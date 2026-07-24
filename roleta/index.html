@@ -1,415 +1,431 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Roleta de Experts | Corujão de Traders · Safirion</title>
-<meta name="description" content="Sistema de seleção aleatória de experts do Corujão de Traders da Safirion." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Roleta dos Experts — Corujão de Traders | Safirion</title>
+<meta name="description" content="Roleta de sorteio dos experts do Corujão de Traders da Safirion." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,800;0,900;1,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%2300A7FF'/%3E%3C/svg%3E" />
 <style>
-:root{
-  --bg:#060B18; --bg-2:#080E1C; --bg-3:#0C1424;
-  --surface:#111A2B; --surface-2:#111C30;
-  --line:rgba(214,237,248,.08); --line-strong:rgba(214,237,248,.16);
-  --text:#E9F0FA; --muted:#A1B8C3; --muted-2:#7C93A6;
-  --accent:#2389E6; --accent-strong:#146AC7; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
-  --danger:#E2556A; --ok:#4ADE80;
-  --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
-  --grad-panel:linear-gradient(180deg,#070C19 0%,#10182A 100%);
-  --shadow-card:0 24px 60px -24px rgba(2,8,20,.9);
-  --shadow-glow:0 10px 24px -6px rgba(35,137,230,.35);
-  --r-panel:18px; --r-btn:16px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:#060B18}
-::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#146AC7}
-@keyframes ctaPulse{
-  0%,100%{box-shadow:0 0 20px rgba(35,137,230,.3)}
-  50%{box-shadow:0 0 40px rgba(35,137,230,.5),0 0 60px rgba(35,137,230,.2)}
-}
-.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
-.grad-text{background:linear-gradient(90deg,#2389E6,#69B8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit}
-::selection{background:rgba(35,137,230,.4)}
-.container{max-width:1180px;margin:0 auto;padding:0 24px}
+  :root{
+    --bg-1:#0a1120;
+    --bg-2:#05070d;
+    --bg-top:rgba(0,167,255,.08);
+    --brand:#00A7FF;
+    --brand-2:#4dc3ff;
+    --glow-a:rgba(0,167,255,.16);
+    --btn:linear-gradient(180deg,#2fb9ff,#0077cc);
+    --btn-ink:#03253c;
+    --ring:#0e1a2e;
+    --pill-border:rgba(0,167,255,.28);
+    --panel:#0f1524;
+    --line:rgba(255,255,255,.10);
+    --muted:#9aa6c2;
+    --muted-2:#7986a4;
+    --danger:#E2556A;
+  }
 
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  font-weight:700;font-size:1rem;padding:16px 30px;border-radius:var(--r-btn);
-  border:0;background:var(--accent);color:#fff;cursor:pointer;
-  box-shadow:var(--shadow-glow);
-  transition:transform .3s cubic-bezier(.16,1,.3,1),background-color .3s,box-shadow .3s;
-}
-.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 18px 48px -12px rgba(35,137,230,.55)}
-.btn:active{transform:scale(.98)}
-.btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
-.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none;animation:none}
-.btn--ghost{background:rgba(35,137,230,.08);border:1px solid var(--line-strong);box-shadow:none;color:var(--accent-pale)}
-.btn--ghost:hover{background:rgba(35,137,230,.16)}
-.btn--danger{background:rgba(226,85,106,.12);border-color:rgba(226,85,106,.35);box-shadow:none;color:#F3A9B4}
-.btn--sm{padding:9px 16px;font-size:.85rem;border-radius:11px}
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+  html,body{ height:100%; }
+  body{
+    font-family:'Poppins', system-ui, -apple-system, sans-serif;
+    color:#fff; min-height:100%;
+    display:flex; flex-direction:column; align-items:center;
+    overflow-x:hidden;
+    background:
+      radial-gradient(140% 70% at 50% -20%, var(--bg-top) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    background-attachment:fixed;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(0,167,255,.35); }
+  ::-webkit-scrollbar{ width:8px }
+  ::-webkit-scrollbar-track{ background:#05070d }
+  ::-webkit-scrollbar-thumb{ background:linear-gradient(180deg,#00A7FF,#005791); border-radius:10px; border:2px solid #05070d }
 
-.nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);background:rgba(7,12,25,.78);border-bottom:1px solid var(--line)}
-.nav-inner{max-width:1180px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.nav img{height:24px}
-.nav .right{display:flex;gap:10px;align-items:center}
+  .topbar{
+    position:relative; z-index:2; width:100%; max-width:560px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px 0; gap:10px;
+  }
+  .topbar a,.topbar button.tb{
+    font-size:12.5px; font-weight:600; text-decoration:none; color:#aeb9d6; cursor:pointer;
+    padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04); transition:.2s; font-family:inherit;
+  }
+  .topbar a:hover,.topbar button.tb:hover{ border-color:var(--brand); color:#fff; }
+  .tb-right{ display:flex; align-items:center; gap:8px; }
+  .mute{ display:flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; cursor:pointer;
+    border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#aeb9d6; transition:.2s; }
+  .mute:hover{ border-color:var(--brand); color:#fff; }
+  .mute svg{ width:17px; height:17px; }
 
-.page-head{text-align:center;padding:44px 0 8px}
-.page-head .live-pill{
-  display:inline-flex;align-items:center;gap:9px;background:rgba(74,222,128,.1);
-  border:1px solid rgba(74,222,128,.3);color:#7CEBA8;font-size:.75rem;font-weight:800;
-  letter-spacing:.12em;text-transform:uppercase;padding:7px 15px;border-radius:999px;margin-bottom:16px;
-}
-.livedot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
-.livedot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(74,222,128,.55);animation:pulse 1.8s ease-out infinite}
-@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
-.page-head h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;letter-spacing:-.03em}
-.page-head p{color:var(--muted);margin-top:8px;max-width:38rem;margin-left:auto;margin-right:auto}
+  .brandlogo{ margin-top:4px; }
+  .brandlogo img{ height:44px; width:auto; display:block; margin:0 auto; }
+  .event-tag{
+    margin-top:10px; display:inline-flex; align-items:center; gap:8px;
+    font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--brand-2);
+  }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:#2ec16b; flex:0 0 auto; }
 
-.stage{display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:start;padding:40px 0 80px}
+  .stage{
+    position:relative; z-index:1; width:100%; max-width:560px;
+    padding:14px 20px 130px; display:flex; flex-direction:column;
+    align-items:center; text-align:center;
+  }
+  .headline{
+    font-family:'Montserrat',sans-serif; font-weight:800;
+    font-size:clamp(27px,7.4vw,44px); line-height:1.02; letter-spacing:-.5px;
+    text-transform:uppercase; margin-top:14px; color:#fff;
+  }
+  .headline em{ font-style:normal; color:var(--brand-2); }
+  .subtitle{ margin-top:9px; font-size:clamp(13px,3.6vw,15.5px); font-weight:400; color:var(--muted); max-width:340px; }
+  .subtitle b{ color:#e7ecfa; font-weight:600; }
+  .status{ margin-top:8px; font-size:13.5px; color:var(--brand-2); font-weight:600; min-height:18px; }
+  .status b{ color:#fff; }
 
-/* ---- Roda ---- */
-.wheel-wrap{position:relative;max-width:620px;margin:0 auto;filter:drop-shadow(0 30px 60px rgba(2,8,20,.8))}
-.wheel-wrap::before{
-  content:"";position:absolute;inset:-6%;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,rgba(35,137,230,.16),transparent 65%);
-}
-#wheelSpin{transition:transform 5.4s cubic-bezier(.1,.82,.06,1);will-change:transform}
-#wheel{width:100%;height:auto;border-radius:50%}
-.pointer{
-  position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:5;
-  width:0;height:0;border-left:19px solid transparent;border-right:19px solid transparent;
-  border-top:32px solid var(--accent-soft);
-  filter:drop-shadow(0 4px 10px rgba(35,137,230,.6));
-}
-.hub{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4;
-  width:19%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(160deg,#111C30,#070C19);border:2px solid var(--line-strong);
-  box-shadow:0 0 0 6px rgba(7,12,25,.9), var(--shadow-glow);
-}
-.hub img{width:62%;opacity:.95}
+  /* ---------- WHEEL ---------- */
+  .wheel-wrap{ position:relative; width:min(88vw,66vh,440px); height:min(88vw,66vh,440px); margin:22px auto 6px;
+    display:flex; align-items:center; justify-content:center; }
+  .rim{ position:absolute; inset:-4%; border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, transparent 62%, var(--ring) 63%, #0a0d16 84%, #05070d 100%);
+    box-shadow:0 0 0 3px rgba(255,255,255,.05), 0 20px 50px rgba(0,0,0,.6); }
+  .rim-lights{ position:absolute; inset:0; }
+  .rim-lights i{ position:absolute; top:50%; left:50%; width:7px; height:7px; border-radius:50%;
+    margin:-3.5px 0 0 -3.5px; background:#fff; box-shadow:0 0 5px 1px currentColor; opacity:.85;
+    animation:lightBlink 1.4s ease-in-out infinite alternate; }
+  @keyframes lightBlink{ from{opacity:.25} to{opacity:.95} }
+  .wheel{ position:absolute; inset:8%; border-radius:50%; overflow:hidden; border:6px solid #05070f;
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.08), inset 0 0 40px rgba(0,0,0,.6);
+    transition:transform 6.2s cubic-bezier(.12,.72,.03,1); will-change:transform; }
+  .seg-label{ position:absolute; top:0; left:50%; width:0; height:50%; transform-origin:bottom center; z-index:3; }
+  .seg-label > span{ position:absolute; top:27%; left:50%; transform:translateX(-50%) rotate(90deg); transform-origin:center;
+    white-space:nowrap; font-family:'Montserrat',sans-serif; font-weight:800; font-size:12px; letter-spacing:.3px;
+    text-transform:uppercase; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.55); line-height:1.05; text-align:center; }
+  .seg-label.done > span{ color:rgba(255,255,255,.32); text-decoration:line-through; }
+  .spokes{ position:absolute; inset:0; border-radius:50%; z-index:2; pointer-events:none; }
+  .spokes i{ position:absolute; top:0; left:50%; width:2px; height:50%; background:rgba(0,0,0,.35); transform-origin:bottom center; }
+  .pointer{ position:absolute; top:-3%; left:50%; transform:translateX(-50%); z-index:6; width:34px; height:44px;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)); }
+  .pointer div{ width:0; height:0; margin:0 auto; border-left:17px solid transparent; border-right:17px solid transparent;
+    border-top:30px solid var(--brand); }
+  .pointer::after{ content:""; position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:18px; height:18px;
+    border-radius:50%; background:var(--brand); border:3px solid #05070f; }
+  .hub{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24%; height:24%; border-radius:50%;
+    z-index:5; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    background:#0c1120; border:4px solid #05070f;
+    box-shadow:0 6px 16px rgba(0,0,0,.5); transition:transform .12s ease; }
+  .hub:active{ transform:translate(-50%,-50%) scale(.94); }
+  .hub-core{ width:76%; height:76%; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--btn); color:var(--btn-ink); }
+  .hub-core svg{ width:44%; height:44%; }
 
-/* ---- Painel lateral ---- */
-.side{display:grid;gap:20px}
-.panel{background:var(--grad-panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:26px 26px 24px;box-shadow:var(--shadow-card)}
-.panel h2{font-size:.82rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:16px}
-.spin-panel{text-align:center}
-.spin-panel .btn{width:100%;font-size:1.08rem;padding:19px 20px}
-.spin-panel .hint{font-size:.85rem;color:var(--muted);margin-top:12px}
-.round-list{display:flex;flex-wrap:wrap;gap:8px}
-.tagchip{
-  display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;
-  background:rgba(35,137,230,.1);border:1px solid var(--line);font-size:.82rem;font-weight:600;color:var(--accent-pale);
-}
-.tagchip img,.tagchip .mini{width:20px;height:20px;border-radius:50%;object-fit:cover}
-.tagchip.done{opacity:.42;text-decoration:line-through}
-.round-meta{font-size:.82rem;color:var(--muted-2);margin-top:14px}
-.round-meta b{color:var(--accent-soft)}
+  .cta{
+    margin-top:24px; position:relative; border:none; cursor:pointer;
+    font-family:'Montserrat',sans-serif; font-weight:800;
+    font-size:clamp(16px,4.4vw,20px); letter-spacing:.4px; text-transform:uppercase; color:var(--btn-ink);
+    padding:16px 46px; border-radius:12px; background:var(--btn);
+    box-shadow:0 6px 16px rgba(0,0,0,.35), 0 0 26px rgba(0,167,255,.25); transition:transform .1s, filter .15s;
+  }
+  .cta:hover{ filter:brightness(1.06); }
+  .cta:active{ transform:translateY(1px); }
+  .cta:disabled{ filter:grayscale(.5) brightness(.6); cursor:default; }
+  .attempts{ margin-top:14px; font-size:12.5px; color:var(--muted-2); }
+  .attempts b{ color:var(--brand-2); }
 
-/* ---- Overlay vencedor ---- */
-.overlay{
-  position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;
-  background:rgba(4,8,18,.82);backdrop-filter:blur(10px);
-}
-.overlay.open{display:flex}
-.winner-card{
-  position:relative;width:min(520px,100%);border-radius:24px;text-align:center;overflow:hidden;
-  background:linear-gradient(165deg,rgba(20,106,199,.3),rgba(10,16,32,.96));
-  border:1px solid var(--line-strong);box-shadow:0 40px 120px -20px rgba(2,8,20,1), var(--shadow-glow);
-  padding:44px 38px 38px;animation:pop .55s cubic-bezier(.16,1,.3,1);
-}
-@keyframes pop{0%{transform:scale(.86);opacity:0}100%{transform:scale(1);opacity:1}}
-.winner-card::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px 200px at 50% -10%,rgba(105,184,255,.22),transparent 65%)}
-.winner-label{font-size:.75rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-soft)}
-.winner-photo{
-  width:128px;height:128px;border-radius:50%;object-fit:cover;margin:20px auto 14px;
-  border:3px solid var(--accent);box-shadow:0 0 0 8px rgba(35,137,230,.15), var(--shadow-glow);
-}
-.winner-name{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:900;letter-spacing:-.02em;color:#fff}
-.timer-wrap{position:relative;width:190px;margin:26px auto 8px}
-.timer-wrap svg{width:100%;height:auto;transform:rotate(-90deg)}
-.timer-wrap .track{stroke:rgba(137,178,230,.15)}
-.timer-wrap .bar{stroke:url(#tg);stroke-linecap:round;transition:stroke-dashoffset .3s linear}
-.timer-txt{
-  position:absolute;inset:0;display:grid;place-items:center;
-  font-size:2.2rem;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;
-}
-.timer-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px}
-.winner-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.timeup .timer-txt{color:var(--ok);animation:blink 1s steps(2) infinite}
-@keyframes blink{50%{opacity:.35}}
+  /* ---------- LIVE TICKER ---------- */
+  .ticker{ position:fixed; bottom:0; left:0; right:0; z-index:4; display:flex; justify-content:center;
+    padding:14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    background:linear-gradient(180deg, transparent, var(--bg-2) 55%); }
+  .ticker-pill{ display:inline-flex; align-items:center; gap:9px; background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.10); border-radius:10px; padding:7px 14px 7px 7px; font-size:13.5px; color:#c8d1e6;
+    max-width:92vw; }
+  .ticker-pill .av{ width:28px; height:28px; border-radius:7px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:12.5px; color:var(--btn-ink); background:var(--btn); overflow:hidden; }
+  .ticker-pill .av img{ width:100%; height:100%; object-fit:cover; }
+  .ticker-pill b{ color:var(--brand-2); font-weight:700; }
 
-/* ---- Login admin ---- */
-.login-overlay{
-  position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:20px;
-  background:rgba(4,8,18,.85);backdrop-filter:blur(10px);
-}
-.login-overlay.open{display:flex}
-.login-card{
-  width:min(400px,100%);border-radius:22px;text-align:center;position:relative;overflow:hidden;
-  background:linear-gradient(165deg,rgba(20,106,199,.22),rgba(10,16,32,.97));
-  border:1px solid var(--line-strong);box-shadow:0 40px 120px -20px rgba(2,8,20,1), var(--shadow-glow);
-  padding:42px 36px 36px;animation:pop .5s cubic-bezier(.16,1,.3,1);
-}
-.login-card img{height:26px;margin:0 auto 22px}
-.login-card h2{font-size:1.25rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
-.login-card .sub{font-size:.88rem;color:var(--muted);margin-bottom:24px}
-.login-card input{
-  width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-strong);
-  background:var(--surface);color:var(--text);font-family:inherit;font-size:1rem;text-align:center;
-  letter-spacing:.08em;
-}
-.login-card input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.login-card .err{
-  display:none;margin-top:12px;font-size:.85rem;font-weight:600;color:#F3A9B4;
-}
-.login-card.wrong .err{display:block}
-.login-card.wrong input{border-color:rgba(226,85,106,.55);animation:shake .4s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-.login-card .btn{width:100%;margin-top:18px}
-.login-card .close-x{position:absolute;top:14px;right:14px}
+  /* ---------- RESULT MODAL ---------- */
+  .overlay{ position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,6,12,.78); }
+  .overlay.show{ display:flex; animation:fade .2s ease; }
+  @keyframes fade{ from{opacity:0} to{opacity:1} }
+  .card{ position:relative; width:100%; max-width:370px; border-radius:16px; padding:32px 26px 24px; text-align:center;
+    background:var(--panel); border:1px solid rgba(255,255,255,.10); box-shadow:0 24px 70px rgba(0,0,0,.6);
+    border-top:3px solid var(--brand); animation:rise .28s ease; overflow:hidden; }
+  @keyframes rise{ from{ transform:translateY(14px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+  .win-photo{ width:86px; height:86px; border-radius:50%; margin:0 auto; object-fit:cover; display:block;
+    border:3px solid var(--brand); box-shadow:0 0 0 7px rgba(0,167,255,.14), 0 0 30px rgba(0,167,255,.35); position:relative; z-index:1; }
+  .congrats{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:27px; letter-spacing:-.3px;
+    text-transform:uppercase; margin-top:14px; color:#fff; position:relative; z-index:1; }
+  .instr{ font-size:11.5px; letter-spacing:1.5px; color:var(--muted-2); text-transform:uppercase; margin-top:4px; position:relative; z-index:1; }
+  .prize-box{ margin:16px 0 18px; padding:18px 16px 14px; border-radius:12px; background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.10); position:relative; z-index:1; }
+  .timer-wrap{ position:relative; width:150px; margin:0 auto; }
+  .timer-wrap svg{ width:100%; height:auto; transform:rotate(-90deg); display:block; }
+  .timer-wrap .track{ stroke:rgba(255,255,255,.10); }
+  .timer-wrap .bar{ stroke:url(#tg); stroke-linecap:round; transition:stroke-dashoffset .3s linear; }
+  .timer-txt{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Montserrat',sans-serif; font-weight:800; font-size:27px; letter-spacing:-.3px;
+    font-variant-numeric:tabular-nums; color:#fff; }
+  .timer-sub{ margin-top:10px; font-size:12px; color:var(--muted-2); letter-spacing:.5px; }
+  .card.timeup .timer-txt{ color:#2ec16b; animation:blink 1s steps(2) infinite; }
+  @keyframes blink{ 50%{ opacity:.35 } }
+  .claim-btn{ display:block; width:100%; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:800;
+    font-size:16px; letter-spacing:.3px; text-transform:uppercase; color:var(--btn-ink); padding:15px; border-radius:10px;
+    background:var(--btn); transition:transform .1s, filter .15s; position:relative; z-index:1; }
+  .claim-btn:hover{ filter:brightness(1.05); }
+  .claim-btn:active{ transform:translateY(1px); }
+  .claim-btn:disabled{ filter:grayscale(.5) brightness(.55); cursor:default; }
+  .retry{ margin-top:13px; background:none; border:none; cursor:pointer; color:var(--muted-2); font-size:12.5px;
+    font-family:'Poppins',sans-serif; position:relative; z-index:1; }
+  .retry:hover{ color:#aab4cf; text-decoration:underline; }
+  .confetti{ position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .confetti i{ position:absolute; top:-12px; width:7px; height:12px; opacity:.85; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(520px) rotate(500deg); opacity:0; } }
 
-/* ---- Drawer admin ---- */
-.drawer-bg{position:fixed;inset:0;z-index:90;background:rgba(4,8,18,.7);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s}
-.drawer{
-  position:fixed;top:0;right:0;bottom:0;z-index:91;width:min(460px,100vw);
-  background:var(--bg-3);border-left:1px solid var(--line-strong);
-  transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);
-  display:flex;flex-direction:column;
-}
-body.admin-open .drawer{transform:none}
-body.admin-open .drawer-bg{opacity:1;pointer-events:auto}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:22px 26px;border-bottom:1px solid var(--line)}
-.drawer-head h2{font-size:1.1rem;font-weight:800;letter-spacing:-.01em}
-.drawer-body{flex:1;overflow-y:auto;padding:24px 26px 40px;display:grid;gap:28px;align-content:start}
-.field label{display:block;font-size:.8rem;font-weight:700;color:var(--accent-pale);margin-bottom:7px}
-.field input[type=text],.field input[type=number]{
-  width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line-strong);
-  background:var(--surface);color:var(--text);font-family:inherit;font-size:.95rem;
-}
-.field input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.field input[type=file]{width:100%;font-size:.85rem;color:var(--muted)}
-.field input[type=file]::file-selector-button{
-  margin-right:12px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-strong);
-  background:rgba(35,137,230,.12);color:var(--accent-pale);font-weight:700;cursor:pointer;font-family:inherit;
-}
-.form-grid{display:grid;gap:14px}
-.exp-row{
-  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
-  background:var(--surface);border:1px solid var(--line);
-}
-.exp-row.inactive{opacity:.5}
-.exp-row img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
-.exp-row .nm{flex:1;font-weight:700;font-size:.94rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.icon-btn{
-  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;cursor:pointer;
-  background:rgba(35,137,230,.1);border:1px solid var(--line);color:var(--accent-soft);
-  transition:background .2s;
-}
-.icon-btn:hover{background:rgba(35,137,230,.22)}
-.icon-btn.del{color:#F3A9B4;background:rgba(226,85,106,.08);border-color:rgba(226,85,106,.25)}
-.icon-btn.del:hover{background:rgba(226,85,106,.2)}
-/* switch */
-.sw{position:relative;width:42px;height:24px;flex:none;cursor:pointer}
-.sw input{position:absolute;opacity:0;inset:0;cursor:pointer}
-.sw .tr{position:absolute;inset:0;border-radius:999px;background:rgba(137,178,230,.18);border:1px solid var(--line);transition:background .25s}
-.sw .th{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#8FA9C4;transition:transform .25s,background .25s}
-.sw input:checked + .tr{background:rgba(35,137,230,.5)}
-.sw input:checked + .tr .th{transform:translateX(18px);background:#fff}
-.sw input:focus-visible + .tr{outline:2px solid var(--accent-soft)}
-.exp-list{display:grid;gap:10px}
-.drawer .sub{font-size:.78rem;color:var(--muted-2);margin-top:6px}
-.toast{
-  position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);z-index:99;
-  background:var(--surface-2);border:1px solid var(--line-strong);color:var(--accent-pale);
-  padding:13px 22px;border-radius:12px;font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;
-  transition:opacity .3s,transform .3s;box-shadow:var(--shadow-card);
-}
-.toast.show{opacity:1;transform:translateX(-50%)}
+  /* ---------- LOGIN ADMIN ---------- */
+  .gate{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,6,12,.82); }
+  .gate.show{ display:flex; animation:fade .2s ease; }
+  .gate-card{ position:relative; width:100%; max-width:340px; border-radius:16px; padding:26px 24px 20px; text-align:center;
+    background:var(--panel); border:1px solid rgba(255,255,255,.10); box-shadow:0 24px 60px rgba(0,0,0,.55);
+    border-top:3px solid var(--brand); }
+  .gate-card img{ height:34px; margin:0 auto 4px; }
+  .gate-card h2{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; margin-top:12px; text-transform:uppercase; }
+  .gate-card p.g-sub{ font-size:13px; color:var(--muted); margin-top:5px; }
+  .gate-field{ text-align:left; margin-top:14px; }
+  .gate-field label{ display:block; font-size:11.5px; font-weight:600; color:#8b97b5; margin-bottom:5px; }
+  .gate-field input{ width:100%; padding:13px; border-radius:9px; font-size:16px; color:#fff;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); outline:none; transition:.15s;
+    font-family:'Poppins',sans-serif; }
+  .gate-field input::placeholder{ color:#5f6b86; }
+  .gate-field input:focus{ border-color:var(--brand); }
+  .gate-field input.err{ border-color:#ff5252; animation:shake .35s; }
+  @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .gate-btn{ width:100%; margin-top:18px; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:800;
+    font-size:15px; letter-spacing:.3px; text-transform:uppercase; color:var(--btn-ink); padding:14px; border-radius:10px;
+    background:var(--btn); transition:transform .1s, filter .15s; }
+  .gate-btn:active{ transform:translateY(1px); }
+  .gate-x{ position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:8px; border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04); color:#aeb9d6; cursor:pointer; display:grid; place-items:center; }
+  .gate-err{ display:none; margin-top:10px; font-size:12.5px; font-weight:600; color:#ff8a9a; }
+  .gate-card.wrong .gate-err{ display:block; }
 
-@media (prefers-reduced-motion: reduce){
-  .livedot::after{animation:none}
-  #wheelSpin{transition-duration:1.2s}
-  .winner-card{animation:none}
-  .cta-pulse{animation:none}
-}
-@media (max-width:1024px){
-  .stage{grid-template-columns:1fr;gap:28px}
-  .side{max-width:620px;margin:0 auto;width:100%}
-}
-@media (max-width:560px){
-  .nav .btn--sm span{display:none}
-  .winner-card{padding:34px 22px 28px}
-  .stage{padding:28px 0 60px}
-}
+  /* ---------- DRAWER ADMIN ---------- */
+  .drawer-bg{ position:fixed; inset:0; z-index:70; background:rgba(4,6,12,.7); opacity:0; pointer-events:none; transition:opacity .3s; }
+  .drawer{ position:fixed; top:0; right:0; bottom:0; z-index:71; width:min(440px,100vw);
+    background:var(--bg-1); border-left:1px solid rgba(255,255,255,.12);
+    transform:translateX(100%); transition:transform .4s cubic-bezier(.16,1,.3,1);
+    display:flex; flex-direction:column; }
+  body.admin-open .drawer{ transform:none; }
+  body.admin-open .drawer-bg{ opacity:1; pointer-events:auto; }
+  .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
+  .drawer-head h2{ font-family:'Montserrat',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; }
+  .drawer-body{ flex:1; overflow-y:auto; padding:22px 24px 40px; display:grid; gap:26px; align-content:start; text-align:left; }
+  .field label{ display:block; font-size:12px; font-weight:600; color:#8b97b5; margin-bottom:6px; }
+  .field input[type=text],.field input[type=number]{
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.05); color:#fff; font-family:'Poppins',sans-serif; font-size:15px; outline:none; }
+  .field input:focus{ border-color:var(--brand); }
+  .field input[type=file]{ width:100%; font-size:13px; color:var(--muted); }
+  .field input[type=file]::file-selector-button{
+    margin-right:12px; padding:9px 14px; border-radius:9px; border:1px solid var(--pill-border);
+    background:rgba(0,167,255,.12); color:var(--brand-2); font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
+  .form-grid{ display:grid; gap:13px; }
+  .sub{ font-size:11.5px; color:#5f6b86; margin-top:5px; }
+  .abtn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;
+    font-family:'Montserrat',sans-serif; font-weight:800; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
+    color:var(--btn-ink); padding:12px 18px; border-radius:9px; background:var(--btn); transition:transform .1s, filter .15s; }
+  .abtn:hover{ filter:brightness(1.05); }
+  .abtn:active{ transform:translateY(1px); }
+  .abtn--ghost{ background:rgba(255,255,255,.06); color:#c8d1e6; border:1px solid rgba(255,255,255,.14); }
+  .abtn--danger{ background:rgba(226,85,106,.15); color:#ff8a9a; border:1px solid rgba(226,85,106,.35); }
+  .exp-row{ display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:12px;
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10); }
+  .exp-row.inactive{ opacity:.5; }
+  .exp-row img{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex:none; }
+  .exp-row .nm{ flex:1; font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .icon-btn{ width:32px; height:32px; border-radius:9px; display:grid; place-items:center; flex:none; cursor:pointer;
+    background:rgba(0,167,255,.1); border:1px solid rgba(0,167,255,.25); color:var(--brand-2); transition:background .2s; }
+  .icon-btn:hover{ background:rgba(0,167,255,.22); }
+  .icon-btn.del{ color:#ff8a9a; background:rgba(226,85,106,.08); border-color:rgba(226,85,106,.25); }
+  .icon-btn.del:hover{ background:rgba(226,85,106,.2); }
+  .sw{ position:relative; width:40px; height:23px; flex:none; cursor:pointer; }
+  .sw input{ position:absolute; opacity:0; inset:0; cursor:pointer; }
+  .sw .tr{ position:absolute; inset:0; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.14); transition:background .25s; }
+  .sw .th{ position:absolute; top:3px; left:3px; width:15px; height:15px; border-radius:50%; background:#8FA9C4; transition:transform .25s, background .25s; }
+  .sw input:checked + .tr{ background:rgba(0,167,255,.55); }
+  .sw input:checked + .tr .th{ transform:translateX(17px); background:#fff; }
+  .exp-list{ display:grid; gap:9px; }
+  .toast{ position:fixed; left:50%; bottom:86px; transform:translateX(-50%) translateY(20px); z-index:99;
+    background:var(--panel); border:1px solid var(--pill-border); color:#e7ecfa;
+    padding:12px 20px; border-radius:11px; font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
+    transition:opacity .3s, transform .3s; box-shadow:0 18px 44px rgba(0,0,0,.5); }
+  .toast.show{ opacity:1; transform:translateX(-50%); }
+
+  /* ---------- MOBILE / MOTION ---------- */
+  @media (max-width:600px){
+    .stage{ padding:10px 16px 120px; }
+    .topbar{ padding:12px 16px 0; }
+    .headline{ margin-top:12px; }
+    .cta{ width:100%; max-width:340px; }
+    .wheel-wrap{ margin-top:16px; }
+    .brandlogo img{ height:38px; }
+  }
+  @media (max-width:380px){
+    .seg-label > span{ font-size:10.5px; }
+    .gate-card{ padding:22px 18px 18px; }
+    .card{ padding:28px 20px 22px; }
+    .congrats{ font-size:24px; }
+  }
+  @media (max-height:560px){
+    .ticker{ display:none; }
+    .stage{ padding-bottom:32px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wheel{ transition-duration:1.2s; }
+    .rim-lights i{ animation:none; }
+    .card,.overlay.show,.gate.show{ animation:none; }
+  }
 </style>
 </head>
 <body>
 
-<nav class="nav" aria-label="Navegação">
-  <div class="nav-inner">
-    <a href="../" aria-label="Página do Arsenal Pro">
-      <img src="../assets/logo.svg" alt="Safirion" />
-    </a>
-    <div class="right">
-      <a class="btn btn--ghost btn--sm" href="../aovivo/">Página <span>&nbsp;ao vivo</span></a>
-      <button class="btn btn--sm" id="btnAdmin" type="button">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-        Painel Admin
-      </button>
+  <div class="topbar">
+    <a href="../">← Arsenal Pro</a>
+    <div class="tb-right">
+      <button id="btnAdmin" class="tb" type="button">Painel Admin</button>
+      <button id="muteBtn" class="mute" type="button" aria-label="Ativar ou desativar som"></button>
     </div>
   </div>
-</nav>
 
-<header class="page-head container">
-  <span class="live-pill"><span class="livedot" aria-hidden="true"></span> Corujão de Traders</span>
-  <h1>Roleta de <span class="grad-text">Experts</span></h1>
-  <p>O expert sorteado assume a operação ao vivo. Quem já operou sai da roleta até todos os experts passarem pela rodada.</p>
-</header>
+  <main class="stage">
+    <div class="brandlogo"><img src="../assets/corujao/logo.webp" alt="Safirion — Confiança para investir" /></div>
+    <span class="event-tag"><span class="live-dot" aria-hidden="true"></span> Corujão de Traders</span>
+    <h1 class="headline">Roleta dos <em>Experts</em></h1>
+    <p class="subtitle">O sorteado assume a operação <b>ao vivo</b>. Quem já operou sai da roleta até todos os experts passarem.</p>
+    <p class="status" id="statusLine"></p>
 
-<main class="container stage">
-  <!-- Roda -->
-  <div class="wheel-wrap">
-    <div class="pointer" aria-hidden="true"></div>
-    <div id="wheelSpin">
-      <canvas id="wheel" width="920" height="920" aria-label="Roleta com os experts ativos"></canvas>
-    </div>
-    <div class="hub" aria-hidden="true"><img src="../assets/logo.svg" alt="" /></div>
-  </div>
-
-  <!-- Lateral -->
-  <div class="side">
-    <div class="panel spin-panel">
-      <h2>Sorteio</h2>
-      <button class="btn cta-pulse" id="btnSpin" type="button">
-        Sortear Expert
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      </button>
-      <p class="hint" id="spinHint">Clique para girar a roleta</p>
+    <div class="wheel-wrap">
+      <div class="rim"><div class="rim-lights" id="lights"></div></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="pointer"><div></div></div>
+      <div class="hub" id="hubBtn"><div class="hub-core">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+      </div></div>
     </div>
 
-    <div class="panel">
-      <h2>Rodada atual</h2>
-      <div class="round-list" id="roundList"></div>
-      <p class="round-meta" id="roundMeta"></p>
-      <p class="round-meta">Tempo por expert: <b id="cfgTimeLabel"></b></p>
-    </div>
-  </div>
-</main>
+    <button class="cta" id="spinBtn">Sortear Expert</button>
+    <p class="attempts">Tempo por expert: <b id="cfgTimeLabel">10 min</b></p>
+  </main>
 
-<!-- Overlay vencedor -->
-<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winnerName">
-  <div class="winner-card" id="winnerCard">
-    <span class="winner-label">Expert selecionado</span>
-    <img class="winner-photo" id="winnerPhoto" src="" alt="" />
-    <div class="winner-name" id="winnerName"></div>
-    <div class="timer-wrap">
-      <svg viewBox="0 0 200 200" aria-hidden="true">
-        <defs>
-          <linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#69B8FF"/><stop offset="100%" stop-color="#146AC7"/>
-          </linearGradient>
-        </defs>
-        <circle class="track" cx="100" cy="100" r="88" fill="none" stroke-width="10"/>
-        <circle class="bar" id="timerBar" cx="100" cy="100" r="88" fill="none" stroke-width="10"/>
-      </svg>
-      <div class="timer-txt" id="timerTxt">00:00</div>
-    </div>
-    <p class="timer-sub" id="timerSub">Tempo de operação em andamento</p>
-    <div class="winner-actions">
-      <button class="btn" id="btnNext" type="button" disabled>Novo sorteio</button>
-      <button class="btn btn--ghost" id="btnEnd" type="button">Encerrar agora</button>
-    </div>
-  </div>
-</div>
+  <div class="ticker"><div class="ticker-pill">
+    <span class="live-dot"></span>
+    <span class="av" id="tickAv">C</span>
+    <span id="tickTxt">Roleta pronta. <b>Boa sorte aos experts!</b></span>
+  </div></div>
 
-<!-- Login do admin -->
-<div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <form class="login-card" id="loginCard">
-    <button class="icon-btn close-x" id="btnCloseLogin" type="button" aria-label="Fechar login">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-    </button>
-    <img src="../assets/logo.svg" alt="Safirion" />
-    <h2 id="loginTitle">Acesso restrito</h2>
-    <p class="sub">Digite a senha do operador para abrir o Painel Admin.</p>
-    <input type="text" name="username" value="operador" autocomplete="username" hidden aria-hidden="true" tabindex="-1" />
-    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password" aria-label="Senha do painel admin" />
-    <p class="err">Senha incorreta. Tente novamente.</p>
-    <button class="btn" type="submit">
-      Entrar no painel
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-    </button>
-  </form>
-</div>
-
-<!-- Admin -->
-<div class="drawer-bg" id="drawerBg"></div>
-<aside class="drawer" id="drawer" aria-label="Painel administrativo">
-  <div class="drawer-head">
-    <h2>Painel Admin</h2>
-    <button class="icon-btn" id="btnCloseAdmin" type="button" aria-label="Fechar painel">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-    </button>
-  </div>
-  <div class="drawer-body">
-
-    <section>
-      <div class="field" style="margin-bottom:14px">
-        <label for="cfgMinutes">Tempo padrão do cronômetro (minutos)</label>
-        <input type="number" id="cfgMinutes" min="1" max="180" step="1" />
+  <!-- Modal do sorteado + cronômetro -->
+  <div class="overlay" id="overlay"><div class="card" id="winCard">
+    <div class="confetti" id="confetti"></div>
+    <img class="win-photo" id="winnerPhoto" src="" alt="" />
+    <div class="congrats" id="winnerName">Expert</div>
+    <div class="instr">assume a operação ao vivo agora</div>
+    <div class="prize-box">
+      <div class="timer-wrap">
+        <svg viewBox="0 0 160 160" aria-hidden="true">
+          <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4dc3ff"/><stop offset="100%" stop-color="#0077cc"/>
+          </linearGradient></defs>
+          <circle class="track" cx="80" cy="80" r="70" fill="none" stroke-width="9"/>
+          <circle class="bar" id="timerBar" cx="80" cy="80" r="70" fill="none" stroke-width="9"/>
+        </svg>
+        <div class="timer-txt" id="timerTxt">00:00</div>
       </div>
-      <button class="btn btn--sm" id="btnSaveCfg" type="button">Salvar tempo</button>
-    </section>
+      <div class="timer-sub" id="timerSub">TEMPO DE OPERAÇÃO EM ANDAMENTO</div>
+    </div>
+    <button class="claim-btn" id="btnNext" disabled>Novo sorteio</button>
+    <button class="retry" id="btnEnd">Encerrar agora</button>
+  </div></div>
 
-    <section>
-      <div class="form-grid" id="expertForm">
-        <div class="field">
-          <label for="fName" id="formTitle">Adicionar expert</label>
-          <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
-        </div>
-        <div class="field">
-          <label for="fPhoto">Foto (opcional)</label>
-          <input type="file" id="fPhoto" accept="image/*" />
-          <p class="sub">A imagem é redimensionada automaticamente. Sem foto, usamos as iniciais.</p>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn--sm" id="btnSaveExpert" type="button">Adicionar</button>
-          <button class="btn btn--ghost btn--sm" id="btnCancelEdit" type="button" style="display:none">Cancelar edição</button>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="field"><label>Experts cadastrados</label></div>
-      <div class="exp-list" id="expList"></div>
-    </section>
-
-    <section style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn--ghost btn--sm" id="btnResetRound" type="button">Reiniciar rodada</button>
-      <button class="btn btn--danger btn--sm" id="btnRestoreDefaults" type="button">Restaurar padrão</button>
-    </section>
-
+  <!-- Login do admin -->
+  <div class="gate" id="loginOverlay" role="dialog" aria-modal="true">
+    <form class="gate-card" id="loginCard">
+      <button class="gate-x" id="btnCloseLogin" type="button" aria-label="Fechar">✕</button>
+      <img src="../assets/corujao/logo.webp" alt="Safirion" />
+      <h2>Acesso restrito</h2>
+      <p class="g-sub">Digite a senha do operador para abrir o Painel Admin.</p>
+      <input type="text" name="username" value="operador" autocomplete="username" hidden aria-hidden="true" tabindex="-1" />
+      <div class="gate-field"><label for="loginPass">Senha</label>
+        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <p class="gate-err">Senha incorreta. Tente novamente.</p>
+      <button type="submit" class="gate-btn">Entrar no painel</button>
+    </form>
   </div>
-</aside>
 
-<div class="toast" id="toast" role="status"></div>
+  <!-- Painel admin -->
+  <div class="drawer-bg" id="drawerBg"></div>
+  <aside class="drawer" id="drawer" aria-label="Painel administrativo">
+    <div class="drawer-head">
+      <h2>Painel Admin</h2>
+      <button class="icon-btn" id="btnCloseAdmin" type="button" aria-label="Fechar painel">✕</button>
+    </div>
+    <div class="drawer-body">
+      <section>
+        <div class="field" style="margin-bottom:12px">
+          <label for="cfgMinutes">Tempo padrão do cronômetro (minutos)</label>
+          <input type="number" id="cfgMinutes" min="1" max="180" step="1" />
+        </div>
+        <button class="abtn" id="btnSaveCfg" type="button">Salvar tempo</button>
+      </section>
+
+      <section>
+        <div class="form-grid" id="expertForm">
+          <div class="field">
+            <label for="fName" id="formTitle">Adicionar expert</label>
+            <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
+          </div>
+          <div class="field">
+            <label for="fPhoto">Foto (opcional)</label>
+            <input type="file" id="fPhoto" accept="image/*" />
+            <p class="sub">A imagem é redimensionada automaticamente. Sem foto, usamos as iniciais.</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
+            <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="field"><label>Experts cadastrados</label></div>
+        <div class="exp-list" id="expList"></div>
+      </section>
+
+      <section style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="abtn abtn--ghost" id="btnResetRound" type="button">Reiniciar rodada</button>
+        <button class="abtn abtn--danger" id="btnRestoreDefaults" type="button">Restaurar padrão</button>
+      </section>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status"></div>
 
 <script>
 "use strict";
-/* ================= Persistência ================= */
+/* ================= Dados ================= */
 const LS_EXPERTS = "cj_experts_v1";
 const LS_CFG     = "cj_cfg_v1";
 const LS_ROUND   = "cj_round_v1";
 const LS_LIVE    = "cj_live_state_v1";
+const ADMIN_PASS = "corujao2026"; // TODO: troque a senha antes do evento
+const SS_AUTH    = "cj_admin_ok";
 
 const DEFAULT_EXPERTS = [
   "Taylon","Patrick","Miriele","Julin","Thon Carvalho",
@@ -421,46 +437,26 @@ const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts = load(LS_EXPERTS, DEFAULT_EXPERTS);
 let cfg     = load(LS_CFG, { minutes: 10 });
-let round   = load(LS_ROUND, { remaining: null, done: [] }); // remaining null => nova rodada
+let round   = load(LS_ROUND, { remaining: null, done: [] });
 
-/* ================= Avatares ================= */
-function initials(name){
-  return name.trim().split(/\s+/).map(p => p[0]).slice(0,2).join("").toUpperCase();
-}
+function initials(name){ return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 function avatarURI(name){
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>` +
-    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>` +
-    `<stop offset='0%' stop-color='#146AC7'/><stop offset='100%' stop-color='#0A3461'/></linearGradient></defs>` +
-    `<rect width='240' height='240' fill='url(#g)'/>` +
-    `<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' ` +
-    `font-family='Inter,Arial,sans-serif' font-weight='800' font-size='88' fill='#D6EDF8'>${initials(name)}</text></svg>`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>`+
+    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>`+
+    `<stop offset='0%' stop-color='#0090df'/><stop offset='100%' stop-color='#004e82'/></linearGradient></defs>`+
+    `<rect width='240' height='240' fill='url(#g)'/>`+
+    `<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' `+
+    `font-family='Montserrat,Arial,sans-serif' font-weight='800' font-size='86' fill='#fff'>${initials(name)}</text></svg>`;
   return "data:image/svg+xml," + encodeURIComponent(svg);
 }
-function photoOf(e){ return e.photo || avatarURI(e.name); }
-
-const imgCache = new Map();
-function getImage(src, onload){
-  if (imgCache.has(src)) return imgCache.get(src);
-  const im = new Image();
-  im.onload = onload;
-  im.src = src;
-  imgCache.set(src, im);
-  return im;
-}
-
-/* ================= Roda (canvas) ================= */
-const canvas = document.getElementById("wheel");
-const ctx = canvas.getContext("2d");
-const spinEl = document.getElementById("wheelSpin");
-let currentRotation = 0; // graus acumulados
-
+const photoOf = e => e.photo || avatarURI(e.name);
 const activeExperts = () => experts.filter(e => e.active);
+
 function ensureRound(){
   const act = activeExperts().map(e => e.id);
   if (!round.remaining || round.remaining.length === 0){
     round = { remaining: [...act], done: [] };
   } else {
-    // remove ids que deixaram de existir/ficaram inativos
     round.remaining = round.remaining.filter(id => act.includes(id));
     round.done      = round.done.filter(id => act.includes(id));
     const known = new Set([...round.remaining, ...round.done]);
@@ -472,77 +468,69 @@ function ensureRound(){
   save(LS_ROUND, round);
 }
 
-const SEG_COLORS = ["#0C1A31","#102843","#0A2036","#123152"];
-function drawWheel(){
+/* ================= Roda (conic-gradient, pegada Zona/Mega) ================= */
+const wheel = document.getElementById("wheel");
+const COL_LIVE = ["#0e5fa8","#0a2440","#071527"];
+const COL_DONE = "#080d16";
+let rotation = 0, spinning = false, pendingIdx = -1;
+
+function buildWheel(){
   const list = activeExperts();
   const N = list.length;
-  const W = canvas.width, R = W/2;
-  ctx.clearRect(0,0,W,W);
+  wheel.innerHTML = "";
   if (N === 0){
-    ctx.fillStyle = "#0C1424";
-    ctx.beginPath(); ctx.arc(R,R,R-6,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = "#7C93A6"; ctx.font = "700 34px Inter,Arial";
-    ctx.textAlign = "center"; ctx.fillText("Nenhum expert ativo", R, R+10);
+    wheel.style.background = "#0a1120";
     return;
   }
-  const seg = (Math.PI*2)/N;
+  const SEG = 360/N;
+  const stops = list.map((e,i) => {
+    const c = round.done.includes(e.id) ? COL_DONE : COL_LIVE[i % COL_LIVE.length];
+    return `${c} ${(i*SEG).toFixed(3)}deg ${((i+1)*SEG).toFixed(3)}deg`;
+  }).join(", ");
+  wheel.style.background = `conic-gradient(from ${(-SEG/2).toFixed(3)}deg, ${stops})`;
+  list.forEach((e,i) => {
+    const el = document.createElement("div");
+    el.className = "seg-label" + (round.done.includes(e.id) ? " done" : "");
+    el.style.transform = `rotate(${i*SEG}deg)`;
+    const span = document.createElement("span");
+    span.textContent = e.name;
+    const L = e.name.length;
+    if (N > 10 || L > 13) span.style.fontSize = "9.5px";
+    else if (L > 9) span.style.fontSize = "10.5px";
+    el.appendChild(span);
+    wheel.appendChild(el);
+  });
+  const spokes = document.createElement("div");
+  spokes.className = "spokes";
   for (let i=0;i<N;i++){
-    const e = list[i];
-    const a0 = i*seg - Math.PI/2, a1 = a0 + seg;
-    const isDone = round.done.includes(e.id);
-    // fatia
-    ctx.beginPath(); ctx.moveTo(R,R); ctx.arc(R,R,R-6,a0,a1); ctx.closePath();
-    ctx.fillStyle = SEG_COLORS[i % SEG_COLORS.length];
-    ctx.fill();
-    ctx.strokeStyle = "rgba(137,178,230,.22)"; ctx.lineWidth = 2; ctx.stroke();
-    const mid = a0 + seg/2;
-    ctx.save();
-    ctx.globalAlpha = isDone ? .3 : 1;
-    // foto circular (sempre na vertical)
-    const pr = R*0.125;
-    const px = R + Math.cos(mid)*R*0.70, py = R + Math.sin(mid)*R*0.70;
-    const im = getImage(photoOf(e), () => requestAnimationFrame(drawWheel));
-    ctx.save();
-    ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.clip();
-    if (im.complete && im.naturalWidth) ctx.drawImage(im, px-pr, py-pr, pr*2, pr*2);
-    else { ctx.fillStyle = "#146AC7"; ctx.fillRect(px-pr,py-pr,pr*2,pr*2); }
-    ctx.restore();
-    ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2);
-    ctx.strokeStyle = isDone ? "rgba(137,178,230,.3)" : "#69B8FF";
-    ctx.lineWidth = 4; ctx.stroke();
-    // nome radial (sempre legível)
-    const inner = R*0.26, outer = R*0.53, avail = outer - inner;
-    ctx.save();
-    ctx.translate(R,R); ctx.rotate(mid);
-    const flip = Math.cos(mid) < 0;
-    if (flip) ctx.rotate(Math.PI);
-    ctx.fillStyle = isDone ? "#7C93A6" : "#E9F0FA";
-    ctx.textBaseline = "middle";
-    let fs = 27;
-    ctx.font = `800 ${fs}px Inter,Arial`;
-    let w = ctx.measureText(e.name).width;
-    if (w > avail){ fs = Math.max(15, Math.floor(fs*avail/w)); ctx.font = `800 ${fs}px Inter,Arial`; }
-    if (flip){ ctx.textAlign = "right"; ctx.fillText(e.name, -inner, 0); }
-    else     { ctx.textAlign = "left";  ctx.fillText(e.name,  inner, 0); }
-    ctx.restore();
-    ctx.restore();
+    const sp = document.createElement("i");
+    sp.style.transform = `rotate(${i*SEG - SEG/2}deg)`;
+    spokes.appendChild(sp);
   }
-  // aro externo
-  ctx.beginPath(); ctx.arc(R,R,R-5,0,Math.PI*2);
-  ctx.strokeStyle = "rgba(105,184,255,.5)"; ctx.lineWidth = 6; ctx.stroke();
+  wheel.appendChild(spokes);
 }
+
+/* luzes do aro */
+(function(){
+  const lights = document.getElementById("lights"), LN = 28, RR = 48.5;
+  const LC = ["#00A7FF","#4dc3ff","#ffffff"];
+  for (let i=0;i<LN;i++){
+    const a = (i/LN)*Math.PI*2, x = 50+Math.cos(a)*RR, y = 50+Math.sin(a)*RR;
+    const b = document.createElement("i");
+    b.style.left = x+"%"; b.style.top = y+"%";
+    const c = LC[i%LC.length]; b.style.color = c; b.style.background = c;
+    b.style.animationDelay = (i*0.07)+"s";
+    lights.appendChild(b);
+  }
+})();
 
 /* ================= Sorteio ================= */
-const btnSpin  = document.getElementById("btnSpin");
-const spinHint = document.getElementById("spinHint");
-let spinning = false, pendingWinner = null;
+const spinBtn = document.getElementById("spinBtn");
+const hubBtn  = document.getElementById("hubBtn");
 
-function randInt(max){
-  const a = new Uint32Array(1); crypto.getRandomValues(a);
-  return a[0] % max;
-}
+function randInt(max){ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % max; }
 
-btnSpin.addEventListener("click", () => {
+function spin(){
   if (spinning) return;
   ensureRound();
   const list = activeExperts();
@@ -550,54 +538,51 @@ btnSpin.addEventListener("click", () => {
   const pool = list.filter(e => round.remaining.includes(e.id));
   const source = pool.length ? pool : list;
   const winner = source[randInt(source.length)];
-  pendingWinner = winner;
-
-  const N = list.length, segDeg = 360/N;
   const idx = list.findIndex(e => e.id === winner.id);
-  const mid = idx*segDeg + segDeg/2;
-  const jitter = (Math.random() - .5) * segDeg * .55;
-  const targetMod = ((360 - mid) % 360 + 360) % 360;
-  const currentMod = ((currentRotation % 360) + 360) % 360;
-  let delta = targetMod - currentMod + jitter;
-  delta = ((delta % 360) + 360) % 360;
-  currentRotation += 360*6 + delta;
 
-  spinning = true;
-  btnSpin.disabled = true;
-  spinHint.textContent = "Girando...";
-  spinEl.style.transform = `rotate(${currentRotation}deg)`;
-});
-
-spinEl.addEventListener("transitionend", () => {
-  if (!spinning || !pendingWinner) return;
-  spinning = false;
-  const w = pendingWinner; pendingWinner = null;
-  round.remaining = round.remaining.filter(id => id !== w.id);
-  if (!round.done.includes(w.id)) round.done.push(w.id);
+  spinning = true; spinBtn.disabled = true; pendingIdx = idx;
+  SFX.spin(6.2);
+  const N = list.length, SEG = 360/N, rounds = 6;
+  const jitter = (Math.random()-0.5)*(SEG*0.6);
+  const curMod = ((rotation%360)+360)%360;
+  const desMod = ((360 - idx*SEG)%360+360)%360;
+  let delta = (desMod - curMod + 360)%360;
+  delta += rounds*360 - jitter;
+  rotation += delta;
+  wheel.style.transform = `rotate(${rotation}deg)`;
+}
+spinBtn.addEventListener("click", spin);
+hubBtn.addEventListener("click", spin);
+wheel.addEventListener("transitionend", e => {
+  if (e.propertyName !== "transform" || !spinning || pendingIdx < 0) return;
+  const list = activeExperts();
+  const winner = list[pendingIdx];
+  pendingIdx = -1;
+  if (!winner){ spinning = false; spinBtn.disabled = false; return; }
+  round.remaining = round.remaining.filter(id => id !== winner.id);
+  if (!round.done.includes(winner.id)) round.done.push(winner.id);
   save(LS_ROUND, round);
-  drawWheel(); renderRound();
-  showWinner(w);
+  buildWheel(); renderStatus(); updateTicker(winner);
+  showWinner(winner);
 });
 
-/* ================= Vencedor + cronômetro ================= */
-const overlay     = document.getElementById("overlay");
-const winnerCard  = document.getElementById("winnerCard");
+/* ================= Modal + cronômetro ================= */
+const overlay = document.getElementById("overlay");
+const winCard = document.getElementById("winCard");
 const winnerPhoto = document.getElementById("winnerPhoto");
-const winnerName  = document.getElementById("winnerName");
-const timerBar    = document.getElementById("timerBar");
-const timerTxt    = document.getElementById("timerTxt");
-const timerSub    = document.getElementById("timerSub");
-const btnNext     = document.getElementById("btnNext");
-const btnEnd      = document.getElementById("btnEnd");
-const CIRC = 2 * Math.PI * 88;
+const winnerName = document.getElementById("winnerName");
+const timerBar = document.getElementById("timerBar");
+const timerTxt = document.getElementById("timerTxt");
+const timerSub = document.getElementById("timerSub");
+const btnNext = document.getElementById("btnNext");
+const btnEnd  = document.getElementById("btnEnd");
+const confetti = document.getElementById("confetti");
+const CIRC = 2*Math.PI*70;
 timerBar.style.strokeDasharray = CIRC;
 
 let timerRAF = null, timerEndAt = 0, timerTotal = 0;
-
-function fmt(s){
-  s = Math.max(0, Math.ceil(s));
-  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
-}
+const fmt = s => { s = Math.max(0, Math.ceil(s));
+  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
 function setLive(state){
   save(LS_LIVE, state);
   try { new BroadcastChannel("cj-live").postMessage(state); } catch {}
@@ -606,11 +591,13 @@ function showWinner(e){
   winnerPhoto.src = photoOf(e);
   winnerPhoto.alt = "Foto de " + e.name;
   winnerName.textContent = e.name;
-  winnerCard.classList.remove("timeup");
+  winCard.classList.remove("timeup");
   btnNext.disabled = true;
-  timerSub.textContent = "Tempo de operação em andamento";
-  overlay.classList.add("open");
-  timerTotal = cfg.minutes * 60;
+  timerSub.textContent = "TEMPO DE OPERAÇÃO EM ANDAMENTO";
+  overlay.classList.add("show");
+  launchConfetti();
+  SFX.win(false);
+  timerTotal = cfg.minutes*60;
   timerEndAt = Date.now() + timerTotal*1000;
   setLive({ status:"running", name:e.name, photo:photoOf(e), endsAt:timerEndAt, total:timerTotal });
   tick();
@@ -626,61 +613,135 @@ function timeUp(){
   cancelAnimationFrame(timerRAF);
   timerTxt.textContent = "00:00";
   timerBar.style.strokeDashoffset = CIRC;
-  winnerCard.classList.add("timeup");
-  timerSub.textContent = "Tempo encerrado. Pronto para o próximo sorteio.";
+  winCard.classList.add("timeup");
+  timerSub.textContent = "TEMPO ENCERRADO · PRONTO PARA O PRÓXIMO";
   btnNext.disabled = false;
   setLive({ status:"idle" });
-  beep();
-}
-function beep(){
-  try{
-    const ac = new (window.AudioContext || window.webkitAudioContext)();
-    [0,.35,.7].forEach(t => {
-      const o = ac.createOscillator(), g = ac.createGain();
-      o.connect(g); g.connect(ac.destination);
-      o.frequency.value = 880; g.gain.setValueAtTime(.18, ac.currentTime + t);
-      g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + t + .3);
-      o.start(ac.currentTime + t); o.stop(ac.currentTime + t + .32);
-    });
-  } catch {}
+  SFX.lose();
 }
 btnEnd.addEventListener("click", () => { timerEndAt = Date.now(); });
 btnNext.addEventListener("click", () => {
-  overlay.classList.remove("open");
-  ensureRound(); drawWheel(); renderRound();
-  btnSpin.disabled = false;
-  spinHint.textContent = round.done.length === 0
-    ? "Nova rodada iniciada. Todos os experts voltaram para a roleta."
-    : "Clique para girar a roleta";
+  overlay.classList.remove("show");
+  ensureRound(); buildWheel(); renderStatus();
+  spinning = false; spinBtn.disabled = false;
 });
-
-/* ================= Painel lateral ================= */
-const roundList = document.getElementById("roundList");
-const roundMeta = document.getElementById("roundMeta");
-const cfgTimeLabel = document.getElementById("cfgTimeLabel");
-
-function renderRound(){
-  ensureRound();
-  const list = activeExperts();
-  roundList.innerHTML = "";
-  list.forEach(e => {
-    const chip = document.createElement("span");
-    chip.className = "tagchip" + (round.done.includes(e.id) ? " done" : "");
-    const im = document.createElement("img");
-    im.src = photoOf(e); im.alt = "";
-    chip.appendChild(im);
-    chip.appendChild(document.createTextNode(e.name));
-    roundList.appendChild(chip);
-  });
-  const rem = round.remaining.length, done = round.done.length;
-  roundMeta.innerHTML = `<b>${rem}</b> na roleta · <b>${done}</b> já operaram nesta rodada`;
-  cfgTimeLabel.textContent = cfg.minutes + " min";
+function launchConfetti(){
+  confetti.innerHTML = "";
+  const CC = ["#00A7FF","#4dc3ff","#ffffff","#0077cc"];
+  for (let i=0;i<44;i++){
+    const p = document.createElement("i");
+    p.style.left = Math.random()*100+"%";
+    p.style.background = CC[i%CC.length];
+    p.style.animationDuration = (1.6+Math.random()*1.6)+"s";
+    p.style.animationDelay = (Math.random()*0.5)+"s";
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    confetti.appendChild(p);
+  }
 }
 
-/* ================= Admin ================= */
+/* ================= Status + ticker ================= */
+const statusLine = document.getElementById("statusLine");
+const cfgTimeLabel = document.getElementById("cfgTimeLabel");
+const tickTxt = document.getElementById("tickTxt");
+const tickAv  = document.getElementById("tickAv");
+function renderStatus(){
+  ensureRound();
+  statusLine.innerHTML = `<b>${round.remaining.length}</b> na roleta · <b>${round.done.length}</b> já operaram nesta rodada`;
+  cfgTimeLabel.textContent = cfg.minutes + " min";
+}
+function updateTicker(last){
+  if (last){
+    tickAv.innerHTML = "";
+    const im = document.createElement("img");
+    im.src = photoOf(last); im.alt = "";
+    tickAv.appendChild(im);
+    tickTxt.innerHTML = `<strong>${last.name}</strong> foi sorteado · <b>${round.remaining.length}</b> ainda na roleta`;
+  }
+}
+
+/* ================= SFX (pegada Zona/Mega) ================= */
+const SFX = (function(){
+  let ctx=null, master=null, comp=null, conv=null, wet=null, noiseBuf=null, muted=false;
+  const R = () => Math.random();
+  function makeIR(sec,decay){
+    const rate=ctx.sampleRate, len=Math.max(1,Math.floor(rate*sec)), b=ctx.createBuffer(2,len,rate);
+    for (let c=0;c<2;c++){ const d=b.getChannelData(c);
+      for (let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); }
+    return b;
+  }
+  function init(){
+    if (ctx) return;
+    try{
+      const AC = window.AudioContext||window.webkitAudioContext; if (!AC) return;
+      ctx = new AC();
+      comp = ctx.createDynamicsCompressor();
+      comp.threshold.value=-6; comp.knee.value=6; comp.ratio.value=8; comp.attack.value=0.003; comp.release.value=0.2;
+      comp.connect(ctx.destination);
+      master = ctx.createGain(); master.gain.value=0.62; master.connect(comp);
+      conv = ctx.createConvolver(); conv.buffer = makeIR(1.9,2.4);
+      wet = ctx.createGain(); wet.gain.value=0.26; conv.connect(wet).connect(master);
+      const len = Math.floor(ctx.sampleRate*1.4);
+      noiseBuf = ctx.createBuffer(1,len,ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i=0;i<len;i++) d[i]=Math.random()*2-1;
+    } catch(e){ ctx=null; }
+  }
+  function on(){ init(); if (ctx && ctx.state==="suspended") ctx.resume(); }
+  function out(node,rev){ node.connect(master); if (rev) node.connect(conv); }
+  function noiseSrc(){ const s=ctx.createBufferSource(); s.buffer=noiseBuf; return s; }
+  function tickSnd(t,g){
+    const s=noiseSrc();
+    const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1700+R()*1100; bp.Q.value=5.5;
+    const a=ctx.createGain(); a.gain.setValueAtTime(g,t); a.gain.exponentialRampToValueAtTime(0.0001,t+0.028);
+    s.connect(bp).connect(a); out(a,true); s.start(t,R()*0.6); s.stop(t+0.05);
+    const o=ctx.createOscillator(), og=ctx.createGain();
+    o.type="triangle"; o.frequency.setValueAtTime(290+R()*50,t);
+    og.gain.setValueAtTime(g*0.5,t); og.gain.exponentialRampToValueAtTime(0.0001,t+0.06);
+    o.connect(og); out(og,true); o.start(t); o.stop(t+0.075);
+  }
+  function spinS(duration){
+    on(); if (!ctx||muted) return;
+    const now=ctx.currentTime, total=48;
+    for (let i=1;i<=total;i++){ const af=i/total, p=1-Math.pow(1-af,1/3.2); tickSnd(now+p*duration, 0.42*(1-af*0.5)); }
+  }
+  function bell(freq,t,dur,vol){
+    const P=[[1,1],[2.01,0.5],[2.76,0.32],[3.76,0.2],[5.42,0.12]];
+    for (const [m,a] of P){
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sine"; o.frequency.value=freq*m;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(vol*a,t+0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur/(1+(m-1)*0.6));
+      o.connect(g); out(g,true); o.start(t); o.stop(t+dur+0.05);
+    }
+  }
+  function win(big){
+    on(); if (!ctx||muted) return;
+    const t=ctx.currentTime;
+    const seq = big ? [523.25,659.25,783.99,1046.5,1318.51] : [659.25,783.99,1046.5,1318.51];
+    seq.forEach((f,i)=> bell(f, t+i*0.13, 1.5, 0.2));
+    bell(big?2093:1567.98, t+seq.length*0.13+0.04, 1.9, 0.15);
+  }
+  function lose(){
+    on(); if (!ctx||muted) return;
+    const t=ctx.currentTime; bell(415.3,t,0.95,0.15); bell(311.13,t+0.2,1.25,0.13);
+  }
+  function setMuted(m){ muted=m; }
+  return { on, spin:spinS, win, lose, setMuted };
+})();
+(function(){
+  const btn=document.getElementById("muteBtn");
+  const ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+  const OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  let m=false; btn.innerHTML=ON;
+  btn.addEventListener("click", ()=>{ m=!m; SFX.setMuted(m); btn.innerHTML=m?OFF:ON; btn.setAttribute("aria-pressed", m); });
+})();
+
+/* ================= Login + Admin ================= */
+const loginOverlay = document.getElementById("loginOverlay");
+const loginCard = document.getElementById("loginCard");
+const loginPass = document.getElementById("loginPass");
 const drawer = document.getElementById("drawer");
-const btnAdmin = document.getElementById("btnAdmin");
-const btnCloseAdmin = document.getElementById("btnCloseAdmin");
 const drawerBg = document.getElementById("drawerBg");
 const expList = document.getElementById("expList");
 const fName = document.getElementById("fName");
@@ -691,49 +752,36 @@ const formTitle = document.getElementById("formTitle");
 const cfgMinutes = document.getElementById("cfgMinutes");
 let editingId = null;
 
-/* ---- Login do admin ----
-   TODO: troque a senha padrão abaixo antes do evento.
-   Observação: em site estático a proteção é no navegador (impede curiosos,
-   não substitui um backend com autenticação real). */
-const ADMIN_PASS = "corujao2026";
-const SS_AUTH = "cj_admin_ok";
-const loginOverlay = document.getElementById("loginOverlay");
-const loginCard = document.getElementById("loginCard");
-const loginPass = document.getElementById("loginPass");
-
-btnAdmin.addEventListener("click", () => {
+document.getElementById("btnAdmin").addEventListener("click", () => {
   if (sessionStorage.getItem(SS_AUTH) === "1"){ openAdmin(); return; }
   loginCard.classList.remove("wrong");
+  loginPass.classList.remove("err");
   loginPass.value = "";
-  loginOverlay.classList.add("open");
+  loginOverlay.classList.add("show");
   loginPass.focus();
 });
 loginCard.addEventListener("submit", e => {
   e.preventDefault();
   if (loginPass.value === ADMIN_PASS){
-    sessionStorage.setItem(SS_AUTH, "1");
-    loginOverlay.classList.remove("open");
+    sessionStorage.setItem(SS_AUTH,"1");
+    loginOverlay.classList.remove("show");
     openAdmin();
   } else {
-    loginCard.classList.remove("wrong");
-    void loginCard.offsetWidth; // reinicia a animação de erro
     loginCard.classList.add("wrong");
+    loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
     loginPass.select();
   }
 });
-document.getElementById("btnCloseLogin").addEventListener("click", () => loginOverlay.classList.remove("open"));
-
+document.getElementById("btnCloseLogin").addEventListener("click", () => loginOverlay.classList.remove("show"));
 function openAdmin(){ document.body.classList.add("admin-open"); renderAdmin(); }
-btnCloseAdmin.addEventListener("click", closeAdmin);
-drawerBg.addEventListener("click", closeAdmin);
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape"){ closeAdmin(); loginOverlay.classList.remove("open"); }
-});
 function closeAdmin(){ document.body.classList.remove("admin-open"); }
+document.getElementById("btnCloseAdmin").addEventListener("click", closeAdmin);
+drawerBg.addEventListener("click", closeAdmin);
+document.addEventListener("keydown", e => { if (e.key === "Escape"){ closeAdmin(); loginOverlay.classList.remove("show"); } });
 
 function persistExperts(){
   save(LS_EXPERTS, experts);
-  ensureRound(); drawWheel(); renderRound(); renderAdmin();
+  ensureRound(); buildWheel(); renderStatus(); renderAdmin();
 }
 function resizePhoto(file){
   return new Promise((res, rej) => {
@@ -745,8 +793,7 @@ function resizePhoto(file){
         c.width = c.height = S;
         const x = c.getContext("2d");
         const r = Math.max(S/im.width, S/im.height);
-        const w = im.width*r, h = im.height*r;
-        x.drawImage(im, (S-w)/2, (S-h)/2, w, h);
+        x.drawImage(im, (S-im.width*r)/2, (S-im.height*r)/2, im.width*r, im.height*r);
         res(c.toDataURL("image/jpeg", .85));
       };
       im.onerror = rej;
@@ -766,13 +813,12 @@ btnSaveExpert.addEventListener("click", async () => {
   }
   if (editingId){
     const e = experts.find(x => x.id === editingId);
-    if (e){ e.name = name; if (photo) e.photo = photo; imgCache.clear(); }
-    toast("Expert atualizado.");
-    cancelEdit();
+    if (e){ e.name = name; if (photo) e.photo = photo; }
+    toast("Expert atualizado."); cancelEdit();
   } else {
-    experts.push({ id:"e" + Date.now().toString(36), name, photo, active:true });
+    experts.push({ id:"e"+Date.now().toString(36), name, photo, active:true });
     toast("Expert adicionado à roleta.");
-    fName.value = ""; fPhoto.value = "";
+    fName.value=""; fPhoto.value="";
   }
   persistExperts();
 });
@@ -781,7 +827,7 @@ function cancelEdit(){
   formTitle.textContent = "Adicionar expert";
   btnSaveExpert.textContent = "Adicionar";
   btnCancelEdit.style.display = "none";
-  fName.value = ""; fPhoto.value = "";
+  fName.value=""; fPhoto.value="";
 }
 btnCancelEdit.addEventListener("click", cancelEdit);
 
@@ -791,36 +837,31 @@ function renderAdmin(){
   experts.forEach(e => {
     const row = document.createElement("div");
     row.className = "exp-row" + (e.active ? "" : " inactive");
-    const im = document.createElement("img");
-    im.src = photoOf(e); im.alt = "";
-    const nm = document.createElement("span");
-    nm.className = "nm"; nm.textContent = e.name;
-    // switch ativo
+    const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
     const sw = document.createElement("label");
     sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
-    sw.innerHTML = `<input type="checkbox" ${e.active ? "checked" : ""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
+    sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
     sw.querySelector("input").addEventListener("change", ev => {
       e.active = ev.target.checked; persistExperts();
-      toast(e.active ? e.name + " ativado." : e.name + " desativado.");
+      toast(e.active ? e.name+" ativado." : e.name+" desativado.");
     });
-    // editar
     const bE = document.createElement("button");
-    bE.className = "icon-btn"; bE.type = "button"; bE.setAttribute("aria-label","Editar " + e.name);
-    bE.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`;
+    bE.className = "icon-btn"; bE.type="button"; bE.setAttribute("aria-label","Editar "+e.name);
+    bE.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
     bE.addEventListener("click", () => {
       editingId = e.id;
       formTitle.textContent = "Editar expert: " + e.name;
-      btnSaveExpert.textContent = "Salvar alterações";
+      btnSaveExpert.textContent = "Salvar";
       btnCancelEdit.style.display = "";
       fName.value = e.name; fPhoto.value = "";
       fName.focus();
     });
-    // remover
     const bD = document.createElement("button");
-    bD.className = "icon-btn del"; bD.type = "button"; bD.setAttribute("aria-label","Remover " + e.name);
-    bD.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+    bD.className = "icon-btn del"; bD.type="button"; bD.setAttribute("aria-label","Remover "+e.name);
+    bD.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
     bD.addEventListener("click", () => {
-      if (!confirm("Remover " + e.name + " da roleta?")) return;
+      if (!confirm("Remover "+e.name+" da roleta?")) return;
       experts = experts.filter(x => x.id !== e.id);
       if (editingId === e.id) cancelEdit();
       persistExperts();
@@ -834,25 +875,24 @@ document.getElementById("btnSaveCfg").addEventListener("click", () => {
   const m = parseInt(cfgMinutes.value, 10);
   if (!m || m < 1 || m > 180){ toast("Informe um tempo entre 1 e 180 minutos."); return; }
   cfg.minutes = m; save(LS_CFG, cfg);
-  renderRound();
-  toast("Tempo padrão salvo: " + m + " min.");
+  renderStatus();
+  toast("Tempo padrão salvo: "+m+" min.");
 });
 document.getElementById("btnResetRound").addEventListener("click", () => {
-  round = { remaining: null, done: [] };
-  ensureRound(); drawWheel(); renderRound();
+  round = { remaining:null, done:[] };
+  ensureRound(); buildWheel(); renderStatus();
   toast("Rodada reiniciada. Todos os experts voltaram para a roleta.");
 });
 document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
   if (!confirm("Restaurar a lista padrão de experts? Isso apaga alterações e fotos.")) return;
   experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
-  round = { remaining: null, done: [] };
-  imgCache.clear();
+  round = { remaining:null, done:[] };
   save(LS_EXPERTS, experts);
-  ensureRound(); drawWheel(); renderRound(); renderAdmin();
+  ensureRound(); buildWheel(); renderStatus(); renderAdmin();
   toast("Lista padrão restaurada.");
 });
 
-/* ================= Toast ================= */
+/* ================= Toast + init ================= */
 let toastT = null;
 function toast(msg){
   const t = document.getElementById("toast");
@@ -862,11 +902,9 @@ function toast(msg){
   toastT = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-/* ================= Init ================= */
 ensureRound();
-drawWheel();
-renderRound();
+buildWheel();
+renderStatus();
 setLive({ status:"idle" });
 </script>
-</body>
-</html>
+</body></html>
