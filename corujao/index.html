@@ -11,14 +11,32 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
 <style>
 :root{
-  --bg:#070C19; --surface:#10182A;
-  --line:rgba(137,178,230,.14); --line-strong:rgba(137,178,230,.26);
+  --bg:#060B18; --surface:#111A2B;
+  --line:rgba(214,237,248,.08); --line-strong:rgba(214,237,248,.16);
   --text:#E9F0FA; --muted:#A1B8C3;
-  --accent:#2389E6; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
+  --accent:#2389E6; --accent-strong:#146AC7; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
   --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
-  --shadow-glow:0 12px 40px -12px rgba(35,137,230,.45);
+  --shadow-glow:0 10px 24px -6px rgba(35,137,230,.35);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#060B18}
+::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#146AC7}
+@keyframes ctaPulse{
+  0%,100%{box-shadow:0 0 20px rgba(35,137,230,.3)}
+  50%{box-shadow:0 0 40px rgba(35,137,230,.5),0 0 60px rgba(35,137,230,.2)}
+}
+.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
+.grad-text{background:linear-gradient(90deg,#2389E6,#69B8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gcheck{
+  flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:#090E1A;position:relative;border:2px solid transparent;background-clip:padding-box;
+}
+.gcheck::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;z-index:-1;
+  background:linear-gradient(to bottom,#146AC7,#0A3461);
+}
 body{
   background:
     radial-gradient(900px 500px at 50% -15%,rgba(20,106,199,.28),transparent 60%),
@@ -59,16 +77,16 @@ h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;letter-spacing:-.03em;line-h
 .sub b{color:var(--accent-pale)}
 ul{list-style:none;display:grid;gap:13px;justify-content:center;margin-bottom:34px}
 li{display:flex;align-items:flex-start;gap:11px;font-weight:500;color:var(--accent-pale);text-align:left}
-li svg{flex:none;margin-top:3px}
+li .gcheck{margin-top:-4px}
 li.hl{font-weight:800;color:#fff}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:12px;
-  font-weight:800;font-size:1.12rem;letter-spacing:-.01em;padding:20px 44px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.16);background:var(--grad-btn);color:#fff;cursor:pointer;
-  box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.22);
-  transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s;
+  font-weight:800;font-size:1.12rem;letter-spacing:-.01em;padding:20px 44px;border-radius:16px;
+  border:0;background:var(--accent);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-glow);
+  transition:transform .3s cubic-bezier(.16,1,.3,1),background-color .3s,box-shadow .3s;
 }
-.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 18px 48px -12px rgba(35,137,230,.55)}
 .btn:active{transform:scale(.98)}
 .btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
 .btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
@@ -83,6 +101,7 @@ footer p{font-size:.78rem;color:#7C93A6}
 @media (prefers-reduced-motion: reduce){
   [data-reveal]{opacity:1;transform:none;transition:none}
   .livedot::after{animation:none}
+  .cta-pulse{animation:none}
 }
 @media (max-width:560px){
   .card{padding:40px 24px 36px}
@@ -104,16 +123,16 @@ footer p{font-size:.78rem;color:#7C93A6}
   <section class="card">
     <span class="live-pill" data-reveal><span class="livedot" aria-hidden="true"></span> Ao vivo agora</span>
     <p class="brand" data-reveal style="--d:.06s">Safirion</p>
-    <h1 data-reveal style="--d:.12s">Corujão de Traders</h1>
+    <h1 data-reveal style="--d:.12s">Corujão de <span class="grad-text">Traders</span></h1>
     <p class="sub" data-reveal style="--d:.18s">Os maiores traders da Safirion estão <b>ao vivo agora</b>. Entre no Corujão, lucre junto com eles e aproveite:</p>
     <ul data-reveal style="--d:.24s">
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Estratégias, IA e métodos validados</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Bônus exclusivos na live</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Cupons gamificados</li>
-      <li class="hl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Revelação do Arsenal Pro ainda hoje</li>
+      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Estratégias, IA e métodos validados</li>
+      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Bônus exclusivos na live</li>
+      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Cupons gamificados</li>
+      <li class="hl"><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Revelação do Arsenal Pro ainda hoje</li>
     </ul>
     <div data-reveal style="--d:.3s">
-      <a class="btn" href="#" id="ctaLive">
+      <a class="btn cta-pulse" href="#" id="ctaLive">
         Clique aqui e entre agora
         <svg class="arr" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
       </a>

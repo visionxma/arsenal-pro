@@ -16,13 +16,13 @@
    Raio: painéis 18px · botões 14px · badges pill
    ============================================================ */
 :root{
-  --bg:#070C19;
-  --bg-2:#0A1020;
+  --bg:#060B18;
+  --bg-2:#080E1C;
   --bg-3:#0C1424;
-  --surface:#10182A;
+  --surface:#111A2B;
   --surface-2:#111C30;
-  --line:rgba(137,178,230,.14);
-  --line-strong:rgba(137,178,230,.26);
+  --line:rgba(214,237,248,.08);
+  --line-strong:rgba(214,237,248,.16);
   --text:#E9F0FA;
   --muted:#A1B8C3;
   --muted-2:#7C93A6;
@@ -32,15 +32,19 @@
   --accent-pale:#D6EDF8;
   --danger:#E2556A;
   --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
-  --grad-panel:linear-gradient(180deg,#0C1424 0%,#111C30 100%);
+  --grad-panel:linear-gradient(180deg,#070C19 0%,#10182A 100%);
   --shadow-card:0 24px 60px -24px rgba(2,8,20,.9);
-  --shadow-glow:0 12px 40px -12px rgba(35,137,230,.45);
+  --shadow-glow:0 10px 24px -6px rgba(35,137,230,.35);
   --r-panel:18px;
-  --r-btn:14px;
+  --r-btn:16px;
   --container:1180px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#060B18}
+::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#146AC7}
 body{
   background:var(--bg);
   color:var(--text);
@@ -75,13 +79,13 @@ strong{color:var(--text)}
 .btn{
   position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;
   font-family:inherit;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;
-  padding:18px 34px;border-radius:var(--r-btn);border:1px solid rgba(255,255,255,.14);
-  background:var(--grad-btn);color:#fff;cursor:pointer;
-  box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.22);
-  transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, filter .25s ease;
+  padding:18px 34px;border-radius:var(--r-btn);border:0;
+  background:var(--accent);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-glow);
+  transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, background-color .3s ease;
   white-space:nowrap;
 }
-.btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 18px 48px -12px rgba(35,137,230,.55), inset 0 1px 0 rgba(255,255,255,.25)}
+.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 18px 48px -12px rgba(35,137,230,.55)}
 .btn:active{transform:translateY(0) scale(.98)}
 .btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
 .btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
@@ -92,6 +96,43 @@ strong{color:var(--text)}
   box-shadow:none;color:var(--accent-pale);
 }
 .btn--ghost:hover{background:rgba(35,137,230,.16);box-shadow:none}
+/* ---- Efeitos oficiais Safirion ---- */
+@keyframes ctaPulse{
+  0%,100%{box-shadow:0 0 20px rgba(35,137,230,.3)}
+  50%{box-shadow:0 0 40px rgba(35,137,230,.5),0 0 60px rgba(35,137,230,.2)}
+}
+.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.float{animation:heroFloat 6s ease-in-out infinite}
+.grad-text{
+  background:linear-gradient(90deg,#2389E6,#69B8FF);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.gcheck{
+  flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:#090E1A;position:relative;border:2px solid transparent;background-clip:padding-box;
+}
+.gcheck::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;z-index:-1;
+  background:linear-gradient(to bottom,#146AC7,#0A3461);
+}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-wrapper{
+  overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:var(--bg-2);padding:22px 0;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,black 8%,black 92%,transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0%,black 8%,black 92%,transparent 100%);
+}
+.marquee-track{display:flex;width:max-content;animation:marqueeScroll 30s linear infinite;gap:0}
+.marquee-track.reverse{animation-direction:reverse}
+.marquee-track + .marquee-track{margin-top:16px}
+.mq-item{
+  display:inline-flex;align-items:center;gap:26px;padding:0 26px;white-space:nowrap;
+  font-size:.9rem;font-weight:600;color:var(--muted);letter-spacing:.02em;
+}
+.mq-item b{color:var(--accent-pale);font-weight:700}
+.mq-item::after{content:"";width:6px;height:6px;transform:rotate(45deg);background:var(--accent);opacity:.6}
+
 .price-note{margin-top:14px;font-size:.92rem;color:var(--muted)}
 .price-note s{color:var(--muted-2)}
 .price-note b{color:var(--accent-soft);font-weight:800}
@@ -383,8 +424,17 @@ strong{color:var(--text)}
 }
 .urgency .final-box b{color:var(--accent-soft)}
 
-/* ---------- Garantia ---------- */
-.guarantee{display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center;max-width:920px;margin:0 auto}
+/* ---------- Garantia (steps-overlap Safirion) ---------- */
+.guarantee{display:flex;flex-direction:column;gap:1.5rem;align-items:center;max-width:1000px;margin:0 auto}
+.g-card{
+  background:var(--grad-panel);border:1px solid var(--line);border-radius:var(--r-panel);
+  padding:40px 42px;box-shadow:var(--shadow-card);
+}
+@media (min-width:1024px){
+  .guarantee{display:grid;grid-template-columns:repeat(12,1fr);align-items:center;gap:0}
+  .g-badge{grid-column:1/4;grid-row:1;z-index:10;justify-self:center}
+  .g-card{grid-column:3/13;grid-row:1;padding-left:150px}
+}
 .g-badge{
   width:168px;height:168px;border-radius:50%;display:grid;place-items:center;text-align:center;
   background:linear-gradient(160deg,rgba(20,106,199,.35),rgba(10,52,97,.4));
@@ -435,6 +485,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
   [data-reveal]{opacity:1;transform:none;transition:none}
   .livedot::after{animation:none}
   .btn,.pain,.trader,.dim-card{transition:none}
+  .cta-pulse,.float,.marquee-track{animation:none}
 }
 
 /* ---------- Responsivo ---------- */
@@ -458,8 +509,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
   .stack-card .idx{font-size:1.9rem}
   .stack-card .val{text-align:left;display:flex;align-items:baseline;gap:10px}
   .stack-card:nth-child(n){top:86px}
-  .guarantee{grid-template-columns:1fr;text-align:center;gap:32px}
-  .guarantee p{text-align:left}
+  .g-card{padding:32px 24px}
   .total-band{padding:36px 26px}
   .urgency p{text-align:left}
 }
@@ -501,13 +551,13 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
   <div class="container hero-grid">
     <div>
       <span class="eyebrow" data-reveal>Night Challenge · Safirion</span>
-      <h1 data-reveal style="--d:.08s">Você não precisa de <span class="dim">mais um curso.</span></h1>
+      <h1 data-reveal style="--d:.08s">Você não precisa de <span class="grad-text">mais um curso.</span></h1>
       <p class="lead" data-reveal style="--d:.16s">
         9 traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar:
         estratégias reais, indicadores exclusivos e IA integrada. Você para de adivinhar e opera como profissional.
       </p>
       <div class="hero-cta" data-reveal style="--d:.24s">
-        <a class="btn btn--lg" href="#" data-checkout>
+        <a class="btn btn--lg cta-pulse" href="#" data-checkout>
           Quero o Arsenal Pro
           <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
         </a>
@@ -517,7 +567,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
 
     <aside data-reveal style="--d:.2s">
       <div class="offer-card">
-        <span class="oc-badge">Só essa noite</span>
+        <span class="oc-badge float">Só essa noite</span>
         <p class="oc-title">Tudo que está incluso</p>
         <div class="oc-row"><span>Método PHIZ 5K</span><s>R$ 997</s></div>
         <div class="oc-row"><span>Mestre do Price Action</span><s>R$ 497</s></div>
@@ -547,10 +597,10 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
         <h2>Corujão de Traders</h2>
         <p style="margin-bottom:22px">Os maiores traders da Safirion estão ao vivo agora. Entre no Corujão, lucre junto com eles e aproveite:</p>
         <ul class="corujao-list">
-          <li><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Estratégias, IA e métodos validados</li>
-          <li><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Bônus exclusivos na live</li>
-          <li><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Cupons gamificados</li>
-          <li class="hl"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Revelação do <strong>&nbsp;Arsenal Pro ainda hoje</strong></li>
+          <li><span class="gcheck ico" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Estratégias, IA e métodos validados</li>
+          <li><span class="gcheck ico" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Bônus exclusivos na live</li>
+          <li><span class="gcheck ico" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Cupons gamificados</li>
+          <li class="hl"><span class="gcheck ico" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> <span>Revelação do <strong>Arsenal Pro ainda hoje</strong></span></li>
         </ul>
       </div>
       <div class="corujao-cta">
@@ -563,6 +613,18 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
     </div>
   </div>
 </header>
+
+<!-- Marquee (arquitetura Safirion) -->
+<div class="marquee-wrapper" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="mq-item"><b>Método PHIZ 5K</b></span><span class="mq-item"><b>Mestre do Price Action</b></span><span class="mq-item"><b>Ultra Sniper</b></span><span class="mq-item"><b>Mentoria do Zero ao Avançado</b></span><span class="mq-item"><b>Kit Zero Loss</b></span><span class="mq-item"><b>Método VPA</b></span><span class="mq-item"><b>Indicador Exclusivo 6 Anos</b></span><span class="mq-item"><b>MACD Sniper</b></span><span class="mq-item"><b>Olho de Deus · IA</b></span>
+    <span class="mq-item"><b>Método PHIZ 5K</b></span><span class="mq-item"><b>Mestre do Price Action</b></span><span class="mq-item"><b>Ultra Sniper</b></span><span class="mq-item"><b>Mentoria do Zero ao Avançado</b></span><span class="mq-item"><b>Kit Zero Loss</b></span><span class="mq-item"><b>Método VPA</b></span><span class="mq-item"><b>Indicador Exclusivo 6 Anos</b></span><span class="mq-item"><b>MACD Sniper</b></span><span class="mq-item"><b>Olho de Deus · IA</b></span>
+  </div>
+  <div class="marquee-track reverse">
+    <span class="mq-item">Taylon</span><span class="mq-item">Patrick</span><span class="mq-item">Miriele</span><span class="mq-item">Julin</span><span class="mq-item">Thon Carvalho</span><span class="mq-item">Ed Trader</span><span class="mq-item">Vitor Lela</span><span class="mq-item">Eduardo Bastos</span><span class="mq-item">Tio Vitão</span>
+    <span class="mq-item">Taylon</span><span class="mq-item">Patrick</span><span class="mq-item">Miriele</span><span class="mq-item">Julin</span><span class="mq-item">Thon Carvalho</span><span class="mq-item">Ed Trader</span><span class="mq-item">Vitor Lela</span><span class="mq-item">Eduardo Bastos</span><span class="mq-item">Tio Vitão</span>
+  </div>
+</div>
 
 <main>
 
@@ -751,7 +813,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
       <p class="strike">Value Stack total: <s>R$ 4.673</s></p>
       <p class="now">R$ 997 <small>apenas essa noite</small></p>
       <p class="cond">Acesso imediato · disponível somente durante o Night Challenge</p>
-      <a class="btn btn--lg" href="#" data-checkout>
+      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
         Quero o Arsenal Pro
         <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
       </a>
@@ -853,13 +915,13 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
 <section class="section">
   <div class="container">
     <div class="guarantee">
-      <div class="g-badge" data-reveal aria-hidden="true">
+      <div class="g-badge float" data-reveal aria-hidden="true">
         <div>
           <div class="d">7</div>
           <div class="t">dias de<br/>garantia</div>
         </div>
       </div>
-      <div>
+      <div class="g-card">
         <h2 data-reveal>Você tem 7 dias para testar. Sem risco.</h2>
         <p data-reveal>Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o reembolso em até 7 dias. Sem perguntas. Sem burocracia. Sem julgamento.</p>
         <p data-reveal>Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar, devolvemos 100% do seu investimento.</p>
@@ -882,7 +944,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--bg-
       <li data-reveal style="--d:.24s"><svg class="ico" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> 7 dias de garantia incondicional</li>
     </ul>
     <div data-reveal>
-      <a class="btn btn--lg" href="#" data-checkout>
+      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
         Quero o Arsenal Pro
         <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
       </a>

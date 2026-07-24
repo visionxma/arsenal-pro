@@ -11,17 +11,27 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
 <style>
 :root{
-  --bg:#070C19; --bg-2:#0A1020; --surface:#10182A; --surface-2:#111C30;
-  --line:rgba(137,178,230,.14); --line-strong:rgba(137,178,230,.26);
+  --bg:#060B18; --bg-2:#080E1C; --surface:#111A2B; --surface-2:#111C30;
+  --line:rgba(214,237,248,.08); --line-strong:rgba(214,237,248,.16);
   --text:#E9F0FA; --muted:#A1B8C3; --muted-2:#7C93A6;
-  --accent:#2389E6; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
+  --accent:#2389E6; --accent-strong:#146AC7; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
   --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
-  --grad-panel:linear-gradient(180deg,#0C1424 0%,#111C30 100%);
+  --grad-panel:linear-gradient(180deg,#070C19 0%,#10182A 100%);
   --shadow-card:0 24px 60px -24px rgba(2,8,20,.9);
-  --shadow-glow:0 12px 40px -12px rgba(35,137,230,.45);
+  --shadow-glow:0 10px 24px -6px rgba(35,137,230,.35);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 [hidden]{display:none!important}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#060B18}
+::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#146AC7}
+@keyframes ctaPulse{
+  0%,100%{box-shadow:0 0 20px rgba(35,137,230,.3)}
+  50%{box-shadow:0 0 40px rgba(35,137,230,.5),0 0 60px rgba(35,137,230,.2)}
+}
+.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
+.grad-text{background:linear-gradient(90deg,#2389E6,#69B8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -29,12 +39,12 @@ a{color:inherit;text-decoration:none}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:11px;
-  font-weight:700;font-size:1rem;padding:16px 32px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.14);background:var(--grad-btn);color:#fff;cursor:pointer;
-  box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.22);
-  transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s;
+  font-weight:700;font-size:1rem;padding:16px 32px;border-radius:16px;
+  border:0;background:var(--accent);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-glow);
+  transition:transform .3s cubic-bezier(.16,1,.3,1),background-color .3s,box-shadow .3s;
 }
-.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 18px 48px -12px rgba(35,137,230,.55)}
 .btn:active{transform:scale(.98)}
 .btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
 .btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
@@ -93,7 +103,7 @@ a{color:inherit;text-decoration:none}
 footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;background:var(--bg-2)}
 footer p{font-size:.78rem;color:var(--muted-2)}
 
-@media (prefers-reduced-motion: reduce){ .livedot::after{animation:none} }
+@media (prefers-reduced-motion: reduce){ .livedot::after{animation:none} .cta-pulse{animation:none} }
 @media (max-width:1024px){ .grid{grid-template-columns:1fr} }
 @media (max-width:560px){
   .head{padding:32px 0 22px}
@@ -112,7 +122,7 @@ footer p{font-size:.78rem;color:var(--muted-2)}
 
 <header class="head container">
   <span class="live-pill"><span class="livedot" aria-hidden="true"></span> Transmissão ao vivo</span>
-  <h1>Corujão de Traders</h1>
+  <h1>Corujão de <span class="grad-text">Traders</span></h1>
   <p>Os maiores traders da Safirion operando ao vivo, agora.</p>
 </header>
 
@@ -143,7 +153,7 @@ footer p{font-size:.78rem;color:var(--muted-2)}
       <div class="offer">
         <div class="t">Arsenal Pro</div>
         <p>O arsenal completo dos 9 experts dessa live: estratégias, indicadores e IA. De <b>R$ 4.673</b> por <b>R$ 997</b>, apenas essa noite.</p>
-        <a class="btn" href="../#oferta">
+        <a class="btn cta-pulse" href="../#oferta">
           Quero o Arsenal Pro
           <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
         </a>
