@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Corujão de Traders | Safirion</title>
+<meta name="description" content="Os maiores traders da Safirion estão ao vivo agora. Entre no Corujão, lucre junto com eles e acompanhe a revelação do Arsenal Pro." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
+<style>
+:root{
+  --bg:#070C19; --surface:#10182A;
+  --line:rgba(137,178,230,.14); --line-strong:rgba(137,178,230,.26);
+  --text:#E9F0FA; --muted:#A1B8C3;
+  --accent:#2389E6; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
+  --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
+  --shadow-glow:0 12px 40px -12px rgba(35,137,230,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:
+    radial-gradient(900px 500px at 50% -15%,rgba(20,106,199,.28),transparent 60%),
+    radial-gradient(700px 420px at 100% 100%,rgba(10,52,97,.3),transparent 60%),
+    var(--bg);
+  color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;
+  -webkit-font-smoothing:antialiased;min-height:100dvh;
+  display:flex;flex-direction:column;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.nav{border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.nav img{height:24px}
+.nav a.lp{font-size:.85rem;font-weight:700;color:var(--accent-soft)}
+.nav a.lp:hover{text-decoration:underline;text-underline-offset:3px}
+
+main{flex:1;display:grid;place-items:center;padding:56px 24px 72px}
+.card{
+  width:min(680px,100%);text-align:center;position:relative;
+  background:linear-gradient(165deg,rgba(20,106,199,.14),rgba(12,20,36,.92));
+  border:1px solid var(--line-strong);border-radius:24px;
+  box-shadow:0 40px 100px -30px rgba(2,8,20,1), inset 0 1px 0 rgba(255,255,255,.08);
+  padding:56px 52px 50px;
+}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(480px 220px at 50% -10%,rgba(105,184,255,.16),transparent 65%)}
+.live-pill{
+  display:inline-flex;align-items:center;gap:9px;background:rgba(74,222,128,.1);
+  border:1px solid rgba(74,222,128,.3);color:#7CEBA8;font-size:.75rem;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;border-radius:999px;
+}
+.livedot{position:relative;width:8px;height:8px;border-radius:50%;background:#4ADE80}
+.livedot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(74,222,128,.55);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.brand{margin:26px 0 4px;font-size:.9rem;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-soft)}
+h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;letter-spacing:-.03em;line-height:1.08;color:#fff}
+.sub{color:var(--muted);max-width:30rem;margin:18px auto 30px;font-size:1.02rem}
+.sub b{color:var(--accent-pale)}
+ul{list-style:none;display:grid;gap:13px;justify-content:center;margin-bottom:34px}
+li{display:flex;align-items:flex-start;gap:11px;font-weight:500;color:var(--accent-pale);text-align:left}
+li svg{flex:none;margin-top:3px}
+li.hl{font-weight:800;color:#fff}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  font-weight:800;font-size:1.12rem;letter-spacing:-.01em;padding:20px 44px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.16);background:var(--grad-btn);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.22);
+  transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
+.btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.btn:hover .arr{transform:translateX(5px)}
+.note{margin-top:16px;font-size:.85rem;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center}
+footer p{font-size:.78rem;color:#7C93A6}
+
+[data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}
+[data-reveal].in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  [data-reveal]{opacity:1;transform:none;transition:none}
+  .livedot::after{animation:none}
+}
+@media (max-width:560px){
+  .card{padding:40px 24px 36px}
+  .btn{width:100%;font-size:1rem;padding:18px 20px}
+  li{font-size:.94rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Navegação">
+  <div class="nav-inner">
+    <a href="../" aria-label="Página do Arsenal Pro"><img src="../assets/logo.svg" alt="Safirion" /></a>
+    <a class="lp" href="../">Conhecer o Arsenal Pro</a>
+  </div>
+</nav>
+
+<main>
+  <section class="card">
+    <span class="live-pill" data-reveal><span class="livedot" aria-hidden="true"></span> Ao vivo agora</span>
+    <p class="brand" data-reveal style="--d:.06s">Safirion</p>
+    <h1 data-reveal style="--d:.12s">Corujão de Traders</h1>
+    <p class="sub" data-reveal style="--d:.18s">Os maiores traders da Safirion estão <b>ao vivo agora</b>. Entre no Corujão, lucre junto com eles e aproveite:</p>
+    <ul data-reveal style="--d:.24s">
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Estratégias, IA e métodos validados</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Bônus exclusivos na live</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Cupons gamificados</li>
+      <li class="hl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-opacity=".35"/><polyline points="8 12.5 11 15.5 16.5 9.5"/></svg> Revelação do Arsenal Pro ainda hoje</li>
+    </ul>
+    <div data-reveal style="--d:.3s">
+      <a class="btn" href="#" id="ctaLive">
+        Clique aqui e entre agora
+        <svg class="arr" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+      </a>
+      <p class="note">Transmissão acontecendo neste momento</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Corujão de Traders é um evento da Safirion. Operar no mercado financeiro envolve riscos.</p>
+</footer>
+
+<script>
+// TODO: troque pelo link real da sala/grupo da live
+const LIVE_URL = "../aovivo/";
+document.getElementById("ctaLive").href = LIVE_URL;
+
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+}), { threshold:.15 });
+document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+</script>
+</body>
+</html>

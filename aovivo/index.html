@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ao Vivo | Corujão de Traders · Safirion</title>
+<meta name="description" content="Acompanhe a transmissão ao vivo do Corujão de Traders da Safirion e veja qual expert está operando agora." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
+<style>
+:root{
+  --bg:#070C19; --bg-2:#0A1020; --surface:#10182A; --surface-2:#111C30;
+  --line:rgba(137,178,230,.14); --line-strong:rgba(137,178,230,.26);
+  --text:#E9F0FA; --muted:#A1B8C3; --muted-2:#7C93A6;
+  --accent:#2389E6; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
+  --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
+  --grad-panel:linear-gradient(180deg,#0C1424 0%,#111C30 100%);
+  --shadow-card:0 24px 60px -24px rgba(2,8,20,.9);
+  --shadow-glow:0 12px 40px -12px rgba(35,137,230,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.container{max-width:1180px;margin:0 auto;padding:0 24px;width:100%}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:11px;
+  font-weight:700;font-size:1rem;padding:16px 32px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);background:var(--grad-btn);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.22);
+  transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
+.btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.btn:hover .arr{transform:translateX(5px)}
+
+.nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);background:rgba(7,12,25,.78);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nav img{height:24px}
+.nav .btn{padding:11px 20px;font-size:.88rem}
+
+.head{text-align:center;padding:44px 0 30px}
+.live-pill{
+  display:inline-flex;align-items:center;gap:9px;background:rgba(74,222,128,.1);
+  border:1px solid rgba(74,222,128,.3);color:#7CEBA8;font-size:.75rem;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;padding:7px 15px;border-radius:999px;margin-bottom:16px;
+}
+.livedot{position:relative;width:8px;height:8px;border-radius:50%;background:#4ADE80}
+.livedot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(74,222,128,.55);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.head h1{font-size:clamp(1.7rem,4.5vw,2.7rem);font-weight:900;letter-spacing:-.03em}
+.head p{color:var(--muted);margin-top:8px}
+
+.stage{flex:1;padding-bottom:72px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+
+.player{
+  position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;
+  background:var(--grad-panel);border:1px solid var(--line-strong);box-shadow:var(--shadow-card);
+}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player .empty{
+  position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;
+}
+.player .empty img{height:30px;margin:0 auto 18px;opacity:.85}
+.player .empty p{color:var(--muted);font-size:.95rem;max-width:26rem}
+
+.panel{background:var(--grad-panel);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow-card)}
+.panel h2{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:16px}
+.now{display:flex;align-items:center;gap:16px}
+.now img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);flex:none}
+.now .nm{font-weight:800;font-size:1.15rem;color:#fff;letter-spacing:-.01em}
+.now .st{font-size:.85rem;color:var(--muted)}
+.now .st b{color:var(--accent-soft);font-variant-numeric:tabular-nums}
+.idle{color:var(--muted);font-size:.94rem}
+
+.offer{
+  margin-top:20px;text-align:center;
+  background:linear-gradient(160deg,rgba(20,106,199,.25),rgba(10,52,97,.3));
+  border:1px solid var(--line-strong);border-radius:18px;padding:30px 26px;box-shadow:var(--shadow-card);
+}
+.offer .t{font-weight:900;font-size:1.3rem;letter-spacing:-.02em;color:#fff;margin-bottom:6px}
+.offer p{color:var(--muted);font-size:.92rem;margin-bottom:20px}
+.offer p b{color:var(--accent-soft)}
+.offer .btn{width:100%}
+
+footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;background:var(--bg-2)}
+footer p{font-size:.78rem;color:var(--muted-2)}
+
+@media (prefers-reduced-motion: reduce){ .livedot::after{animation:none} }
+@media (max-width:1024px){ .grid{grid-template-columns:1fr} }
+@media (max-width:560px){
+  .head{padding:32px 0 22px}
+  .nav .btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Navegação">
+  <div class="nav-inner">
+    <a href="../" aria-label="Página do Arsenal Pro"><img src="../assets/logo.svg" alt="Safirion" /></a>
+    <a class="btn" href="../#oferta">Quero o Arsenal Pro</a>
+  </div>
+</nav>
+
+<header class="head container">
+  <span class="live-pill"><span class="livedot" aria-hidden="true"></span> Transmissão ao vivo</span>
+  <h1>Corujão de Traders</h1>
+  <p>Os maiores traders da Safirion operando ao vivo, agora.</p>
+</header>
+
+<main class="stage container">
+  <div class="grid">
+    <div class="player" id="player">
+      <div class="empty" id="playerEmpty">
+        <div>
+          <img src="../assets/logo.svg" alt="Safirion" />
+          <p>A transmissão aparecerá aqui. Configure o link do player no arquivo desta página (constante <strong>EMBED_URL</strong>).</p>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="panel">
+        <h2>Agora em operação</h2>
+        <div class="now" id="nowBox" hidden>
+          <img id="nowPhoto" src="" alt="" />
+          <div>
+            <div class="nm" id="nowName"></div>
+            <div class="st">Tempo restante: <b id="nowTimer">00:00</b></div>
+          </div>
+        </div>
+        <p class="idle" id="nowIdle">Aguardando o próximo sorteio da roleta de experts.</p>
+      </div>
+
+      <div class="offer">
+        <div class="t">Arsenal Pro</div>
+        <p>O arsenal completo dos 9 experts dessa live: estratégias, indicadores e IA. De <b>R$ 4.673</b> por <b>R$ 997</b>, apenas essa noite.</p>
+        <a class="btn" href="../#oferta">
+          Quero o Arsenal Pro
+          <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+        </a>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <p>Corujão de Traders é um evento da Safirion. Operar no mercado financeiro envolve riscos e pode resultar em perda do capital investido.</p>
+</footer>
+
+<script>
+"use strict";
+// TODO: cole aqui o link de embed da transmissão (ex.: https://www.youtube.com/embed/XXXXXXX)
+const EMBED_URL = "";
+
+if (EMBED_URL){
+  const f = document.createElement("iframe");
+  f.src = EMBED_URL;
+  f.allow = "autoplay; encrypted-media; picture-in-picture";
+  f.allowFullscreen = true;
+  f.title = "Transmissão ao vivo do Corujão de Traders";
+  document.getElementById("playerEmpty").remove();
+  document.getElementById("player").appendChild(f);
+}
+
+/* Estado do expert em operação: sincronizado com a rota /roleta
+   (localStorage + BroadcastChannel, funciona no mesmo navegador) */
+const LS_LIVE = "cj_live_state_v1";
+const nowBox = document.getElementById("nowBox");
+const nowIdle = document.getElementById("nowIdle");
+const nowPhoto = document.getElementById("nowPhoto");
+const nowName = document.getElementById("nowName");
+const nowTimer = document.getElementById("nowTimer");
+let state = null, raf = null;
+
+function fmt(s){
+  s = Math.max(0, Math.ceil(s));
+  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+}
+function apply(st){
+  state = st;
+  cancelAnimationFrame(raf);
+  if (st && st.status === "running" && st.endsAt > Date.now()){
+    nowBox.hidden = false; nowIdle.hidden = true;
+    nowPhoto.src = st.photo || ""; nowPhoto.alt = "Foto de " + st.name;
+    nowName.textContent = st.name;
+    (function tick(){
+      const left = (state.endsAt - Date.now())/1000;
+      nowTimer.textContent = fmt(left);
+      if (left > 0) raf = requestAnimationFrame(tick);
+      else apply({ status:"idle" });
+    })();
+  } else {
+    nowBox.hidden = true; nowIdle.hidden = false;
+  }
+}
+function readLS(){
+  try { apply(JSON.parse(localStorage.getItem(LS_LIVE))); } catch { apply(null); }
+}
+window.addEventListener("storage", e => { if (e.key === LS_LIVE) readLS(); });
+try { new BroadcastChannel("cj-live").onmessage = e => apply(e.data); } catch {}
+readLS();
+</script>
+</body>
+</html>
