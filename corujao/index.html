@@ -4,155 +4,463 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Corujão de Traders | Safirion</title>
-<meta name="description" content="Os maiores traders da Safirion estão ao vivo agora. Entre no Corujão, lucre junto com eles e acompanhe a revelação do Arsenal Pro." />
+<meta name="description" content="Corujão de Traders da Safirion: os maiores traders ao vivo a partir das 18 horas. Estratégias, IA, bônus exclusivos e a revelação do Arsenal Pro." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%2300A7FF'/%3E%3C/svg%3E" />
 <style>
 :root{
-  --bg:#060B18; --surface:#111A2B;
-  --line:rgba(214,237,248,.08); --line-strong:rgba(214,237,248,.16);
-  --text:#E9F0FA; --muted:#A1B8C3;
-  --accent:#2389E6; --accent-strong:#146AC7; --accent-soft:#69B8FF; --accent-pale:#D6EDF8;
-  --grad-btn:linear-gradient(180deg,#2389E6 0%,#146AC7 100%);
-  --shadow-glow:0 10px 24px -6px rgba(35,137,230,.35);
+  --bg:#0a0a0a;
+  --bg-2:#0e0e0e;
+  --card:#141414;
+  --blue:#00A7FF;
+  --blue-dark:#005791;
+  --blue-light:#4dc3ff;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,.62);
+  --muted-2:rgba(255,255,255,.4);
+  --line:rgba(255,255,255,.1);
+  --line-strong:rgba(255,255,255,.16);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:#060B18}
-::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#146AC7}
-@keyframes ctaPulse{
-  0%,100%{box-shadow:0 0 20px rgba(35,137,230,.3)}
-  50%{box-shadow:0 0 40px rgba(35,137,230,.5),0 0 60px rgba(35,137,230,.2)}
-}
-.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
-.grad-text{background:linear-gradient(90deg,#2389E6,#69B8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
-.gcheck{
-  flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
-  background:#090E1A;position:relative;border:2px solid transparent;background-clip:padding-box;
-}
-.gcheck::before{
-  content:"";position:absolute;inset:-2px;border-radius:50%;z-index:-1;
-  background:linear-gradient(to bottom,#146AC7,#0A3461);
-}
+html{scroll-behavior:smooth}
 body{
-  background:
-    radial-gradient(900px 500px at 50% -15%,rgba(20,106,199,.28),transparent 60%),
-    radial-gradient(700px 420px at 100% 100%,rgba(10,52,97,.3),transparent 60%),
-    var(--bg);
-  color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.65;
-  -webkit-font-smoothing:antialiased;min-height:100dvh;
-  display:flex;flex-direction:column;
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',sans-serif;letter-spacing:-.01em;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
-.nav{border-bottom:1px solid var(--line)}
-.nav-inner{max-width:1180px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between}
-.nav img{height:24px}
-.nav a.lp{font-size:.85rem;font-weight:700;color:var(--accent-soft)}
-.nav a.lp:hover{text-decoration:underline;text-underline-offset:3px}
+::selection{background:rgba(0,167,255,.35)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#0a0a0a}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00A7FF 0%,#005791 100%);border-radius:10px;border:2px solid #0a0a0a}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#4dc3ff 0%,#00A7FF 100%)}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
 
-main{flex:1;display:grid;place-items:center;padding:56px 24px 72px}
-.card{
-  width:min(680px,100%);text-align:center;position:relative;
-  background:linear-gradient(165deg,rgba(20,106,199,.14),rgba(12,20,36,.92));
-  border:1px solid var(--line-strong);border-radius:24px;
-  box-shadow:0 40px 100px -30px rgba(2,8,20,1), inset 0 1px 0 rgba(255,255,255,.08);
-  padding:56px 52px 50px;
+/* ---- iHub design system ---- */
+.glass{
+  background:rgba(22,22,23,.6);
+  backdrop-filter:saturate(180%) blur(25px);-webkit-backdrop-filter:saturate(180%) blur(25px);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 20px 40px rgba(0,0,0,.3);
 }
-.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(480px 220px at 50% -10%,rgba(105,184,255,.16),transparent 65%)}
-.live-pill{
-  display:inline-flex;align-items:center;gap:9px;background:rgba(74,222,128,.1);
-  border:1px solid rgba(74,222,128,.3);color:#7CEBA8;font-size:.75rem;font-weight:800;
-  letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;border-radius:999px;
+.glass-light{
+  background:rgba(255,255,255,.03);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border:1px solid rgba(255,255,255,.1);
 }
-.livedot{position:relative;width:8px;height:8px;border-radius:50%;background:#4ADE80}
-.livedot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(74,222,128,.55);animation:pulse 1.8s ease-out infinite}
-@keyframes pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
-.brand{margin:26px 0 4px;font-size:.9rem;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-soft)}
-h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;letter-spacing:-.03em;line-height:1.08;color:#fff}
-.sub{color:var(--muted);max-width:30rem;margin:18px auto 30px;font-size:1.02rem}
-.sub b{color:var(--accent-pale)}
-ul{list-style:none;display:grid;gap:13px;justify-content:center;margin-bottom:34px}
-li{display:flex;align-items:flex-start;gap:11px;font-weight:500;color:var(--accent-pale);text-align:left}
-li .gcheck{margin-top:-4px}
-li.hl{font-weight:800;color:#fff}
+.hero-grid-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,167,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,167,255,.06) 1px,transparent 1px),
+    linear-gradient(rgba(0,167,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,167,255,.03) 1px,transparent 1px);
+  background-size:80px 80px,80px 80px,20px 20px,20px 20px;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 20%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 20%,transparent 70%);
+}
+.section-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,167,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,167,255,.08) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 60%,black 20%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 60%,black 20%,transparent 70%);
+}
+.glow-top{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(0,167,255,.2),transparent 70%)}
+.glow-center{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,rgba(0,167,255,.1),transparent 70%)}
+.text-gradient{
+  background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.7) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+}
+.text-brand{
+  background:linear-gradient(135deg,#00A7FF 0%,#4dc3ff 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+}
+
+/* ---- Botões ---- */
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:12px;
-  font-weight:800;font-size:1.12rem;letter-spacing:-.01em;padding:20px 44px;border-radius:16px;
-  border:0;background:var(--accent);color:#fff;cursor:pointer;
-  box-shadow:var(--shadow-glow);
-  transition:transform .3s cubic-bezier(.16,1,.3,1),background-color .3s,box-shadow .3s;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:11px;overflow:hidden;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;
+  padding:18px 38px;border-radius:16px;border:0;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#00A7FF 0%,#005791 100%);
+  box-shadow:0 10px 30px -8px rgba(0,167,255,.5), inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s;
+  white-space:nowrap;
 }
-.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 18px 48px -12px rgba(35,137,230,.55)}
+.btn::after{
+  content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:skewX(-20deg);animation:btn-shimmer 3s ease-in-out infinite;
+}
+@keyframes btn-shimmer{0%{left:-100%}50%{left:100%}100%{left:100%}}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 44px -8px rgba(0,167,255,.6), inset 0 1px 0 rgba(255,255,255,.3)}
 .btn:active{transform:scale(.98)}
-.btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
-.btn .arr{transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.btn:focus-visible{outline:3px solid var(--blue-light);outline-offset:3px}
+.btn .arr{transition:transform .3s cubic-bezier(.16,1,.3,1)}
 .btn:hover .arr{transform:translateX(5px)}
-.note{margin-top:16px;font-size:.85rem;color:var(--muted)}
-
-footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center}
-footer p{font-size:.78rem;color:#7C93A6}
-
-[data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}
-[data-reveal].in{opacity:1;transform:none}
-@media (prefers-reduced-motion: reduce){
-  [data-reveal]{opacity:1;transform:none;transition:none}
-  .livedot::after{animation:none}
-  .cta-pulse{animation:none}
+.btn--ghost{
+  background:rgba(255,255,255,.05);border:1px solid var(--line-strong);
+  box-shadow:none;color:rgba(255,255,255,.85);
 }
-@media (max-width:560px){
-  .card{padding:40px 24px 36px}
-  .btn{width:100%;font-size:1rem;padding:18px 20px}
-  li{font-size:.94rem}
+.btn--ghost::after{display:none}
+.btn--ghost:hover{background:rgba(255,255,255,.1);box-shadow:none}
+
+/* ---- Topbar ---- */
+.topbar{
+  position:relative;z-index:5;border-bottom:1px solid var(--line);
+  background:rgba(10,10,10,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.topbar-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;height:66px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+}
+.topbar img{height:40px;width:auto}
+.topbar .lp-link{font-size:.88rem;font-weight:600;color:var(--blue-light)}
+.topbar .lp-link:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* ---- Hero ---- */
+.hero{position:relative;overflow:hidden;padding:64px 0 40px}
+.hero-bglow{
+  position:absolute;top:-15%;left:50%;transform:translateX(-50%);width:1200px;max-width:160vw;
+  opacity:.75;pointer-events:none;user-select:none;
+}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.badge-pill{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:.8rem;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.85);
+  padding:9px 18px;border-radius:999px;
+}
+.dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--blue);flex:none}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(0,167,255,.5);animation:dot-pulse 1.8s ease-out infinite}
+@keyframes dot-pulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.hero-when{
+  margin:26px 0 10px;font-size:.95rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--blue-light);
+}
+.hero-when b{color:#fff}
+.hero h1{
+  font-family:'Montserrat',sans-serif;font-weight:900;line-height:.96;letter-spacing:-.02em;
+  font-size:clamp(3rem,8vw,5.4rem);text-transform:uppercase;
+}
+.hero-date{
+  margin-top:14px;display:inline-flex;align-items:center;gap:10px;
+  font-size:1rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.85);
+}
+.hero-date::before,.hero-date::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--blue))}
+.hero-date::after{background:linear-gradient(90deg,var(--blue),transparent)}
+.hero-sub{margin:22px 0 32px;max-width:30rem;color:var(--muted);font-size:1.08rem;font-weight:300}
+.hero-sub b{color:#fff;font-weight:600}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+
+/* Colagem + notificações */
+.hero-visual{position:relative;display:flex;justify-content:center}
+.hero-visual .fotos{
+  width:min(480px,100%);height:auto;position:relative;z-index:2;
+  filter:drop-shadow(0 40px 80px rgba(0,0,0,.6));
+  animation:float 7s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hero-visual::before{
+  content:"";position:absolute;bottom:-8%;left:50%;transform:translateX(-50%);
+  width:120%;height:50%;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(0,167,255,.22),transparent 65%);
+}
+.notification-stack{position:absolute;top:4%;right:-6px;width:262px;z-index:20}
+.notif{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 100%);
+  backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+  border-radius:18px;padding:12px 16px;margin-bottom:8px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2), inset 0 -1px 0 rgba(255,255,255,.05);
+  opacity:0;transform:translateY(-20px) scale(.95);
+}
+.notif .n-ico{
+  width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,#00A7FF,#005791);font-size:15px;
+}
+.notif .n-body{min-width:0;flex:1}
+.notif .n-app{display:block;font-size:.62rem;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.6);text-transform:uppercase}
+.notif .n-msg{display:block;font-size:.8rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notif .n-time{font-size:.66rem;color:rgba(255,255,255,.5);flex:none;align-self:flex-start;margin-top:2px}
+.notif:nth-child(1){animation:notif-cycle-1 12s ease-in-out infinite}
+.notif:nth-child(2){animation:notif-cycle-2 12s ease-in-out infinite}
+.notif:nth-child(3){animation:notif-cycle-3 12s ease-in-out infinite}
+@keyframes notif-cycle-1{
+  0%{opacity:0;transform:translateY(-20px) scale(.95)}
+  8%{opacity:1;transform:translateY(0) scale(1)}
+  75%{opacity:1;transform:translateY(0) scale(1)}
+  85%{opacity:0;transform:translateY(-10px) scale(.95)}
+  100%{opacity:0;transform:translateY(-20px) scale(.95)}
+}
+@keyframes notif-cycle-2{
+  0%,15%{opacity:0;transform:translateY(-20px) scale(.95)}
+  25%{opacity:1;transform:translateY(0) scale(1)}
+  75%{opacity:1;transform:translateY(0) scale(1)}
+  85%{opacity:0;transform:translateY(-10px) scale(.95)}
+  100%{opacity:0;transform:translateY(-20px) scale(.95)}
+}
+@keyframes notif-cycle-3{
+  0%,30%{opacity:0;transform:translateY(-20px) scale(.95)}
+  40%{opacity:1;transform:translateY(0) scale(1)}
+  75%{opacity:1;transform:translateY(0) scale(1)}
+  85%{opacity:0;transform:translateY(-10px) scale(.95)}
+  100%{opacity:0;transform:translateY(-20px) scale(.95)}
+}
+
+/* Stats */
+.stats{
+  margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  max-width:640px;
+}
+.stat{border-radius:18px;padding:20px 22px;text-align:center}
+.stat .v{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.7rem;line-height:1.1}
+.stat .l{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:3px}
+
+/* ---- Ticker ---- */
+.x-bar{
+  position:relative;overflow:hidden;height:56px;
+  background:linear-gradient(135deg,#00A7FF 0%,#005791 100%);
+  border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2);
+}
+.x-bar-marquee{display:flex;width:max-content;height:100%;align-items:center;animation:x-bar-scroll 30s linear infinite}
+@keyframes x-bar-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.x-bar-item{
+  display:flex;align-items:center;gap:14px;padding:0 22px;white-space:nowrap;
+  font-family:'Montserrat',sans-serif;font-weight:800;font-size:.85rem;letter-spacing:.12em;color:#fff;
+}
+.x-bar-item::after{content:"✦";font-size:.7rem;opacity:.7}
+
+/* ---- Seções ---- */
+.section{position:relative;padding:110px 0;overflow:hidden}
+.sec-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;
+  font-size:.78rem;font-weight:600;letter-spacing:.06em;color:var(--blue-light);
+  padding:8px 16px;border-radius:999px;
+}
+.section h2{
+  font-family:'Montserrat',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.06;
+  font-size:clamp(1.9rem,4.6vw,3rem);
+}
+.section .sec-sub{margin-top:16px;color:var(--muted);font-weight:300;font-size:1.05rem;max-width:36rem}
+
+.bene-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:52px}
+.bene{
+  position:relative;border-radius:22px;padding:32px 30px;overflow:hidden;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;
+}
+.bene:hover{transform:translateY(-5px);border-color:rgba(0,167,255,.4);box-shadow:0 20px 50px rgba(0,0,0,.45), 0 0 40px rgba(0,167,255,.12)}
+.bene .b-ico{
+  width:50px;height:50px;border-radius:14px;display:grid;place-items:center;margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(0,167,255,.25),rgba(0,87,145,.25));
+  border:1px solid rgba(0,167,255,.35);color:var(--blue-light);
+}
+.bene h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.18rem;margin-bottom:8px}
+.bene p{color:var(--muted);font-weight:300;font-size:.97rem}
+.bene--hl{background:linear-gradient(160deg,rgba(0,167,255,.14),rgba(22,22,23,.6))}
+.bene--hl h3{color:var(--blue-light)}
+
+/* ---- CTA final ---- */
+.final{position:relative;padding:130px 0;text-align:center;overflow:hidden}
+.final h2{
+  font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;line-height:1;
+  font-size:clamp(2.2rem,6vw,4rem);
+}
+.final p{margin:20px auto 38px;max-width:34rem;color:var(--muted);font-weight:300;font-size:1.08rem}
+.final p b{color:#fff;font-weight:600}
+.final .arsenal-link{display:block;margin-top:22px;font-size:.92rem;color:var(--muted-2)}
+.final .arsenal-link a{color:var(--blue-light);font-weight:600}
+.final .arsenal-link a:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* ---- Footer ---- */
+footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;position:relative;z-index:2}
+footer img{height:26px;margin:0 auto 14px;opacity:.9}
+footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
+
+/* ---- Reveal ---- */
+[data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}
+[data-reveal].in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  [data-reveal]{opacity:1;transform:none;transition:none}
+  .btn::after,.notif,.hero-visual .fotos,.x-bar-marquee{animation:none}
+  .notif{opacity:1;transform:none}
+  .dot::after{animation:none}
+}
+
+/* ---- Responsivo ---- */
+@media (max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;gap:56px;text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-ctas{justify-content:center}
+  .stats{margin-left:auto;margin-right:auto}
+  .notification-stack{right:50%;transform:translateX(50%);top:-16px;width:240px}
+}
+@media (max-width:640px){
+  .hero{padding:44px 0 28px}
+  .bene-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:14px 8px}
+  .stat .v{font-size:1.25rem}
+  .stat .l{font-size:.68rem}
+  .btn{width:100%}
+  .hero-ctas{flex-direction:column}
+  .section{padding:80px 0}
+  .topbar .lp-link span{display:none}
 }
 </style>
 </head>
 <body>
 
-<nav class="nav" aria-label="Navegação">
-  <div class="nav-inner">
-    <a href="../" aria-label="Página do Arsenal Pro"><img src="../assets/logo.svg" alt="Safirion" /></a>
-    <a class="lp" href="../">Conhecer o Arsenal Pro</a>
+<!-- Topbar -->
+<nav class="topbar" aria-label="Navegação">
+  <div class="topbar-inner">
+    <a href="../" aria-label="Página do Arsenal Pro">
+      <img src="../assets/corujao/logo.webp" alt="Safirion — Confiança para investir" />
+    </a>
+    <a class="lp-link" href="../">Conhecer <span>o </span>Arsenal Pro →</a>
   </div>
 </nav>
 
-<main>
-  <section class="card">
-    <span class="live-pill" data-reveal><span class="livedot" aria-hidden="true"></span> Ao vivo agora</span>
-    <p class="brand" data-reveal style="--d:.06s">Safirion</p>
-    <h1 data-reveal style="--d:.12s">Corujão de <span class="grad-text">Traders</span></h1>
-    <p class="sub" data-reveal style="--d:.18s">Os maiores traders da Safirion estão <b>ao vivo agora</b>. Entre no Corujão, lucre junto com eles e aproveite:</p>
-    <ul data-reveal style="--d:.24s">
-      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Estratégias, IA e métodos validados</li>
-      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Bônus exclusivos na live</li>
-      <li><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Cupons gamificados</li>
-      <li class="hl"><span class="gcheck" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg></span> Revelação do Arsenal Pro ainda hoje</li>
-    </ul>
-    <div data-reveal style="--d:.3s">
-      <a class="btn cta-pulse" href="#" id="ctaLive">
-        Clique aqui e entre agora
-        <svg class="arr" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
-      </a>
-      <p class="note">Transmissão acontecendo neste momento</p>
+<!-- HERO -->
+<header class="hero">
+  <img class="hero-bglow" src="../assets/corujao/brilho-azul.webp" alt="" aria-hidden="true" />
+  <div class="hero-grid-bg" aria-hidden="true"></div>
+  <div class="glow-top" aria-hidden="true"></div>
+
+  <div class="container hero-grid">
+    <div>
+      <span class="badge-pill glass-light" data-reveal><span class="dot" aria-hidden="true"></span> Evento ao vivo Safirion</span>
+      <p class="hero-when" data-reveal style="--d:.07s">A partir das <b>18 horas</b></p>
+      <h1 data-reveal style="--d:.14s"><span class="text-gradient">Corujão</span><br /><span class="text-brand">de Traders</span></h1>
+      <p class="hero-date" data-reveal style="--d:.2s">25 de julho</p>
+      <p class="hero-sub" data-reveal style="--d:.26s">Os maiores traders da Safirion <b>ao vivo, a noite inteira</b>. Estratégias, IA, bônus exclusivos e a revelação do Arsenal Pro.</p>
+      <div class="hero-ctas" data-reveal style="--d:.32s">
+        <a class="btn" href="#" id="ctaGroup">
+          Entrar no grupo
+          <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+        </a>
+        <a class="btn btn--ghost" href="../">Conhecer o Arsenal Pro</a>
+      </div>
+
+      <div class="stats" data-reveal style="--d:.4s">
+        <div class="stat glass-light"><div class="v text-brand">9</div><div class="l">Experts ao vivo</div></div>
+        <div class="stat glass-light"><div class="v text-brand">18h</div><div class="l">Começa hoje</div></div>
+        <div class="stat glass-light"><div class="v text-brand">R$4.6k</div><div class="l">Em entregáveis</div></div>
+      </div>
     </div>
-  </section>
-</main>
+
+    <div class="hero-visual" data-reveal style="--d:.2s">
+      <img class="fotos" src="../assets/corujao/fotos.webp" alt="Traders participantes do Corujão" />
+      <div class="notification-stack" aria-hidden="true">
+        <div class="notif">
+          <span class="n-ico">🔴</span>
+          <span class="n-body"><span class="n-app">Safirion · Corujão</span><span class="n-msg">Taylon entrou AO VIVO</span></span>
+          <span class="n-time">agora</span>
+        </div>
+        <div class="notif">
+          <span class="n-ico">💰</span>
+          <span class="n-body"><span class="n-app">Safirion · Corujão</span><span class="n-msg">Cupom gamificado liberado</span></span>
+          <span class="n-time">há 2m</span>
+        </div>
+        <div class="notif">
+          <span class="n-ico">🎯</span>
+          <span class="n-body"><span class="n-app">Safirion · Corujão</span><span class="n-msg">Arsenal Pro revelado hoje</span></span>
+          <span class="n-time">há 5m</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Ticker -->
+<div class="x-bar" aria-hidden="true">
+  <div class="x-bar-marquee">
+    <span class="x-bar-item">Corujão de Traders</span><span class="x-bar-item">Ao vivo hoje</span><span class="x-bar-item">A partir das 18h</span><span class="x-bar-item">25 de julho</span><span class="x-bar-item">Safirion</span><span class="x-bar-item">Revelação do Arsenal Pro</span>
+    <span class="x-bar-item">Corujão de Traders</span><span class="x-bar-item">Ao vivo hoje</span><span class="x-bar-item">A partir das 18h</span><span class="x-bar-item">25 de julho</span><span class="x-bar-item">Safirion</span><span class="x-bar-item">Revelação do Arsenal Pro</span>
+  </div>
+</div>
+
+<!-- Benefícios -->
+<section class="section">
+  <div class="section-grid" aria-hidden="true"></div>
+  <div class="glow-center" aria-hidden="true"></div>
+  <div class="container">
+    <span class="sec-badge glass-light" data-reveal>✦ O que rola na live</span>
+    <h2 class="text-gradient" data-reveal style="--d:.08s">Entre no Corujão e<br />lucre junto com eles.</h2>
+    <p class="sec-sub" data-reveal style="--d:.15s">Uma única noite, os maiores traders da Safirion operando na sua frente. E você aproveita:</p>
+
+    <div class="bene-grid">
+      <div class="bene glass-light" data-reveal>
+        <div class="b-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>
+        </div>
+        <h3>Estratégias, IA e métodos validados</h3>
+        <p>Os operacionais que os experts usam todos os dias, demonstrados ao vivo no gráfico.</p>
+      </div>
+      <div class="bene glass-light" data-reveal style="--d:.08s">
+        <div class="b-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Bônus exclusivos na live</h3>
+        <p>Vantagens liberadas apenas para quem está assistindo, na hora, durante a transmissão.</p>
+      </div>
+      <div class="bene glass-light" data-reveal style="--d:.16s">
+        <div class="b-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21"/><path d="M3 12h18"/><path d="M7.5 8a2.5 2.5 0 1 1 4.5-1.5V8"/><path d="M16.5 8a2.5 2.5 0 1 0-4.5-1.5V8"/></svg>
+        </div>
+        <h3>Cupons gamificados</h3>
+        <p>Desafios e recompensas ao longo da noite. Quanto mais você participa, mais você ganha.</p>
+      </div>
+      <div class="bene bene--hl glass-light" data-reveal style="--d:.24s">
+        <div class="b-ico" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+        </div>
+        <h3>Revelação do Arsenal Pro ainda hoje</h3>
+        <p>O arsenal completo dos 9 experts, estratégias, indicadores e IA, apresentado pela primeira vez.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA final -->
+<section class="final">
+  <div class="section-grid" aria-hidden="true"></div>
+  <div class="glow-top" aria-hidden="true"></div>
+  <div class="container">
+    <h2 data-reveal><span class="text-gradient">A noite é</span> <span class="text-brand">deles.</span><br /><span class="text-gradient">O lucro pode ser seu.</span></h2>
+    <p data-reveal style="--d:.1s">Hoje, <b>a partir das 18 horas</b>, ao vivo. Entre no grupo agora e receba o aviso na hora que começar.</p>
+    <div data-reveal style="--d:.18s">
+      <a class="btn" href="#" id="ctaGroup2">
+        Entrar no grupo agora
+        <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+      </a>
+      <span class="arsenal-link">Já conhece o evento? <a href="../">Veja o Arsenal Pro →</a></span>
+    </div>
+  </div>
+</section>
 
 <footer>
-  <p>Corujão de Traders é um evento da Safirion. Operar no mercado financeiro envolve riscos.</p>
+  <img src="../assets/corujao/logo.webp" alt="Safirion" />
+  <p>Corujão de Traders é um evento da Safirion. Operar no mercado financeiro envolve riscos e pode resultar em perda do capital investido.</p>
 </footer>
 
 <script>
-// TODO: troque pelo link real da sala/grupo da live
-const LIVE_URL = "../aovivo/";
-document.getElementById("ctaLive").href = LIVE_URL;
+"use strict";
+// TODO: troque pelo link real do grupo (WhatsApp/Telegram)
+const GROUP_URL = "../aovivo/";
+document.getElementById("ctaGroup").href = GROUP_URL;
+document.getElementById("ctaGroup2").href = GROUP_URL;
 
 const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
-}), { threshold:.15 });
+}), { threshold:.15, rootMargin:"0px 0px -40px 0px" });
 document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
 </script>
 </body>
