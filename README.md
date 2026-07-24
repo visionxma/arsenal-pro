@@ -16,6 +16,7 @@ Landing page de vendas do Arsenal Pro e sistema do Corujão de Traders, com a id
 - Sorteio aleatório com animação de giro; o expert sorteado sai da roleta até todos passarem pela rodada (rodízio).
 - Cronômetro automático com tempo configurável no Painel Admin.
 - Painel Admin: adicionar, editar, remover, ativar/desativar experts (nome + foto) e configurar o tempo padrão.
+- Acesso ao Painel Admin protegido por tela de login. Senha padrão: `corujao2026` (troque a constante `ADMIN_PASS` em `roleta/index.html`). Proteção client-side, adequada para uso durante o evento.
 - Dados persistidos em `localStorage`. A rota `/aovivo` exibe o expert em operação (sincronização no mesmo navegador).
 
 ## Configuração antes de usar

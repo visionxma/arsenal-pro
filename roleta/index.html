@@ -138,6 +138,36 @@ button{font-family:inherit}
 .timeup .timer-txt{color:var(--ok);animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.35}}
 
+/* ---- Login admin ---- */
+.login-overlay{
+  position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(4,8,18,.85);backdrop-filter:blur(10px);
+}
+.login-overlay.open{display:flex}
+.login-card{
+  width:min(400px,100%);border-radius:22px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(165deg,rgba(20,106,199,.22),rgba(10,16,32,.97));
+  border:1px solid var(--line-strong);box-shadow:0 40px 120px -20px rgba(2,8,20,1), var(--shadow-glow);
+  padding:42px 36px 36px;animation:pop .5s cubic-bezier(.16,1,.3,1);
+}
+.login-card img{height:26px;margin:0 auto 22px}
+.login-card h2{font-size:1.25rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+.login-card .sub{font-size:.88rem;color:var(--muted);margin-bottom:24px}
+.login-card input{
+  width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--text);font-family:inherit;font-size:1rem;text-align:center;
+  letter-spacing:.08em;
+}
+.login-card input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.login-card .err{
+  display:none;margin-top:12px;font-size:.85rem;font-weight:600;color:#F3A9B4;
+}
+.login-card.wrong .err{display:block}
+.login-card.wrong input{border-color:rgba(226,85,106,.55);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.login-card .btn{width:100%;margin-top:18px}
+.login-card .close-x{position:absolute;top:14px;right:14px}
+
 /* ---- Drawer admin ---- */
 .drawer-bg{position:fixed;inset:0;z-index:90;background:rgba(4,8,18,.7);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s}
 .drawer{
@@ -289,6 +319,24 @@ body.admin-open .drawer-bg{opacity:1;pointer-events:auto}
       <button class="btn btn--ghost" id="btnEnd" type="button">Encerrar agora</button>
     </div>
   </div>
+</div>
+
+<!-- Login do admin -->
+<div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form class="login-card" id="loginCard">
+    <button class="icon-btn close-x" id="btnCloseLogin" type="button" aria-label="Fechar login">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+    <img src="../assets/logo.svg" alt="Safirion" />
+    <h2 id="loginTitle">Acesso restrito</h2>
+    <p class="sub">Digite a senha do operador para abrir o Painel Admin.</p>
+    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password" aria-label="Senha do painel admin" />
+    <p class="err">Senha incorreta. Tente novamente.</p>
+    <button class="btn" type="submit">
+      Entrar no painel
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </button>
+  </form>
 </div>
 
 <!-- Admin -->
@@ -631,10 +679,44 @@ const formTitle = document.getElementById("formTitle");
 const cfgMinutes = document.getElementById("cfgMinutes");
 let editingId = null;
 
-btnAdmin.addEventListener("click", () => { document.body.classList.add("admin-open"); renderAdmin(); });
+/* ---- Login do admin ----
+   TODO: troque a senha padrão abaixo antes do evento.
+   Observação: em site estático a proteção é no navegador (impede curiosos,
+   não substitui um backend com autenticação real). */
+const ADMIN_PASS = "corujao2026";
+const SS_AUTH = "cj_admin_ok";
+const loginOverlay = document.getElementById("loginOverlay");
+const loginCard = document.getElementById("loginCard");
+const loginPass = document.getElementById("loginPass");
+
+btnAdmin.addEventListener("click", () => {
+  if (sessionStorage.getItem(SS_AUTH) === "1"){ openAdmin(); return; }
+  loginCard.classList.remove("wrong");
+  loginPass.value = "";
+  loginOverlay.classList.add("open");
+  loginPass.focus();
+});
+loginCard.addEventListener("submit", e => {
+  e.preventDefault();
+  if (loginPass.value === ADMIN_PASS){
+    sessionStorage.setItem(SS_AUTH, "1");
+    loginOverlay.classList.remove("open");
+    openAdmin();
+  } else {
+    loginCard.classList.remove("wrong");
+    void loginCard.offsetWidth; // reinicia a animação de erro
+    loginCard.classList.add("wrong");
+    loginPass.select();
+  }
+});
+document.getElementById("btnCloseLogin").addEventListener("click", () => loginOverlay.classList.remove("open"));
+
+function openAdmin(){ document.body.classList.add("admin-open"); renderAdmin(); }
 btnCloseAdmin.addEventListener("click", closeAdmin);
 drawerBg.addEventListener("click", closeAdmin);
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeAdmin(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape"){ closeAdmin(); loginOverlay.classList.remove("open"); }
+});
 function closeAdmin(){ document.body.classList.remove("admin-open"); }
 
 function persistExperts(){
