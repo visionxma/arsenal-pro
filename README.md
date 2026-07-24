@@ -4,12 +4,12 @@ Landing page de vendas do Arsenal Pro e sistema do Corujão de Traders, com a id
 
 ## Rotas
 
-| Rota | Descrição |
-|---|---|
-| `/` | Landing page de vendas do Arsenal Pro |
-| `/corujao` | Página convite do Corujão de Traders (live) |
-| `/aovivo` | Página da transmissão ao vivo + expert em operação |
-| `/roleta` | Roleta de sorteio de experts com cronômetro e painel admin |
+| Rota | Descrição | Identidade |
+|---|---|---|
+| `/` | Landing page de vendas do Arsenal Pro | Safirion (navy + azul elétrico) |
+| `/corujao` | Página convite do Corujão de Traders (live) | Corujão (preto #0a0a0a + #00A7FF, assets reais do evento) |
+| `/aovivo` | Página da transmissão ao vivo + expert em operação | Corujão |
+| `/roleta` | Roleta de sorteio de experts (visual "roleta premiada": aro com luzes, sons, confete) com cronômetro e painel admin | Corujão |
 
 ## Roleta de Experts
 
