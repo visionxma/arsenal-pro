@@ -296,14 +296,36 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
 
 /* ---- Responsivo ---- */
 @media (max-width:1024px){
-  .hero-grid{grid-template-columns:1fr;gap:56px;text-align:center}
-  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero{padding:0 0 40px}
+  .hero-grid{display:block;text-align:center}
+  /* colagem vira camada de fundo do hero, atrás do texto */
+  .hero-visual{
+    position:absolute;top:0;left:0;right:0;margin:0 auto;
+    width:min(560px,106vw);z-index:0;pointer-events:none;
+    display:block;
+  }
+  .hero-visual .fotos{width:100%;animation:none;filter:none}
+  .hero-visual::before{display:none}
+  .hero-visual::after{
+    content:"";position:absolute;top:-2px;bottom:-2px;
+    left:calc(50% - 50vw);width:100vw;
+    background:linear-gradient(180deg,
+      rgba(10,10,10,.32) 0%,
+      rgba(10,10,10,.08) 22%,
+      rgba(10,10,10,.28) 46%,
+      rgba(10,10,10,.78) 66%,
+      #0a0a0a 90%);
+  }
+  .hero-copy{position:relative;z-index:2;padding-top:min(74vw,400px)}
+  .hero-copy h1{text-shadow:0 6px 40px rgba(0,0,0,.75)}
+  .hero-when,.hero-date{text-shadow:0 3px 18px rgba(0,0,0,.8)}
+  .hero-sub{margin-left:auto;margin-right:auto;color:rgba(255,255,255,.78)}
   .hero-ctas{justify-content:center}
   .stats{margin-left:auto;margin-right:auto}
-  .notification-stack{right:50%;transform:translateX(50%);top:-16px;width:240px}
+  .notification-stack{right:50%;transform:translateX(50%);top:14px;width:236px;z-index:3}
+  .hero-bglow{top:-6%}
 }
 @media (max-width:640px){
-  .hero{padding:44px 0 28px}
   .bene-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(3,1fr);gap:8px}
   .stat{padding:14px 8px}
@@ -335,7 +357,7 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
   <div class="glow-top" aria-hidden="true"></div>
 
   <div class="container hero-grid">
-    <div>
+    <div class="hero-copy">
       <span class="badge-pill glass-light" data-reveal><span class="dot" aria-hidden="true"></span> Evento ao vivo Safirion</span>
       <p class="hero-when" data-reveal style="--d:.07s">A partir das <b>18 horas</b></p>
       <h1 data-reveal style="--d:.14s"><span class="text-gradient">Corujão</span><br /><span class="text-brand">de Traders</span></h1>
