@@ -783,6 +783,7 @@
 
   <div class="toast glass" id="toast" role="status"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 "use strict";
 /* ================= Dados ================= */
@@ -841,8 +842,9 @@ const disponiveis = () => activeExperts().filter(e => !jaSorteado(e));
 function marcaSorteado(id){
   if (!sorteados.includes(id)) sorteados.push(id);
   save(LS_RODADA, sorteados);
+  syncStateR();
 }
-function reiniciaRodada(){ sorteados = []; save(LS_RODADA, sorteados); }
+function reiniciaRodada(){ sorteados = []; save(LS_RODADA, sorteados); syncStateR(); }
 /* tempo do expert: usa o dele quando definido, senão o padrão do painel */
 function minutesFor(e){
   const m = parseInt(e && e.minutes, 10);
@@ -1228,6 +1230,7 @@ function setLiveCard(state){ // idle | live | done
 function setLive(state){
   save(LS_LIVE, state);
   try { new BroadcastChannel("cj-live").postMessage(state); } catch {}
+  syncSend(Object.assign({ type:"live" }, state));
 }
 function showWinner(e){
   winPhoto.src = photoOf(e);
@@ -1339,6 +1342,7 @@ function pushHist(e){
   hist = hist.slice(0,6);
   save(LS_HIST, hist);
   renderHist();
+  syncStateR();
 }
 function renderHist(){
   histList.innerHTML = "";
@@ -1498,34 +1502,81 @@ window.addEventListener("storage", ev => {
     renderHist();
   }
 });
-try {
-  const cmdBC = new BroadcastChannel("cj-cmd");
-  const ack = (cmd, ok, reason) => { try { cmdBC.postMessage({ type:"ack", cmd, ok, reason: reason || "" }); } catch {} };
-  cmdBC.onmessage = ev => {
-    const m = ev.data || {};
-    if (m.type === "ping"){
-      try { cmdBC.postMessage({ type:"pong", standby: !isPrimary }); } catch {}
-      return;
-    }
-    if (!isPrimary) return; // a reserva ignora comandos
+const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_ROOM = "cj-corujao";
+const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
+let syncCh = null, syncOn = false;
+function syncSend(o){
+  if (!syncCh || !syncOn) return;
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); } catch {}
+}
+function syncStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
+function applyAdminState(m){
+  if (Array.isArray(m.experts) && m.experts.length){
+    experts = m.experts; save(LS_EXPERTS, experts);
+    const ids = experts.map(e => e.id);
+    sorteados = sorteados.filter(id => ids.includes(id));
+    save(LS_RODADA, sorteados);
+  }
+  if (m.cfg){
+    cfg = Object.assign(
+      { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+      m.cfg
+    );
+    save(LS_CFG, cfg);
+    MUTE.set(!cfg.sfx);
+    restartIdle();
+  }
+  buildWheel(); renderPool();
+}
+function applyStateR(m){
+  if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
+  if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); renderHist(); }
+  buildWheel(); renderPool();
+}
+(function initSync(){
+  if (!window.supabase) return;
+  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    const m = payload || {};
+    if (m.k !== SYNC_KEY) return;
     switch (m.type){
+      case "ping":
+        syncSend({ type:"pong", standby: !isPrimary });
+        break;
+      case "hello":
+        if (m.role === "admin" && isPrimary){
+          syncStateR();
+          syncSend(Object.assign({ type:"live" }, load(LS_LIVE, { status:"idle" })));
+        }
+        break;
+      case "state":   applyAdminState(m); break;
+      case "state-r": applyStateR(m); break;
       case "force":
+        if (!isPrimary) break;
         forcedId = m.id || null;
         if (forcedId) toast("Painel: próximo sorteado definido.");
         break;
       case "spin":
+        if (!isPrimary) break;
         if (m.forcedId) forcedId = m.forcedId;
-        if (spinning){ ack("spin", false, "A roleta já está girando."); break; }
-        if (timerRAF){ ack("spin", false, "Há uma operação em andamento."); break; }
-        spin(); ack("spin", true);
+        if (spinning){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"A roleta já está girando." }); break; }
+        if (timerRAF){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"Há uma operação em andamento." }); break; }
+        spin(); syncSend({ type:"ack", cmd:"spin", ok:true });
         break;
       case "endOp":
-        if (!timerRAF){ ack("endOp", false, "Nenhuma operação em andamento."); break; }
-        timerEndAt = Date.now(); ack("endOp", true);
+        if (!isPrimary) break;
+        if (!timerRAF){ syncSend({ type:"ack", cmd:"endOp", ok:false, reason:"Nenhuma operação em andamento." }); break; }
+        timerEndAt = Date.now(); syncSend({ type:"ack", cmd:"endOp", ok:true });
         break;
     }
-  };
-} catch {}
+  }).subscribe(st => {
+    syncOn = st === "SUBSCRIBED";
+    if (syncOn) syncSend({ type:"hello", role:"roleta" });
+  });
+})();
 
 /* ================= Redundância: principal + reserva ================= */
 const LS_HB = "cj_roleta_hb";

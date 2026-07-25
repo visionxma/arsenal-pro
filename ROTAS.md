@@ -1,6 +1,17 @@
 # Rotas do Arsenal Pro
 
-Mapa de rotas para publicação sob um domínio próprio (ex.: `arsenalpro.com.br`).
+Domínio: **safiriontradingbrasil.com** (zona no Cloudflare). O site continua hospedado no
+GitHub Pages (`visionxma.github.io/arsenal-pro/`) e entra no domínio como rotas:
+
+- Público (sufixo): `safiriontradingbrasil.com/arsenal-pro/…`
+- Painel admin (prefixo): `admin.safiriontradingbrasil.com`
+
+O proxy fica em `infra/proxy-worker/` (Cloudflare Worker — publicar NA CONTA que possui a
+zona): `cd infra/proxy-worker && npx wrangler login && npx wrangler deploy`. Único registro
+DNS novo: `AAAA admin → 100::` com proxy (nuvem laranja). Nenhum registro existente muda.
+
+A comunicação painel ↔ roleta usa **Supabase Realtime** (chave anon no código) e funciona
+de qualquer dispositivo/navegador — não depende mais de mesma origem.
 Todas as páginas são estáticas (`index.html` por pasta) e **todos os links internos são
 relativos** — o site funciona igual na raiz de um domínio, em um subdiretório ou no
 GitHub Pages, sem nenhuma configuração de servidor.

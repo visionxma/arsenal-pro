@@ -454,6 +454,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 "use strict";
 /* ================= Dados (mesmas chaves da roleta) ================= */
@@ -491,7 +492,7 @@ let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
 let cfg       = Object.assign({}, CFG_DEF, load(LS_CFG, {}));
 let hist      = load(LS_HIST, []);
 let sorteados = load(LS_RODADA, []);
-const saveCfg = () => save(LS_CFG, cfg);
+const saveCfg = () => { save(LS_CFG, cfg); sendState(); };
 
 function initials(name){ return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 function avatarURI(name){
@@ -516,40 +517,35 @@ const minutesFor = e => {
   return (m >= 1 && m <= 180) ? m : cfg.minutes;
 };
 
-/* ================= Comunicação com a roleta ================= */
-let cmdBC = null, lastPongPrim = 0, lastPongStb = 0;
-try {
-  cmdBC = new BroadcastChannel("cj-cmd");
-  cmdBC.onmessage = ev => {
-    const m = ev.data || {};
-    if (m.type === "pong"){
-      if (m.standby) lastPongStb = Date.now();
-      else lastPongPrim = Date.now();
-      updateConn();
-      return;
-    }
-    if (m.type === "ack"){
-      if (m.ok) toast(m.cmd === "spin" ? "Roleta girando!" : "Comando aplicado na roleta.");
-      else toast(m.reason || "A roleta recusou o comando.");
-    }
-  };
-} catch {}
-const connected = () => Date.now() - lastPongPrim < 4000;
-const stbAlive  = () => Date.now() - lastPongStb < 4000;
+/* ================= Comunicação com a roleta (Supabase Realtime) ================= */
+const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_ROOM = "cj-corujao";
+const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
+let syncCh = null, syncOn = false, lastPongPrim = 0, lastPongStb = 0;
+function syncSend(o){
+  if (!syncCh || !syncOn) return false;
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); return true; } catch { return false; }
+}
+function sendState(){ syncSend({ type:"state", experts, cfg }); }
+function sendStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
+const connected = () => Date.now() - lastPongPrim < 6000;
+const stbAlive  = () => Date.now() - lastPongStb < 6000;
 function sendCmd(msg){
-  if (!cmdBC){ toast("Este navegador não suporta o controle remoto."); return false; }
+  if (!syncOn){ toast("Sincronização offline — verifique a internet."); return false; }
   if (!connected()){
     toast(stbAlive()
       ? "A roleta reserva está assumindo… tente novamente em instantes."
-      : "Abra a página da roleta em outra aba para usar este comando.");
+      : "Abra a página da roleta (em qualquer dispositivo) para usar este comando.");
     return false;
   }
-  cmdBC.postMessage(msg);
+  syncSend(msg);
   return true;
 }
 function updateConn(){
   const el = document.getElementById("conn");
   const tx = document.getElementById("connTxt");
+  if (!syncOn){ el.classList.remove("on"); tx.textContent = "Conectando à sincronização…"; return; }
   if (connected()){
     el.classList.add("on");
     tx.textContent = "Roleta conectada" + (stbAlive() ? " · reserva pronta" : "");
@@ -561,8 +557,42 @@ function updateConn(){
     tx.textContent = "Roleta não encontrada";
   }
 }
-setInterval(() => { try { cmdBC && cmdBC.postMessage({ type:"ping" }); } catch {} updateConn(); }, 2500);
-try { cmdBC && cmdBC.postMessage({ type:"ping" }); } catch {}
+(function initSync(){
+  if (!window.supabase){ toast("Falha ao carregar a sincronização."); return; }
+  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    const m = payload || {};
+    if (m.k !== SYNC_KEY) return;
+    switch (m.type){
+      case "pong":
+        if (m.standby) lastPongStb = Date.now();
+        else lastPongPrim = Date.now();
+        updateConn();
+        break;
+      case "ack":
+        if (m.ok) toast(m.cmd === "spin" ? "Roleta girando!" : "Comando aplicado na roleta.");
+        else toast(m.reason || "A roleta recusou o comando.");
+        break;
+      case "live":
+        live = m; renderLive();
+        break;
+      case "state-r":
+        if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
+        if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); }
+        render();
+        break;
+      case "hello":
+        if (m.role === "roleta"){ sendState(); syncSend({ type:"ping" }); }
+        break;
+    }
+  }).subscribe(st => {
+    syncOn = st === "SUBSCRIBED";
+    updateConn();
+    if (syncOn){ syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" }); }
+  });
+})();
+setInterval(() => { syncSend({ type:"ping" }); updateConn(); }, 2500);
 
 /* ================= Cartão AO VIVO ================= */
 let live = load(LS_LIVE, { status:"idle" });
@@ -672,6 +702,7 @@ function render(){
         toast(e.name + " marcado como já sorteado.");
       }
       save(LS_RODADA, sorteados);
+      sendStateR();
       render();
     });
     const bE = document.createElement("button");
@@ -707,6 +738,7 @@ function persistExperts(){
   const ids = experts.map(e => e.id);
   sorteados = sorteados.filter(id => ids.includes(id));
   save(LS_RODADA, sorteados);
+  sendState(); sendStateR();
   render();
 }
 function resizePhoto(file){
@@ -820,11 +852,13 @@ document.getElementById("btnEndOp").addEventListener("click", () => {
 });
 document.getElementById("btnResetRound").addEventListener("click", () => {
   sorteados = []; save(LS_RODADA, sorteados);
+  sendStateR();
   render();
   toast("Rodada reiniciada. Todos voltaram para o sorteio.");
 });
 document.getElementById("btnClearHist").addEventListener("click", () => {
   hist = []; save(LS_HIST, hist);
+  sendStateR();
   toast("Histórico limpo.");
 });
 
@@ -854,6 +888,7 @@ document.getElementById("fImport").addEventListener("change", ev => {
       sorteados = Array.isArray(data.sorteados) ? data.sorteados : [];
       hist = Array.isArray(data.hist) ? data.hist : [];
       save(LS_EXPERTS, experts); saveCfg(); save(LS_RODADA, sorteados); save(LS_HIST, hist);
+      sendState(); sendStateR();
       render();
       toast("Backup importado com sucesso.");
     } catch {
@@ -868,6 +903,7 @@ document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
   cfg = Object.assign({}, CFG_DEF);
   sorteados = []; hist = [];
   save(LS_EXPERTS, experts); saveCfg(); save(LS_RODADA, sorteados); save(LS_HIST, hist);
+  sendState(); sendStateR();
   render();
   toast("Padrão restaurado.");
 });

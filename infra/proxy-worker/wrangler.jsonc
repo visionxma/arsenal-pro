@@ -1,0 +1,11 @@
+{
+  // Proxy das rotas do Arsenal Pro no domínio safiriontradingbrasil.com.
+  // Deploy: `npx wrangler login` (conta que possui a zona) e depois `npx wrangler deploy` nesta pasta.
+  "name": "arsenal-proxy",
+  "main": "src/index.js",
+  "compatibility_date": "2025-06-01",
+  "routes": [
+    { "pattern": "safiriontradingbrasil.com/arsenal-pro*", "zone_name": "safiriontradingbrasil.com" },
+    { "pattern": "admin.safiriontradingbrasil.com/*", "zone_name": "safiriontradingbrasil.com" }
+  ]
+}
