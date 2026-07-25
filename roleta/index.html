@@ -605,88 +605,19 @@
   .hist li .hh{ font-size:11.5px; color:var(--muted-2); font-variant-numeric:tabular-nums; flex:none; }
   .hist .empty{ font-size:12.5px; color:var(--muted-2); margin-top:10px; }
 
-  /* ================= LOGIN ADMIN ================= */
-  .gate{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px;
-    background:rgba(3,5,11,.85); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
-  .gate.show{ display:flex; animation:fade .2s ease; }
-  @keyframes fade{ from{opacity:0} to{opacity:1} }
-  .gate-card{ width:100%; max-width:350px; border-radius:20px; padding:28px 26px 22px; text-align:center; }
-  .gate-card::before{ content:""; position:absolute; inset:0 0 auto; height:2px; border-radius:20px 20px 0 0;
-    background:linear-gradient(90deg, transparent, var(--brand), transparent); }
-  .gate-card img{ height:34px; margin:0 auto 4px; }
-  .gate-card h2{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; margin-top:12px; text-transform:uppercase; }
-  .gate-card p.g-sub{ font-size:13px; color:var(--muted); margin-top:5px; }
-  .gate-field{ text-align:left; margin-top:16px; }
-  .gate-field label{ display:block; font-size:11.5px; font-weight:600; color:#8b97b5; margin-bottom:6px; }
-  .gate-field input{ width:100%; padding:13px; border-radius:10px; font-size:16px; color:#fff;
-    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); outline:none; transition:.15s;
-    font-family:'Poppins',sans-serif; }
-  .gate-field input::placeholder{ color:#5f6b86; }
-  .gate-field input:focus{ border-color:var(--brand); }
-  .gate-field input.err{ border-color:#ff5252; animation:shake .35s; }
-  @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .gate-btn{ width:100%; margin-top:18px; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:800;
-    font-size:15px; letter-spacing:.3px; text-transform:uppercase; color:var(--btn-ink); padding:14px; border-radius:11px;
-    background:var(--btn); transition:transform .1s, filter .15s; }
-  .gate-btn:active{ transform:translateY(1px); }
-  .gate-x{ position:absolute; top:11px; right:11px; width:30px; height:30px; border-radius:9px; border:1px solid var(--line);
-    background:rgba(255,255,255,.04); color:#aeb9d6; cursor:pointer; display:grid; place-items:center; }
-  .gate-err{ display:none; margin-top:10px; font-size:12.5px; font-weight:600; color:#ff8a9a; }
-  .gate-card.wrong .gate-err{ display:block; }
+  /* Roleta reserva (redundância principal + reserva) */
+  .standby-bar{ display:none; position:fixed; top:0; left:0; right:0; z-index:80;
+    align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    background:rgba(5,9,18,.96); border-bottom:1px solid rgba(0,167,255,.4);
+    padding:9px 14px; font-size:12.5px; color:#c8d1e6; text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  body.standby .standby-bar{ display:flex; }
+  .standby-bar b{ color:var(--brand-2); letter-spacing:.14em; }
+  .standby-bar button{ border:1px solid var(--line-2); background:rgba(0,167,255,.12); color:var(--brand-2);
+    font-family:'Poppins',sans-serif; font-weight:700; font-size:12px; padding:6px 13px; border-radius:999px; cursor:pointer; }
+  .standby-bar button:hover{ background:rgba(0,167,255,.22); }
+  body.standby .wrap{ opacity:.55; }
 
-  /* ================= DRAWER ADMIN ================= */
-  .drawer-bg{ position:fixed; inset:0; z-index:70; background:rgba(3,5,11,.72); opacity:0; pointer-events:none; transition:opacity .3s; }
-  .drawer{ position:fixed; top:0; right:0; bottom:0; z-index:71; width:min(450px,100vw);
-    background-color:rgba(8,13,24,.82);
-    transform:translateX(100%); transition:transform .4s cubic-bezier(.16,1,.3,1);
-    display:flex; flex-direction:column; border-radius:0; }
-  .drawer::after{ border-radius:0; opacity:.45; }
-  body.admin-open .drawer{ transform:none; }
-  body.admin-open .drawer-bg{ opacity:1; pointer-events:auto; }
-  .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
-  .drawer-head h2{ font-family:'Montserrat',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; }
-  .drawer-body{ flex:1; overflow-y:auto; padding:22px 24px 44px; display:grid; gap:26px; align-content:start; text-align:left; }
-  .drawer-body section{ border-radius:14px; }
-  .sec-t{ font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:.18em;
-    text-transform:uppercase; color:var(--brand-2); margin-bottom:12px; }
-  .field label{ display:block; font-size:12px; font-weight:600; color:#8b97b5; margin-bottom:6px; }
-  .field input[type=text],.field input[type=number]{
-    width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.05); color:#fff; font-family:'Poppins',sans-serif; font-size:15px; outline:none; }
-  .field input:focus{ border-color:var(--brand); }
-  .field input::placeholder{ color:#5f6b86; }
-  .field input[type=file]{ width:100%; font-size:13px; color:var(--muted); }
-  .field input[type=file]::file-selector-button{
-    margin-right:12px; padding:9px 14px; border-radius:9px; border:1px solid var(--line-2);
-    background:rgba(0,167,255,.12); color:var(--brand-2); font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
-  .form-grid{ display:grid; gap:13px; }
-  .sub-t{ font-size:11.5px; color:#5f6b86; margin-top:5px; }
-  .abtn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;
-    font-family:'Montserrat',sans-serif; font-weight:800; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
-    color:var(--btn-ink); padding:12px 18px; border-radius:10px; background:var(--btn); transition:transform .1s, filter .15s; }
-  .abtn:hover{ filter:brightness(1.05); }
-  .abtn:active{ transform:translateY(1px); }
-  .abtn--ghost{ background:rgba(255,255,255,.06); color:#c8d1e6; border:1px solid var(--line); }
-  .abtn--danger{ background:rgba(226,85,106,.15); color:#ff8a9a; border:1px solid rgba(226,85,106,.35); }
-  .exp-row{ display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:13px; }
-  .exp-row.inactive{ opacity:.45; }
-  .exp-row img{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex:none; }
-  .exp-row .nm{ flex:1; font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .exp-row .tmin{ flex:none; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px;
-    color:var(--brand-2); background:rgba(0,167,255,.10); border:1px solid var(--line-2); }
-  .exp-row .tmin.std{ color:#75829f; background:rgba(255,255,255,.04); border-color:var(--line); }
-  .icon-btn{ width:32px; height:32px; border-radius:9px; display:grid; place-items:center; flex:none; cursor:pointer;
-    background:rgba(0,167,255,.1); border:1px solid rgba(0,167,255,.25); color:var(--brand-2); transition:background .2s; }
-  .icon-btn:hover{ background:rgba(0,167,255,.22); }
-  .icon-btn.del{ color:#ff8a9a; background:rgba(226,85,106,.08); border-color:rgba(226,85,106,.25); }
-  .icon-btn.del:hover{ background:rgba(226,85,106,.2); }
-  .sw{ position:relative; width:40px; height:23px; flex:none; cursor:pointer; }
-  .sw input{ position:absolute; opacity:0; inset:0; cursor:pointer; }
-  .sw .tr{ position:absolute; inset:0; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.14); transition:background .25s; }
-  .sw .th{ position:absolute; top:3px; left:3px; width:15px; height:15px; border-radius:50%; background:#8FA9C4; transition:transform .25s, background .25s; }
-  .sw input:checked + .tr{ background:rgba(0,167,255,.55); }
-  .sw input:checked + .tr .th{ transform:translateX(17px); background:#fff; }
-  .exp-list{ display:grid; gap:9px; }
   .toast{ position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px); z-index:99;
     color:#e7ecfa; padding:13px 22px; border-radius:14px; font-weight:600; font-size:13.5px;
     opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; }
@@ -714,6 +645,11 @@
 </style>
 </head>
 <body class="ready">
+
+  <div class="standby-bar" id="standbyBar">
+    <b>RESERVA</b> Esta roleta está em espera e assume automaticamente se a principal cair.
+    <button id="btnTakeover" type="button">Assumir agora</button>
+  </div>
 
   <div class="bg" aria-hidden="true">
     <img class="bg-photo" src="../assets/corujao/background.webp" alt="" />
@@ -744,7 +680,7 @@
   </div>
 
   <div class="topbar">
-    <!-- zona discreta: 2 cliques abrem o Painel Admin (também no atalho Shift+A) -->
+    <!-- zona discreta: 2 cliques abrem o Painel Admin em outra aba (também no atalho Shift+A) -->
     <span class="admin-hot" id="adminHot" title="Painel Admin" aria-hidden="true"></span>
     <div class="tb-right">
       <button id="muteBtn" class="mute glass--soft" type="button" aria-label="Ativar ou desativar som"></button>
@@ -845,75 +781,6 @@
     </div>
   </main>
 
-  <!-- Login do admin -->
-  <div class="gate" id="loginOverlay" role="dialog" aria-modal="true">
-    <form class="gate-card glass" id="loginCard">
-      <button class="gate-x" id="btnCloseLogin" type="button" aria-label="Fechar">✕</button>
-      <img src="../assets/logo.svg" alt="Safirion" />
-      <h2>Acesso restrito</h2>
-      <p class="g-sub">Digite a senha do operador para abrir o Painel Admin.</p>
-      <input type="text" name="username" value="operador" autocomplete="username" hidden aria-hidden="true" tabindex="-1" />
-      <div class="gate-field"><label for="loginPass">Senha</label>
-        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-      <p class="gate-err">Senha incorreta. Tente novamente.</p>
-      <button type="submit" class="gate-btn">Entrar no painel</button>
-    </form>
-  </div>
-
-  <!-- Painel admin -->
-  <div class="drawer-bg" id="drawerBg"></div>
-  <aside class="drawer glass" id="drawer" aria-label="Painel administrativo">
-    <div class="drawer-head">
-      <h2>Painel Admin</h2>
-      <button class="icon-btn" id="btnCloseAdmin" type="button" aria-label="Fechar painel">✕</button>
-    </div>
-    <div class="drawer-body">
-      <section>
-        <p class="sec-t">Cronômetro</p>
-        <div class="field" style="margin-bottom:12px">
-          <label for="cfgMinutes">Tempo padrão de cada seleção (minutos)</label>
-          <input type="number" id="cfgMinutes" min="1" max="180" step="1" />
-        </div>
-        <button class="abtn" id="btnSaveCfg" type="button">Salvar tempo</button>
-      </section>
-
-      <section>
-        <p class="sec-t" id="formTitle">Adicionar expert</p>
-        <div class="form-grid" id="expertForm">
-          <div class="field">
-            <label for="fName">Nome</label>
-            <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
-          </div>
-          <div class="field">
-            <label for="fPhoto">Foto (opcional)</label>
-            <input type="file" id="fPhoto" accept="image/*" />
-            <p class="sub-t">A imagem é redimensionada automaticamente. Sem foto, usamos as iniciais.</p>
-          </div>
-          <div class="field">
-            <label for="fMinutes">Tempo deste expert em minutos (opcional)</label>
-            <input type="number" id="fMinutes" min="1" max="180" step="1" placeholder="Usar o tempo padrão" />
-            <p class="sub-t">Em branco, o cronômetro usa o tempo padrão acima.</p>
-          </div>
-          <div style="display:flex;gap:10px">
-            <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
-            <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <p class="sec-t">Experts cadastrados</p>
-        <div class="exp-list" id="expList"></div>
-      </section>
-
-      <section style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="abtn" id="btnResetRodada" type="button">Reiniciar rodada</button>
-        <button class="abtn abtn--ghost" id="btnClearHist" type="button">Limpar histórico</button>
-        <button class="abtn abtn--danger" id="btnRestoreDefaults" type="button">Restaurar padrão</button>
-      </section>
-    </div>
-  </aside>
-
   <div class="toast glass" id="toast" role="status"></div>
 
 <script>
@@ -949,7 +816,10 @@ const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); ret
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
-let cfg       = load(LS_CFG, { minutes: 30 });
+let cfg       = Object.assign(
+  { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+  load(LS_CFG, {})
+);
 let hist      = load(LS_HIST, []);
 let sorteados = load(LS_RODADA, []);   // ids já sorteados no ciclo atual
 
@@ -1047,18 +917,21 @@ const COL_DONE = "#070c15";
 let rotation = 0, spinning = false, pendingIdx = -1, currentOpId = null, spinGuard = null;
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const IDLE_SPEEDS = [0, 0.02, 0.045, 0.1];   // desligado · lento · normal · rápido
 let spinDur = REDUCED ? 1.2 : 8;   // duração do giro atual (sorteada a cada rodada)
 let idleRAF = null;
 function startIdle(){
-  if (REDUCED || spinning || idleRAF) return;
+  const sp = IDLE_SPEEDS[cfg.idle] ?? 0.045;
+  if (REDUCED || spinning || idleRAF || sp === 0) return;
   wheel.style.transition = "none";
   (function step(){
-    rotation += 0.045;
+    rotation += sp;
     wheel.style.transform = `rotate(${rotation}deg)`;
     idleRAF = requestAnimationFrame(step);
   })();
 }
 function stopIdle(){ if (idleRAF){ cancelAnimationFrame(idleRAF); idleRAF = null; } }
+function restartIdle(){ stopIdle(); startIdle(); }
 
 function buildWheel(){
   const list = activeExperts();
@@ -1167,8 +1040,12 @@ function randInt(max){
   return a[0] % max;
 }
 
+let forcedId = null;   // definido pelo Painel Admin, vale para um único giro
+let nextT = null;      // contagem do sorteio automático
 async function spin(){
+  if (!isPrimary){ toast("Esta é a roleta reserva — a principal está no ar."); return; }
   if (spinning) return;
+  clearInterval(nextT); nextT = null;
   const list = activeExperts();
   if (list.length === 0){ toast("Cadastre experts no Painel Admin."); return; }
 
@@ -1190,15 +1067,20 @@ async function spin(){
     if (pool.length > 1) pool = pool.filter(e => e.id !== ultimo);
     novoCiclo = true;
   }
-  const escolhido = pool[randInt(pool.length)];
+  let escolhido = null;
+  if (forcedId){
+    escolhido = list.find(e => e.id === forcedId) || null;
+    forcedId = null;
+  }
+  if (!escolhido) escolhido = pool[randInt(pool.length)];
   const idx = list.findIndex(e => e.id === escolhido.id);
   pendingIdx = idx;
   if (novoCiclo) toast("Todos já passaram — novo ciclo iniciado.");
   document.body.classList.add("spinning");
   // voltas, duração e ponto de parada variam a cada giro: dois sorteios nunca
   // têm o mesmo movimento, senão a animação parece roteirizada
-  const dur    = REDUCED ? 1.2 : 6.8 + Math.random()*2.9;      // 6,8s a 9,7s
-  const rounds = REDUCED ? 2   : 6 + randInt(6);               // 6 a 11 voltas
+  const dur    = REDUCED ? 1.2 : (cfg.spinSec >= 2 ? cfg.spinSec : 6.8 + Math.random()*2.9);
+  const rounds = REDUCED ? 2   : (cfg.rounds >= 2 ? cfg.rounds : 6 + randInt(6));
   spinDur = dur;
   SFX.spin(dur);
   wheel.style.transition = `transform ${dur.toFixed(2)}s cubic-bezier(.12,.72,.03,1)`;
@@ -1223,7 +1105,6 @@ document.addEventListener("keydown", e => {
   if (!isSpin && !isFull) return;
   const t = e.target;
   if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-  if (document.body.classList.contains("admin-open") || loginOverlay.classList.contains("show")) return;
   if (isFull){ e.preventDefault(); toggleFs(); return; }
   if (spinBtn.disabled) return;
   e.preventDefault(); spin();
@@ -1392,11 +1273,23 @@ function timeUp(){
   setIdleText(false);
   setCta("Sortear Expert", false);
   startIdle();
+  // ciclo automático (opcional, ligado no Painel Admin)
+  if (cfg.autoNext && isPrimary && activeExperts().length){
+    let left = Math.max(0, Math.round(cfg.waitSec));
+    clearInterval(nextT);
+    if (left === 0){ nextT = setTimeout(() => spin(), 500); return; }
+    timerSub.textContent = "Próximo sorteio em " + left + "s";
+    nextT = setInterval(() => {
+      left--;
+      if (left <= 0){ clearInterval(nextT); nextT = null; spin(); return; }
+      timerSub.textContent = "Próximo sorteio em " + left + "s";
+    }, 1000);
+  }
 }
 btnEnd.addEventListener("click", () => { if (timerRAF) timerEndAt = Date.now(); });
 
 function launchConfetti(){
-  if (REDUCED) return;
+  if (REDUCED || !cfg.confetti) return;
   confetti.innerHTML = "";
   const CC = ["#00A7FF","#4dc3ff","#ffffff","#2ec16b"];
   for (let i=0;i<46;i++){
@@ -1559,198 +1452,145 @@ const SFX = (function(){
 })();
 /* aba em segundo plano: corta o áudio para não voltar tudo de uma vez */
 document.addEventListener("visibilitychange", () => { if (document.hidden) SFX.stop(); });
-(function(){
+const MUTE = (function(){
   const btn=document.getElementById("muteBtn");
   const ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
   const OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
-  let m=false; btn.innerHTML=ON;
-  btn.addEventListener("click", ()=>{ m=!m; SFX.setMuted(m); btn.innerHTML=m?OFF:ON; btn.setAttribute("aria-pressed", m); });
+  let m=false;
+  function set(muted){ m=muted; SFX.setMuted(m); btn.innerHTML=m?OFF:ON; btn.setAttribute("aria-pressed", m); }
+  btn.addEventListener("click", ()=> set(!m));
+  set(!cfg.sfx);
+  return { set };
 })();
 
-/* ================= Login + Admin ================= */
-const loginOverlay = document.getElementById("loginOverlay");
-const loginCard = document.getElementById("loginCard");
-const loginPass = document.getElementById("loginPass");
-const drawerBg = document.getElementById("drawerBg");
-const expList = document.getElementById("expList");
-const fName = document.getElementById("fName");
-const fPhoto = document.getElementById("fPhoto");
-const fMinutes = document.getElementById("fMinutes");
-const btnSaveExpert = document.getElementById("btnSaveExpert");
-const btnCancelEdit = document.getElementById("btnCancelEdit");
-const formTitle = document.getElementById("formTitle");
-const cfgMinutes = document.getElementById("cfgMinutes");
-let editingId = null;
-
-function askAdmin(){
-  if (sessionStorage.getItem(SS_AUTH) === "1"){ openAdmin(); return; }
-  loginCard.classList.remove("wrong");
-  loginPass.classList.remove("err");
-  loginPass.value = "";
-  loginOverlay.classList.add("show");
-  loginPass.focus();
-}
-document.getElementById("adminHot").addEventListener("dblclick", askAdmin);
+/* ================= Painel Admin externo (admin/) ================= */
+function openAdminPage(){ window.open("admin/", "_blank", "noopener"); }
+document.getElementById("adminHot").addEventListener("dblclick", openAdminPage);
 document.addEventListener("keydown", e => {
   if ((e.key === "A" || e.key === "a") && e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
     const t = e.target;
     if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-    e.preventDefault(); askAdmin();
+    e.preventDefault(); openAdminPage();
   }
-});
-loginCard.addEventListener("submit", e => {
-  e.preventDefault();
-  if (loginPass.value === ADMIN_PASS){
-    sessionStorage.setItem(SS_AUTH,"1");
-    loginOverlay.classList.remove("show");
-    openAdmin();
-  } else {
-    loginCard.classList.add("wrong");
-    loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
-    loginPass.select();
+  if (e.key === "Escape" && liveStage.classList.contains("theater")){
+    liveStage.classList.remove("theater"); syncFs();
   }
-});
-document.getElementById("btnCloseLogin").addEventListener("click", () => loginOverlay.classList.remove("show"));
-function openAdmin(){ document.body.classList.add("admin-open"); renderAdmin(); }
-function closeAdmin(){ document.body.classList.remove("admin-open"); }
-document.getElementById("btnCloseAdmin").addEventListener("click", closeAdmin);
-drawerBg.addEventListener("click", closeAdmin);
-document.addEventListener("keydown", e => {
-  if (e.key !== "Escape") return;
-  closeAdmin(); loginOverlay.classList.remove("show");
-  if (liveStage.classList.contains("theater")){ liveStage.classList.remove("theater"); syncFs(); }
 });
 
-function persistExperts(){
-  save(LS_EXPERTS, experts);
-  const ids = experts.map(e => e.id);          // descarta marcas de quem foi removido
-  sorteados = sorteados.filter(id => ids.includes(id));
-  save(LS_RODADA, sorteados);
-  buildWheel(); renderPool(); renderAdmin();
-}
-function resizePhoto(file){
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        const S = 240, c = document.createElement("canvas");
-        c.width = c.height = S;
-        const x = c.getContext("2d");
-        const r = Math.max(S/im.width, S/im.height);
-        x.drawImage(im, (S-im.width*r)/2, (S-im.height*r)/2, im.width*r, im.height*r);
-        res(c.toDataURL("image/jpeg", .85));
-      };
-      im.onerror = rej;
-      im.src = fr.result;
-    };
-    fr.onerror = rej;
-    fr.readAsDataURL(file);
-  });
-}
-btnSaveExpert.addEventListener("click", async () => {
-  const name = fName.value.trim();
-  if (!name){ toast("Informe o nome do expert."); return; }
-  let minutes = null;
-  if (fMinutes.value.trim() !== ""){
-    const m = parseInt(fMinutes.value, 10);
-    if (!(m >= 1 && m <= 180)){ toast("O tempo do expert deve ficar entre 1 e 180 minutos."); return; }
-    minutes = m;
+/* ================= Sincronização com o Painel Admin ================= */
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_EXPERTS){
+    experts = load(LS_EXPERTS, DEFAULT_EXPERTS);
+    const ids = experts.map(e => e.id);
+    sorteados = sorteados.filter(id => ids.includes(id));
+    buildWheel(); renderPool();
+  } else if (ev.key === LS_CFG){
+    cfg = Object.assign(
+      { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+      load(LS_CFG, {})
+    );
+    renderPool(); restartIdle(); MUTE.set(!cfg.sfx);
+  } else if (ev.key === LS_RODADA){
+    sorteados = load(LS_RODADA, []);
+    buildWheel(); renderPool();
+  } else if (ev.key === LS_HIST){
+    hist = load(LS_HIST, []);
+    renderHist();
   }
-  let photo = null;
-  if (fPhoto.files[0]){
-    try { photo = await resizePhoto(fPhoto.files[0]); }
-    catch { toast("Não foi possível ler a imagem."); return; }
-  }
-  if (editingId){
-    const e = experts.find(x => x.id === editingId);
-    if (e){ e.name = name; e.minutes = minutes; if (photo) e.photo = photo; }
-    toast("Expert atualizado."); cancelEdit();
-  } else {
-    experts.push({ id:"e"+Date.now().toString(36), name, photo, active:true, minutes });
-    toast("Expert adicionado à roleta.");
-    fName.value=""; fPhoto.value=""; fMinutes.value="";
-  }
-  persistExperts();
 });
-function cancelEdit(){
-  editingId = null;
-  formTitle.textContent = "Adicionar expert";
-  btnSaveExpert.textContent = "Adicionar";
-  btnCancelEdit.style.display = "none";
-  fName.value=""; fPhoto.value=""; fMinutes.value="";
-}
-btnCancelEdit.addEventListener("click", cancelEdit);
+try {
+  const cmdBC = new BroadcastChannel("cj-cmd");
+  const ack = (cmd, ok, reason) => { try { cmdBC.postMessage({ type:"ack", cmd, ok, reason: reason || "" }); } catch {} };
+  cmdBC.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.type === "ping"){
+      try { cmdBC.postMessage({ type:"pong", standby: !isPrimary }); } catch {}
+      return;
+    }
+    if (!isPrimary) return; // a reserva ignora comandos
+    switch (m.type){
+      case "force":
+        forcedId = m.id || null;
+        if (forcedId) toast("Painel: próximo sorteado definido.");
+        break;
+      case "spin":
+        if (m.forcedId) forcedId = m.forcedId;
+        if (spinning){ ack("spin", false, "A roleta já está girando."); break; }
+        if (timerRAF){ ack("spin", false, "Há uma operação em andamento."); break; }
+        spin(); ack("spin", true);
+        break;
+      case "endOp":
+        if (!timerRAF){ ack("endOp", false, "Nenhuma operação em andamento."); break; }
+        timerEndAt = Date.now(); ack("endOp", true);
+        break;
+    }
+  };
+} catch {}
 
-function renderAdmin(){
-  cfgMinutes.value = cfg.minutes;
-  expList.innerHTML = "";
-  experts.forEach(e => {
-    const row = document.createElement("div");
-    row.className = "exp-row glass--soft" + (e.active ? "" : " inactive");
-    const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
-    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
-    const tm = document.createElement("span");
-    tm.className = "tmin" + (e.minutes ? "" : " std");
-    tm.textContent = minutesFor(e) + " min";
-    tm.title = e.minutes ? "Tempo próprio deste expert" : "Usando o tempo padrão";
-    const sw = document.createElement("label");
-    sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
-    sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
-    sw.querySelector("input").addEventListener("change", ev => {
-      e.active = ev.target.checked; persistExperts();
-      toast(e.active ? e.name+" ativado." : e.name+" desativado.");
-    });
-    const bE = document.createElement("button");
-    bE.className = "icon-btn"; bE.type="button"; bE.setAttribute("aria-label","Editar "+e.name);
-    bE.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
-    bE.addEventListener("click", () => {
-      editingId = e.id;
-      formTitle.textContent = "Editar expert: " + e.name;
-      btnSaveExpert.textContent = "Salvar";
-      btnCancelEdit.style.display = "";
-      fName.value = e.name; fPhoto.value = "";
-      fMinutes.value = e.minutes || "";
-      fName.focus();
-    });
-    const bD = document.createElement("button");
-    bD.className = "icon-btn del"; bD.type="button"; bD.setAttribute("aria-label","Remover "+e.name);
-    bD.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-    bD.addEventListener("click", () => {
-      if (!confirm("Remover "+e.name+" da roleta?")) return;
-      experts = experts.filter(x => x.id !== e.id);
-      if (editingId === e.id) cancelEdit();
-      persistExperts();
-      toast("Expert removido.");
-    });
-    row.append(im, nm, tm, sw, bE, bD);
-    expList.appendChild(row);
-  });
+/* ================= Redundância: principal + reserva ================= */
+const LS_HB = "cj_roleta_hb";
+const INST_ID = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+let isPrimary = false;
+const readHB = () => load(LS_HB, null);
+const hbStale = hb => !hb || (Date.now() - hb.t) > 4000;
+function becomePrimary(silent){
+  isPrimary = true;
+  save(LS_HB, { id: INST_ID, t: Date.now() });
+  document.body.classList.remove("standby");
+  startIdle();
+  if (!silent) toast("Esta roleta assumiu como principal.");
+  resumeLive();
 }
-document.getElementById("btnSaveCfg").addEventListener("click", () => {
-  const m = parseInt(cfgMinutes.value, 10);
-  if (!m || m < 1 || m > 180){ toast("Informe um tempo entre 1 e 180 minutos."); return; }
-  cfg.minutes = m; save(LS_CFG, cfg);
-  renderPool(); renderAdmin();
-  toast("Tempo padrão salvo: "+m+" min.");
+function becomeStandby(silent){
+  isPrimary = false;
+  document.body.classList.add("standby");
+  stopIdle();
+  clearInterval(nextT); nextT = null;
+  if (!silent) toast("Outra roleta assumiu como principal.");
+}
+/* Se a principal caiu no meio de uma operação, a nova principal retoma o cronômetro */
+function resumeLive(){
+  const lv = load(LS_LIVE, null);
+  if (lv && lv.status === "running" && lv.endsAt && lv.endsAt > Date.now() && !timerRAF){
+    winPhoto.src = lv.photo || "";
+    winPhoto.alt = "Foto de " + (lv.name || "Expert");
+    winName.textContent = lv.name || "Expert";
+    timerSub.textContent = "Tempo de operação em andamento";
+    setLiveCard("live");
+    setCta("Expert operando…", true);
+    const e = experts.find(x => x.name === lv.name);
+    currentOpId = e ? e.id : null;
+    timerTotal = lv.total || Math.max(1, (lv.endsAt - Date.now()) / 1000);
+    timerEndAt = lv.endsAt;
+    const hhmm = ms => { const d = new Date(ms);
+      return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+    document.getElementById("stStart").textContent = hhmm(timerEndAt - timerTotal*1000);
+    document.getElementById("stEnd").textContent   = hhmm(timerEndAt);
+    document.getElementById("stTotal").textContent = Math.round(timerTotal/60) + " min";
+    buildWheel(); renderPool();
+    tick();
+  }
+}
+(function initRole(){
+  if (hbStale(readHB())) becomePrimary(true);
+  else becomeStandby(true);
+})();
+setInterval(() => {
+  const hb = readHB();
+  if (isPrimary){
+    if (hb && hb.id !== INST_ID && !hbStale(hb)) becomeStandby(false); // outra instância venceu a disputa
+    else save(LS_HB, { id: INST_ID, t: Date.now() });
+  } else if (hbStale(hb)){
+    becomePrimary(false); // principal caiu → reserva assume
+  }
+}, 1500);
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_HB && !isPrimary && hbStale(readHB())) becomePrimary(false);
 });
-document.getElementById("btnResetRodada").addEventListener("click", () => {
-  reiniciaRodada();
-  buildWheel(); renderPool();
-  toast("Rodada reiniciada. Todos voltaram para o sorteio.");
+window.addEventListener("beforeunload", () => {
+  if (isPrimary){ try { localStorage.removeItem(LS_HB); } catch {} }
 });
-document.getElementById("btnClearHist").addEventListener("click", () => {
-  hist = []; save(LS_HIST, hist); renderHist();
-  toast("Histórico limpo.");
-});
-document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
-  if (!confirm("Restaurar a lista padrão de experts? Isso apaga alterações e fotos.")) return;
-  experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
-  save(LS_EXPERTS, experts);
-  reiniciaRodada();
-  buildWheel(); renderPool(); renderAdmin();
-  toast("Lista padrão restaurada.");
-});
+document.getElementById("btnTakeover").addEventListener("click", () => becomePrimary(false));
 
 /* ================= Toast + init ================= */
 let toastT = null;
@@ -1765,8 +1605,8 @@ function toast(msg){
 buildWheel();
 renderPool();
 renderHist();
-setLiveCard("idle");
-setLive({ status:"idle" });
-startIdle();
+if (!timerRAF) setLiveCard("idle");
+if (isPrimary && !timerRAF) setLive({ status:"idle" });
+if (isPrimary) startIdle();
 </script>
 </body></html>
