@@ -226,6 +226,19 @@
   .confetti i{ position:absolute; top:-12px; width:7px; height:12px; opacity:.85; animation:fall linear forwards; }
   @keyframes fall{ to{ transform:translateY(520px) rotate(500deg); opacity:0; } }
 
+  /* Roleta reserva (redundância principal + reserva) */
+  .standby-bar{ display:none; position:fixed; top:0; left:0; right:0; z-index:80;
+    align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    background:rgba(8,14,27,.96); border-bottom:1px solid rgba(0,167,255,.4);
+    padding:9px 14px; font-size:12.5px; color:#c8d1e6; text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  body.standby .standby-bar{ display:flex; }
+  .standby-bar b{ color:var(--brand-2); letter-spacing:.14em; }
+  .standby-bar button{ border:1px solid var(--pill-border); background:rgba(0,167,255,.12); color:var(--brand-2);
+    font-family:'Poppins',sans-serif; font-weight:700; font-size:12px; padding:6px 13px; border-radius:999px; cursor:pointer; }
+  .standby-bar button:hover{ background:rgba(0,167,255,.22); }
+  body.standby .stage{ opacity:.55; }
+
   .toast{ position:fixed; left:50%; bottom:86px; transform:translateX(-50%) translateY(20px); z-index:99;
     background:var(--panel); border:1px solid var(--pill-border); color:#e7ecfa;
     padding:12px 20px; border-radius:11px; font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
@@ -259,6 +272,11 @@
 </style>
 </head>
 <body>
+
+  <div class="standby-bar" id="standbyBar">
+    <b>RESERVA</b> Esta roleta está em espera e assume automaticamente se a principal cair.
+    <button id="btnTakeover" type="button">Assumir agora</button>
+  </div>
 
   <div class="topbar">
     <a href="../">← Arsenal Pro</a>
@@ -473,6 +491,7 @@ function randInt(max){ const a = new Uint32Array(1); crypto.getRandomValues(a); 
 let forcedId = null; // definido no painel admin, vale para um único giro
 
 function spin(){
+  if (!isPrimary){ toast("Esta é a roleta reserva — a principal está no ar."); return; }
   if (spinning) return;
   ensureRound();
   const list = activeExperts();
@@ -762,10 +781,12 @@ try {
   const ack = (cmd, ok, reason) => { try { cmdBC.postMessage({ type:"ack", cmd, ok, reason: reason || "" }); } catch {} };
   cmdBC.onmessage = ev => {
     const m = ev.data || {};
+    if (m.type === "ping"){
+      try { cmdBC.postMessage({ type:"pong", standby: !isPrimary }); } catch {}
+      return;
+    }
+    if (!isPrimary) return; // a reserva ignora comandos
     switch (m.type){
-      case "ping":
-        try { cmdBC.postMessage({ type:"pong" }); } catch {}
-        break;
       case "force":
         forcedId = m.id || null;
         if (forcedId) toast("Painel: próximo sorteado definido.");
@@ -794,11 +815,71 @@ function toast(msg){
   toastT = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
+/* ================= Redundância: principal + reserva ================= */
+const LS_HB = "cj_roleta_hb";
+const INST_ID = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+let isPrimary = false;
+const readHB = () => load(LS_HB, null);
+const hbStale = hb => !hb || (Date.now() - hb.t) > 4000;
+function becomePrimary(silent){
+  isPrimary = true;
+  save(LS_HB, { id: INST_ID, t: Date.now() });
+  document.body.classList.remove("standby");
+  startIdle();
+  if (!silent) toast("Esta roleta assumiu como principal.");
+  resumeLive();
+}
+function becomeStandby(silent){
+  isPrimary = false;
+  document.body.classList.add("standby");
+  stopIdle();
+  if (!silent) toast("Outra roleta assumiu como principal.");
+}
+/* Se a principal caiu no meio de uma operação, a nova principal retoma o cronômetro */
+function resumeLive(){
+  const lv = load(LS_LIVE, null);
+  if (lv && lv.status === "running" && lv.endsAt && lv.endsAt > Date.now() && !overlay.classList.contains("show")){
+    winnerPhoto.src = lv.photo || "";
+    winnerPhoto.alt = "Foto de " + (lv.name || "Expert");
+    winnerName.textContent = lv.name || "Expert";
+    winCard.classList.remove("timeup");
+    btnNext.disabled = true;
+    timerSub.textContent = "TEMPO DE OPERAÇÃO EM ANDAMENTO";
+    overlay.classList.add("show");
+    const e = experts.find(x => x.name === lv.name);
+    currentOpId = e ? e.id : null;
+    timerTotal = lv.total || Math.max(1, (lv.endsAt - Date.now()) / 1000);
+    timerEndAt = lv.endsAt;
+    renderStatus();
+    tick();
+  }
+}
+(function initRole(){
+  if (hbStale(readHB())) becomePrimary(true);
+  else becomeStandby(true);
+})();
+setInterval(() => {
+  const hb = readHB();
+  if (isPrimary){
+    if (hb && hb.id !== INST_ID && !hbStale(hb)) becomeStandby(false); // outra instância venceu a disputa
+    else save(LS_HB, { id: INST_ID, t: Date.now() });
+  } else if (hbStale(hb)){
+    becomePrimary(false); // principal caiu → reserva assume
+  }
+}, 1500);
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_HB && !isPrimary && hbStale(readHB())) becomePrimary(false);
+});
+window.addEventListener("beforeunload", () => {
+  if (isPrimary){ try { localStorage.removeItem(LS_HB); } catch {} }
+});
+document.getElementById("btnTakeover").addEventListener("click", () => becomePrimary(false));
+
 applyTexts();
 ensureRound();
 buildWheel();
 renderStatus();
-setLive({ status:"idle" });
-startIdle();
+if (isPrimary && !overlay.classList.contains("show")) setLive({ status:"idle" });
+if (isPrimary) startIdle();
 </script>
 </body></html>

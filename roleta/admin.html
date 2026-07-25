@@ -511,30 +511,49 @@ function ensureRound(){
 }
 
 /* ================= Comunicação com a roleta ================= */
-let cmdBC = null, lastPong = 0;
+let cmdBC = null, lastPongPrim = 0, lastPongStb = 0;
 try {
   cmdBC = new BroadcastChannel("cj-cmd");
   cmdBC.onmessage = ev => {
     const m = ev.data || {};
-    if (m.type === "pong"){ lastPong = Date.now(); updateConn(); return; }
+    if (m.type === "pong"){
+      if (m.standby) lastPongStb = Date.now();
+      else lastPongPrim = Date.now();
+      updateConn();
+      return;
+    }
     if (m.type === "ack"){
       if (m.ok) toast(m.cmd === "spin" ? "Roleta girando!" : "Comando aplicado na roleta.");
       else toast(m.reason || "A roleta recusou o comando.");
     }
   };
 } catch {}
-const connected = () => Date.now() - lastPong < 4000;
+const connected = () => Date.now() - lastPongPrim < 4000;
+const stbAlive  = () => Date.now() - lastPongStb < 4000;
 function sendCmd(msg){
   if (!cmdBC){ toast("Este navegador não suporta o controle remoto."); return false; }
-  if (!connected()){ toast("Abra a página da roleta em outra aba para usar este comando."); return false; }
+  if (!connected()){
+    toast(stbAlive()
+      ? "A roleta reserva está assumindo… tente novamente em instantes."
+      : "Abra a página da roleta em outra aba para usar este comando.");
+    return false;
+  }
   cmdBC.postMessage(msg);
   return true;
 }
 function updateConn(){
   const el = document.getElementById("conn");
   const tx = document.getElementById("connTxt");
-  if (connected()){ el.classList.add("on"); tx.textContent = "Roleta conectada"; }
-  else { el.classList.remove("on"); tx.textContent = "Roleta não encontrada"; }
+  if (connected()){
+    el.classList.add("on");
+    tx.textContent = "Roleta conectada" + (stbAlive() ? " · reserva pronta" : "");
+  } else if (stbAlive()){
+    el.classList.remove("on");
+    tx.textContent = "Reserva assumindo…";
+  } else {
+    el.classList.remove("on");
+    tx.textContent = "Roleta não encontrada";
+  }
 }
 setInterval(() => { try { cmdBC && cmdBC.postMessage({ type:"ping" }); } catch {} updateConn(); }, 2500);
 try { cmdBC && cmdBC.postMessage({ type:"ping" }); } catch {}
