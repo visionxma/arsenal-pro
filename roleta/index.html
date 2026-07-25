@@ -226,131 +226,6 @@
   .confetti i{ position:absolute; top:-12px; width:7px; height:12px; opacity:.85; animation:fall linear forwards; }
   @keyframes fall{ to{ transform:translateY(520px) rotate(500deg); opacity:0; } }
 
-  /* ---------- LOGIN ADMIN ---------- */
-  .gate{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px;
-    background:rgba(4,6,12,.82); }
-  .gate.show{ display:flex; animation:fade .2s ease; }
-  .gate-card{ position:relative; width:100%; max-width:340px; border-radius:16px; padding:26px 24px 20px; text-align:center;
-    background:var(--panel); border:1px solid rgba(255,255,255,.10); box-shadow:0 24px 60px rgba(0,0,0,.55);
-    border-top:3px solid var(--brand); }
-  .gate-card img{ height:34px; margin:0 auto 4px; }
-  .gate-card h2{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; margin-top:12px; text-transform:uppercase; }
-  .gate-card p.g-sub{ font-size:13px; color:var(--muted); margin-top:5px; }
-  .gate-field{ text-align:left; margin-top:14px; }
-  .gate-field label{ display:block; font-size:11.5px; font-weight:600; color:#8b97b5; margin-bottom:5px; }
-  .gate-field input{ width:100%; padding:13px; border-radius:9px; font-size:16px; color:#fff;
-    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); outline:none; transition:.15s;
-    font-family:'Poppins',sans-serif; }
-  .gate-field input::placeholder{ color:#5f6b86; }
-  .gate-field input:focus{ border-color:var(--brand); }
-  .gate-field input.err{ border-color:#ff5252; animation:shake .35s; }
-  @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .gate-btn{ width:100%; margin-top:18px; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:800;
-    font-size:15px; letter-spacing:.3px; text-transform:uppercase; color:var(--btn-ink); padding:14px; border-radius:10px;
-    background:var(--btn); transition:transform .1s, filter .15s; }
-  .gate-btn:active{ transform:translateY(1px); }
-  .gate-x{ position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:8px; border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.04); color:#aeb9d6; cursor:pointer; display:grid; place-items:center; }
-  .gate-err{ display:none; margin-top:10px; font-size:12.5px; font-weight:600; color:#ff8a9a; }
-  .gate-card.wrong .gate-err{ display:block; }
-
-  /* ---------- SIDEBAR ADMIN ---------- */
-  :root{ --sbw:min(420px,100vw); }
-  .drawer-bg{ position:fixed; inset:0; z-index:70; background:rgba(4,6,12,.7); opacity:0; pointer-events:none; transition:opacity .3s; }
-  .drawer{ position:fixed; top:0; right:0; bottom:0; z-index:71; width:var(--sbw);
-    background:linear-gradient(180deg,#0c1526 0%,#080e1b 100%);
-    border-left:1px solid rgba(0,167,255,.22);
-    box-shadow:-24px 0 60px rgba(0,0,0,.45);
-    transform:translateX(100%); visibility:hidden;
-    transition:transform .4s cubic-bezier(.16,1,.3,1), visibility 0s .4s;
-    display:flex; flex-direction:column; }
-  body.admin-open .drawer{ transform:none; visibility:visible; transition:transform .4s cubic-bezier(.16,1,.3,1), visibility 0s; }
-  body.admin-open .drawer-bg{ opacity:1; pointer-events:auto; }
-  /* no desktop a sidebar convive com a roleta: empurra o conteúdo e dispensa o fundo escuro */
-  @media (min-width:1100px){
-    body{ transition:padding-right .4s cubic-bezier(.16,1,.3,1); }
-    body.admin-open{ padding-right:var(--sbw); }
-    body.admin-open .drawer-bg{ opacity:0; pointer-events:none; }
-  }
-  /* alça com seta no meio da borda da sidebar */
-  .sb-handle{ position:fixed; top:50%; right:0; z-index:72; transform:translateY(-50%);
-    width:34px; height:76px; border:1px solid rgba(0,167,255,.42); border-right:none;
-    border-radius:13px 0 0 13px; cursor:pointer; padding:0;
-    background:linear-gradient(180deg,#10203a,#0a1424); color:var(--brand-2);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:-8px 0 22px rgba(0,0,0,.35), 0 0 18px rgba(0,167,255,.18);
-    transition:right .4s cubic-bezier(.16,1,.3,1), background .2s, box-shadow .2s; }
-  .sb-handle:hover{ background:linear-gradient(180deg,#15294a,#0d1a30); box-shadow:-8px 0 24px rgba(0,0,0,.4), 0 0 26px rgba(0,167,255,.32); }
-  .sb-handle svg{ width:18px; height:18px; transition:transform .4s; }
-  body.admin-open .sb-handle{ right:var(--sbw); }
-  body.admin-open .sb-handle svg{ transform:rotate(180deg); }
-  @media (max-width:1099px){ body.admin-open .sb-handle{ display:none; } }
-  .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); flex:none; }
-  .drawer-head h2{ font-family:'Montserrat',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.3px;
-    display:flex; align-items:center; gap:10px; }
-  .drawer-head h2 .live-dot{ box-shadow:0 0 10px rgba(46,193,107,.8); }
-  /* resumo rápido */
-  .sb-status{ display:flex; gap:8px; padding:14px 22px 0; flex:none; }
-  .sb-chip{ flex:1; text-align:center; background:rgba(0,167,255,.07); border:1px solid rgba(0,167,255,.2); border-radius:11px; padding:9px 4px 7px; }
-  .sb-chip b{ display:block; font-family:'Montserrat',sans-serif; font-size:19px; line-height:1.15; }
-  .sb-chip span{ font-size:10px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
-  .drawer-body{ flex:1; overflow-y:auto; padding:16px 22px 40px; display:grid; gap:12px; align-content:start; text-align:left; }
-  /* seções sanfona */
-  .acc{ border:1px solid rgba(255,255,255,.09); border-radius:14px; background:rgba(255,255,255,.025); }
-  .acc summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:11px; padding:14px 15px;
-    font-family:'Montserrat',sans-serif; font-weight:800; font-size:12.5px; text-transform:uppercase; letter-spacing:.5px; color:#e7ecfa;
-    border-radius:14px; transition:background .2s; }
-  .acc summary:hover{ background:rgba(0,167,255,.05); }
-  .acc summary::-webkit-details-marker{ display:none; }
-  .acc summary .aico{ width:30px; height:30px; border-radius:9px; display:grid; place-items:center; flex:none;
-    background:rgba(0,167,255,.12); border:1px solid rgba(0,167,255,.3); color:var(--brand-2); }
-  .acc summary .chev{ margin-left:auto; color:var(--muted-2); transition:transform .3s; flex:none; }
-  .acc[open] summary .chev{ transform:rotate(180deg); }
-  .acc-body{ padding:4px 15px 17px; display:grid; gap:13px; }
-  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
-  .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 13px; border-radius:11px;
-    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); font-size:13px; font-weight:600; color:#c8d1e6; }
-  .field select{ width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.05); color:#fff; font-family:'Poppins',sans-serif; font-size:14.5px; outline:none; appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aa6c2' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 14px center; }
-  .field select:focus{ border-color:var(--brand); }
-  .field select option{ background:#0f1524; color:#fff; }
-  .field label{ display:block; font-size:12px; font-weight:600; color:#8b97b5; margin-bottom:6px; }
-  .field input[type=text],.field input[type=number]{
-    width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.05); color:#fff; font-family:'Poppins',sans-serif; font-size:15px; outline:none; }
-  .field input:focus{ border-color:var(--brand); }
-  .field input[type=file]{ width:100%; font-size:13px; color:var(--muted); }
-  .field input[type=file]::file-selector-button{
-    margin-right:12px; padding:9px 14px; border-radius:9px; border:1px solid var(--pill-border);
-    background:rgba(0,167,255,.12); color:var(--brand-2); font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; }
-  .form-grid{ display:grid; gap:13px; }
-  .sub{ font-size:11.5px; color:#5f6b86; margin-top:5px; }
-  .abtn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;
-    font-family:'Montserrat',sans-serif; font-weight:800; font-size:13px; letter-spacing:.3px; text-transform:uppercase;
-    color:var(--btn-ink); padding:12px 18px; border-radius:9px; background:var(--btn); transition:transform .1s, filter .15s; }
-  .abtn:hover{ filter:brightness(1.05); }
-  .abtn:active{ transform:translateY(1px); }
-  .abtn--ghost{ background:rgba(255,255,255,.06); color:#c8d1e6; border:1px solid rgba(255,255,255,.14); }
-  .abtn--danger{ background:rgba(226,85,106,.15); color:#ff8a9a; border:1px solid rgba(226,85,106,.35); }
-  .exp-row{ display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:12px;
-    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10); }
-  .exp-row.inactive{ opacity:.5; }
-  .exp-row img{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex:none; }
-  .exp-row .nm{ flex:1; font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .icon-btn{ width:32px; height:32px; border-radius:9px; display:grid; place-items:center; flex:none; cursor:pointer;
-    background:rgba(0,167,255,.1); border:1px solid rgba(0,167,255,.25); color:var(--brand-2); transition:background .2s; }
-  .icon-btn:hover{ background:rgba(0,167,255,.22); }
-  .icon-btn.del{ color:#ff8a9a; background:rgba(226,85,106,.08); border-color:rgba(226,85,106,.25); }
-  .icon-btn.del:hover{ background:rgba(226,85,106,.2); }
-  .sw{ position:relative; width:40px; height:23px; flex:none; cursor:pointer; }
-  .sw input{ position:absolute; opacity:0; inset:0; cursor:pointer; }
-  .sw .tr{ position:absolute; inset:0; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.14); transition:background .25s; }
-  .sw .th{ position:absolute; top:3px; left:3px; width:15px; height:15px; border-radius:50%; background:#8FA9C4; transition:transform .25s, background .25s; }
-  .sw input:checked + .tr{ background:rgba(0,167,255,.55); }
-  .sw input:checked + .tr .th{ transform:translateX(17px); background:#fff; }
-  .exp-list{ display:grid; gap:9px; }
   .toast{ position:fixed; left:50%; bottom:86px; transform:translateX(-50%) translateY(20px); z-index:99;
     background:var(--panel); border:1px solid var(--pill-border); color:#e7ecfa;
     padding:12px 20px; border-radius:11px; font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
@@ -388,7 +263,7 @@
   <div class="topbar">
     <a href="../">← Arsenal Pro</a>
     <div class="tb-right">
-      <button id="btnAdmin" class="tb" type="button">Painel Admin</button>
+      <a class="tb" href="admin.html" target="_blank" rel="noopener">Painel Admin</a>
       <button id="muteBtn" class="mute" type="button" aria-label="Ativar ou desativar som"></button>
     </div>
   </div>
@@ -448,182 +323,6 @@
     <button class="claim-btn" id="btnNext" disabled>Sortear próximo</button>
     <button class="retry" id="btnEnd">Encerrar agora</button>
   </div></div>
-
-  <!-- Login do admin -->
-  <div class="gate" id="loginOverlay" role="dialog" aria-modal="true">
-    <form class="gate-card" id="loginCard">
-      <button class="gate-x" id="btnCloseLogin" type="button" aria-label="Fechar">✕</button>
-      <img src="../assets/logo.svg" alt="Safirion" />
-      <h2>Acesso restrito</h2>
-      <p class="g-sub">Digite a senha do operador para abrir o Painel Admin.</p>
-      <input type="text" name="username" value="operador" autocomplete="username" hidden aria-hidden="true" tabindex="-1" />
-      <div class="gate-field"><label for="loginPass">Senha</label>
-        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-      <p class="gate-err">Senha incorreta. Tente novamente.</p>
-      <button type="submit" class="gate-btn">Entrar no painel</button>
-    </form>
-  </div>
-
-  <!-- Sidebar admin -->
-  <button class="sb-handle" id="sbHandle" type="button" aria-label="Abrir ou fechar o Painel Admin">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg>
-  </button>
-  <div class="drawer-bg" id="drawerBg"></div>
-  <aside class="drawer" id="drawer" aria-label="Painel administrativo">
-    <div class="drawer-head">
-      <h2><span class="live-dot" aria-hidden="true"></span> Painel Admin</h2>
-      <button class="icon-btn" id="btnCloseAdmin" type="button" aria-label="Fechar painel">✕</button>
-    </div>
-
-    <div class="sb-status" aria-label="Resumo da rodada">
-      <div class="sb-chip"><b id="stTotal">0</b><span>Experts</span></div>
-      <div class="sb-chip"><b id="stLeft">0</b><span>Na roleta</span></div>
-      <div class="sb-chip"><b id="stDone">0</b><span>Já operaram</span></div>
-    </div>
-
-    <div class="drawer-body">
-
-      <!-- TEMPOS & GIRO -->
-      <details class="acc" open>
-        <summary>
-          <span class="aico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg></span>
-          Tempos &amp; giro
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="acc-body">
-          <div class="grid2">
-            <div class="field">
-              <label for="cfgMinutes">Operação (min)</label>
-              <input type="number" id="cfgMinutes" min="1" max="180" step="1" inputmode="numeric" />
-            </div>
-            <div class="field">
-              <label for="cfgWait">Espera p/ próximo giro (s)</label>
-              <input type="number" id="cfgWait" min="0" max="300" step="1" inputmode="numeric" />
-            </div>
-          </div>
-          <div class="grid2">
-            <div class="field">
-              <label for="cfgSpinSec">Duração do giro (s)</label>
-              <input type="number" id="cfgSpinSec" min="2" max="30" step="1" inputmode="numeric" />
-            </div>
-            <div class="field">
-              <label for="cfgRounds">Voltas do giro</label>
-              <input type="number" id="cfgRounds" min="2" max="16" step="1" inputmode="numeric" />
-            </div>
-          </div>
-          <div class="field">
-            <label for="cfgIdle">Giro ocioso (enquanto espera o sorteio)</label>
-            <select id="cfgIdle">
-              <option value="0">Desligado</option>
-              <option value="1">Lento</option>
-              <option value="2">Normal</option>
-              <option value="3">Rápido</option>
-            </select>
-          </div>
-          <label class="switch-row" for="swAuto">Sortear o próximo automaticamente
-            <span class="sw"><input type="checkbox" id="swAuto"><span class="tr"><span class="th"></span></span></span>
-          </label>
-          <p class="sub">As alterações são salvas automaticamente.</p>
-        </div>
-      </details>
-
-      <!-- EXPERTS -->
-      <details class="acc" open>
-        <summary>
-          <span class="aico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-          Experts
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="acc-body">
-          <div class="form-grid" id="expertForm">
-            <div class="field">
-              <label for="fName" id="formTitle">Adicionar expert</label>
-              <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
-            </div>
-            <div class="field">
-              <label for="fPhoto">Foto (opcional)</label>
-              <input type="file" id="fPhoto" accept="image/*" />
-              <p class="sub">A imagem é redimensionada automaticamente. Sem foto, usamos as iniciais.</p>
-            </div>
-            <div style="display:flex;gap:10px">
-              <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
-              <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
-            </div>
-          </div>
-          <div class="exp-list" id="expList"></div>
-          <p class="sub">Use o interruptor para tirar um expert da roleta sem removê-lo, e o ✓ para marcar/desmarcar quem já operou.</p>
-        </div>
-      </details>
-
-      <!-- RODADA & SORTEIO -->
-      <details class="acc">
-        <summary>
-          <span class="aico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span>
-          Rodada &amp; sorteio
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="acc-body">
-          <div class="field">
-            <label for="fForce">Forçar próximo sorteado (opcional)</label>
-            <select id="fForce"><option value="">— sorteio aleatório —</option></select>
-            <p class="sub">Vale só para o próximo giro. Use com sabedoria 😉</p>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="abtn" id="btnSpinNow" type="button">Sortear agora</button>
-            <button class="abtn abtn--ghost" id="btnEndOp" type="button">Encerrar operação</button>
-            <button class="abtn abtn--ghost" id="btnResetRound" type="button">Reiniciar rodada</button>
-          </div>
-        </div>
-      </details>
-
-      <!-- APARÊNCIA & EFEITOS -->
-      <details class="acc">
-        <summary>
-          <span class="aico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg></span>
-          Aparência &amp; efeitos
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="acc-body">
-          <label class="switch-row" for="swConfetti">Confete ao sortear
-            <span class="sw"><input type="checkbox" id="swConfetti"><span class="tr"><span class="th"></span></span></span>
-          </label>
-          <label class="switch-row" for="swSound">Som ligado por padrão
-            <span class="sw"><input type="checkbox" id="swSound"><span class="tr"><span class="th"></span></span></span>
-          </label>
-          <div class="field">
-            <label for="fHeadline">Título da página</label>
-            <input type="text" id="fHeadline" maxlength="40" placeholder="Roleta dos Experts" />
-            <p class="sub">A última palavra ganha o destaque azul.</p>
-          </div>
-          <div class="field">
-            <label for="fSubtitle">Subtítulo</label>
-            <input type="text" id="fSubtitle" maxlength="140" />
-          </div>
-          <button class="abtn" id="btnSaveTexts" type="button">Salvar textos</button>
-        </div>
-      </details>
-
-      <!-- BACKUP -->
-      <details class="acc">
-        <summary>
-          <span class="aico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-          Backup &amp; reset
-          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="acc-body">
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="abtn abtn--ghost" id="btnExport" type="button">Exportar backup</button>
-            <label class="abtn abtn--ghost" for="fImport" style="cursor:pointer">Importar backup
-              <input type="file" id="fImport" accept="application/json" hidden />
-            </label>
-          </div>
-          <p class="sub">O backup leva experts (com fotos), configurações e o estado da rodada em um arquivo .json.</p>
-          <button class="abtn abtn--danger" id="btnRestoreDefaults" type="button">Restaurar padrão</button>
-        </div>
-      </details>
-
-    </div>
-  </aside>
 
   <div class="toast" id="toast" role="status"></div>
 
@@ -927,10 +626,6 @@ function renderStatus(){
   statusLine.innerHTML = `<b>${round.remaining.length}</b> na roleta · <b>${round.done.length}</b> já operaram nesta rodada`;
   cfgTimeLabel.textContent = cfg.minutes + " min";
   document.getElementById("stepMin").textContent = " " + cfg.minutes + " min";
-  // chips de resumo da sidebar
-  document.getElementById("stTotal").textContent = activeExperts().length;
-  document.getElementById("stLeft").textContent = round.remaining.length;
-  document.getElementById("stDone").textContent = round.done.length;
   // faixa de avatares da rodada
   const strip = document.getElementById("roundStrip");
   strip.innerHTML = "";
@@ -1048,308 +743,46 @@ function applyTexts(){
   }
 }
 
-/* ================= Login + Admin ================= */
-const loginOverlay = document.getElementById("loginOverlay");
-const loginCard = document.getElementById("loginCard");
-const loginPass = document.getElementById("loginPass");
-const drawer = document.getElementById("drawer");
-const drawerBg = document.getElementById("drawerBg");
-const expList = document.getElementById("expList");
-const fName = document.getElementById("fName");
-const fPhoto = document.getElementById("fPhoto");
-const btnSaveExpert = document.getElementById("btnSaveExpert");
-const btnCancelEdit = document.getElementById("btnCancelEdit");
-const formTitle = document.getElementById("formTitle");
-const cfgMinutes = document.getElementById("cfgMinutes");
-let editingId = null;
-
-function requestAdmin(){
-  if (sessionStorage.getItem(SS_AUTH) === "1"){ openAdmin(); return; }
-  loginCard.classList.remove("wrong");
-  loginPass.classList.remove("err");
-  loginPass.value = "";
-  loginOverlay.classList.add("show");
-  loginPass.focus();
-}
-document.getElementById("btnAdmin").addEventListener("click", requestAdmin);
-document.getElementById("sbHandle").addEventListener("click", () => {
-  if (document.body.classList.contains("admin-open")) closeAdmin();
-  else requestAdmin();
-});
-loginCard.addEventListener("submit", e => {
-  e.preventDefault();
-  if (loginPass.value === ADMIN_PASS){
-    sessionStorage.setItem(SS_AUTH,"1");
-    loginOverlay.classList.remove("show");
-    openAdmin();
-  } else {
-    loginCard.classList.add("wrong");
-    loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
-    loginPass.select();
+/* ================= Sincronização com o Painel Admin (admin.html) ================= */
+function applyCfgSideEffects(){ applyTexts(); renderStatus(); restartIdle(); MUTE.set(!cfg.sfx); }
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_EXPERTS){
+    experts = load(LS_EXPERTS, DEFAULT_EXPERTS);
+    ensureRound(); buildWheel(); renderStatus();
+  } else if (ev.key === LS_CFG){
+    cfg = Object.assign({}, CFG_DEF, load(LS_CFG, {}));
+    applyCfgSideEffects();
+  } else if (ev.key === LS_ROUND){
+    round = load(LS_ROUND, { remaining: null, done: [] });
+    buildWheel(); renderStatus();
   }
 });
-document.getElementById("btnCloseLogin").addEventListener("click", () => loginOverlay.classList.remove("show"));
-function openAdmin(){ document.body.classList.add("admin-open"); renderAdmin(); }
-function closeAdmin(){ document.body.classList.remove("admin-open"); }
-document.getElementById("btnCloseAdmin").addEventListener("click", closeAdmin);
-drawerBg.addEventListener("click", closeAdmin);
-document.addEventListener("keydown", e => { if (e.key === "Escape"){ closeAdmin(); loginOverlay.classList.remove("show"); } });
-
-function persistExperts(){
-  save(LS_EXPERTS, experts);
-  ensureRound(); buildWheel(); renderStatus(); renderAdmin();
-}
-function resizePhoto(file){
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        const S = 240, c = document.createElement("canvas");
-        c.width = c.height = S;
-        const x = c.getContext("2d");
-        const r = Math.max(S/im.width, S/im.height);
-        x.drawImage(im, (S-im.width*r)/2, (S-im.height*r)/2, im.width*r, im.height*r);
-        res(c.toDataURL("image/jpeg", .85));
-      };
-      im.onerror = rej;
-      im.src = fr.result;
-    };
-    fr.onerror = rej;
-    fr.readAsDataURL(file);
-  });
-}
-btnSaveExpert.addEventListener("click", async () => {
-  const name = fName.value.trim();
-  if (!name){ toast("Informe o nome do expert."); return; }
-  let photo = null;
-  if (fPhoto.files[0]){
-    try { photo = await resizePhoto(fPhoto.files[0]); }
-    catch { toast("Não foi possível ler a imagem."); return; }
-  }
-  if (editingId){
-    const e = experts.find(x => x.id === editingId);
-    if (e){ e.name = name; if (photo) e.photo = photo; }
-    toast("Expert atualizado."); cancelEdit();
-  } else {
-    experts.push({ id:"e"+Date.now().toString(36), name, photo, active:true });
-    toast("Expert adicionado à roleta.");
-    fName.value=""; fPhoto.value="";
-  }
-  persistExperts();
-});
-function cancelEdit(){
-  editingId = null;
-  formTitle.textContent = "Adicionar expert";
-  btnSaveExpert.textContent = "Adicionar";
-  btnCancelEdit.style.display = "none";
-  fName.value=""; fPhoto.value="";
-}
-btnCancelEdit.addEventListener("click", cancelEdit);
-
-const cfgWait = document.getElementById("cfgWait");
-const cfgSpinSec = document.getElementById("cfgSpinSec");
-const cfgRounds = document.getElementById("cfgRounds");
-const cfgIdle = document.getElementById("cfgIdle");
-const swAuto = document.getElementById("swAuto");
-const swConfetti = document.getElementById("swConfetti");
-const swSound = document.getElementById("swSound");
-const fForce = document.getElementById("fForce");
-const fHeadline = document.getElementById("fHeadline");
-const fSubtitle = document.getElementById("fSubtitle");
-
-function renderAdmin(){
-  cfgMinutes.value = cfg.minutes;
-  cfgWait.value = cfg.waitSec;
-  cfgSpinSec.value = cfg.spinSec;
-  cfgRounds.value = cfg.rounds;
-  cfgIdle.value = String(cfg.idle);
-  swAuto.checked = cfg.autoNext;
-  swConfetti.checked = cfg.confetti;
-  swSound.checked = cfg.sfx;
-  fHeadline.value = cfg.headline;
-  fSubtitle.value = cfg.subtitle;
-  // select de sorteado forçado
-  const cur = forcedId || "";
-  fForce.innerHTML = '<option value="">— sorteio aleatório —</option>';
-  activeExperts().forEach(e => {
-    const o = document.createElement("option");
-    o.value = e.id; o.textContent = e.name;
-    fForce.appendChild(o);
-  });
-  fForce.value = cur;
-  // lista de experts
-  expList.innerHTML = "";
-  experts.forEach(e => {
-    const row = document.createElement("div");
-    row.className = "exp-row" + (e.active ? "" : " inactive");
-    const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
-    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
-    const sw = document.createElement("label");
-    sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
-    sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
-    sw.querySelector("input").addEventListener("change", ev => {
-      e.active = ev.target.checked; persistExperts();
-      toast(e.active ? e.name+" ativado." : e.name+" desativado.");
-    });
-    const done = round.done.includes(e.id);
-    const bT = document.createElement("button");
-    bT.className = "icon-btn"; bT.type = "button";
-    bT.style.color = done ? "#2ec16b" : "";
-    bT.title = done ? "Marcado como já operou — clique para voltar à roleta" : "Marcar como já operou";
-    bT.setAttribute("aria-label", (done ? "Voltar " : "Marcar ") + e.name + (done ? " para a roleta" : " como já operou"));
-    bT.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
-    bT.addEventListener("click", () => {
-      if (round.done.includes(e.id)){
-        round.done = round.done.filter(id => id !== e.id);
-        if (!round.remaining.includes(e.id)) round.remaining.push(e.id);
-        toast(e.name + " voltou para a roleta.");
-      } else {
-        round.remaining = round.remaining.filter(id => id !== e.id);
-        round.done.push(e.id);
-        toast(e.name + " marcado como já operou.");
-      }
-      save(LS_ROUND, round);
-      buildWheel(); renderStatus(); renderAdmin();
-    });
-    const bE = document.createElement("button");
-    bE.className = "icon-btn"; bE.type="button"; bE.setAttribute("aria-label","Editar "+e.name);
-    bE.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
-    bE.addEventListener("click", () => {
-      editingId = e.id;
-      formTitle.textContent = "Editar expert: " + e.name;
-      btnSaveExpert.textContent = "Salvar";
-      btnCancelEdit.style.display = "";
-      fName.value = e.name; fPhoto.value = "";
-      fName.focus();
-    });
-    const bD = document.createElement("button");
-    bD.className = "icon-btn del"; bD.type="button"; bD.setAttribute("aria-label","Remover "+e.name);
-    bD.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-    bD.addEventListener("click", () => {
-      if (!confirm("Remover "+e.name+" da roleta?")) return;
-      experts = experts.filter(x => x.id !== e.id);
-      if (editingId === e.id) cancelEdit();
-      persistExperts();
-      toast("Expert removido.");
-    });
-    row.append(im, nm, sw, bT, bE, bD);
-    expList.appendChild(row);
-  });
-}
-
-/* --- Tempos & giro: salvamento automático --- */
-function numCfg(input, key, min, max, label, after){
-  input.addEventListener("change", () => {
-    const v = parseInt(input.value, 10);
-    if (isNaN(v) || v < min || v > max){
-      toast(label + ": use um valor entre " + min + " e " + max + ".");
-      input.value = cfg[key];
-      return;
-    }
-    cfg[key] = v; saveCfg(); renderStatus();
-    if (after) after();
-    toast(label + " salvo: " + v + ".");
-  });
-}
-numCfg(cfgMinutes, "minutes", 1, 180, "Tempo de operação (min)");
-numCfg(cfgWait, "waitSec", 0, 300, "Espera para o próximo giro (s)");
-numCfg(cfgSpinSec, "spinSec", 2, 30, "Duração do giro (s)");
-numCfg(cfgRounds, "rounds", 2, 16, "Voltas do giro");
-cfgIdle.addEventListener("change", () => {
-  cfg.idle = parseInt(cfgIdle.value, 10) || 0; saveCfg();
-  restartIdle();
-  toast("Giro ocioso: " + cfgIdle.options[cfgIdle.selectedIndex].text.toLowerCase() + ".");
-});
-swAuto.addEventListener("change", () => {
-  cfg.autoNext = swAuto.checked; saveCfg();
-  toast(cfg.autoNext ? "Sorteio automático ligado." : "Sorteio automático desligado.");
-});
-swConfetti.addEventListener("change", () => {
-  cfg.confetti = swConfetti.checked; saveCfg();
-  toast(cfg.confetti ? "Confete ligado." : "Confete desligado.");
-});
-swSound.addEventListener("change", () => {
-  cfg.sfx = swSound.checked; saveCfg();
-  MUTE.set(!cfg.sfx);
-  toast(cfg.sfx ? "Som ligado." : "Som desligado.");
-});
-fForce.addEventListener("change", () => {
-  forcedId = fForce.value || null;
-  if (forcedId){
-    const e = experts.find(x => x.id === forcedId);
-    toast("Próximo sorteado: " + (e ? e.name : "?") + ".");
-  }
-});
-document.getElementById("btnSaveTexts").addEventListener("click", () => {
-  cfg.headline = fHeadline.value.trim() || CFG_DEF.headline;
-  cfg.subtitle = fSubtitle.value.trim() || CFG_DEF.subtitle;
-  saveCfg(); applyTexts();
-  toast("Textos da página salvos.");
-});
-
-/* --- Rodada & sorteio --- */
-document.getElementById("btnSpinNow").addEventListener("click", () => {
-  if (spinning){ toast("A roleta já está girando."); return; }
-  if (overlay.classList.contains("show")){ toast("Encerre a operação atual antes de sortear."); return; }
-  if (window.innerWidth < 1100) closeAdmin();
-  spin();
-});
-document.getElementById("btnEndOp").addEventListener("click", () => {
-  if (!overlay.classList.contains("show")){ toast("Nenhuma operação em andamento."); return; }
-  timerEndAt = Date.now();
-  toast("Operação encerrada.");
-});
-document.getElementById("btnResetRound").addEventListener("click", () => {
-  round = { remaining:null, done:[] };
-  ensureRound(); buildWheel(); renderStatus(); renderAdmin();
-  toast("Rodada reiniciada. Todos os experts voltaram para a roleta.");
-});
-
-/* --- Backup & reset --- */
-document.getElementById("btnExport").addEventListener("click", () => {
-  const data = { kind:"cj_roleta_backup", version:1, exportedAt:new Date().toISOString(), experts, cfg, round };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "roleta-corujao-backup.json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-  toast("Backup exportado.");
-});
-document.getElementById("fImport").addEventListener("change", ev => {
-  const file = ev.target.files[0];
-  ev.target.value = "";
-  if (!file) return;
-  const fr = new FileReader();
-  fr.onload = () => {
-    try {
-      const data = JSON.parse(fr.result);
-      if (!data || data.kind !== "cj_roleta_backup" || !Array.isArray(data.experts)) throw new Error("formato");
-      if (!confirm("Importar backup? Isso substitui experts, configurações e a rodada atual.")) return;
-      experts = data.experts;
-      cfg = Object.assign({}, CFG_DEF, data.cfg || {});
-      round = data.round && Array.isArray(data.round.done) ? data.round : { remaining:null, done:[] };
-      save(LS_EXPERTS, experts); saveCfg(); save(LS_ROUND, round);
-      applyTexts(); MUTE.set(!cfg.sfx);
-      ensureRound(); buildWheel(); renderStatus(); renderAdmin(); restartIdle();
-      toast("Backup importado com sucesso.");
-    } catch {
-      toast("Arquivo inválido. Use um backup exportado desta roleta.");
+try {
+  const cmdBC = new BroadcastChannel("cj-cmd");
+  const ack = (cmd, ok, reason) => { try { cmdBC.postMessage({ type:"ack", cmd, ok, reason: reason || "" }); } catch {} };
+  cmdBC.onmessage = ev => {
+    const m = ev.data || {};
+    switch (m.type){
+      case "ping":
+        try { cmdBC.postMessage({ type:"pong" }); } catch {}
+        break;
+      case "force":
+        forcedId = m.id || null;
+        if (forcedId) toast("Painel: próximo sorteado definido.");
+        break;
+      case "spin":
+        if (m.forcedId) forcedId = m.forcedId;
+        if (spinning){ ack("spin", false, "A roleta já está girando."); break; }
+        if (overlay.classList.contains("show")){ ack("spin", false, "Há uma operação em andamento."); break; }
+        spin(); ack("spin", true);
+        break;
+      case "endOp":
+        if (!overlay.classList.contains("show")){ ack("endOp", false, "Nenhuma operação em andamento."); break; }
+        timerEndAt = Date.now(); ack("endOp", true);
+        break;
     }
   };
-  fr.readAsText(file);
-});
-document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
-  if (!confirm("Restaurar tudo ao padrão? Isso apaga experts personalizados, fotos e configurações.")) return;
-  experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
-  cfg = Object.assign({}, CFG_DEF);
-  round = { remaining:null, done:[] };
-  save(LS_EXPERTS, experts); saveCfg();
-  applyTexts(); MUTE.set(!cfg.sfx);
-  ensureRound(); buildWheel(); renderStatus(); renderAdmin(); restartIdle();
-  toast("Padrão restaurado.");
-});
+} catch {}
 
 /* ================= Toast + init ================= */
 let toastT = null;
