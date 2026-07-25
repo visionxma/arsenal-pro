@@ -21,8 +21,7 @@ GitHub Pages, sem nenhuma configuração de servidor.
 | Rota | Arquivo | O que é |
 |---|---|---|
 | `/` | `index.html` | Landing page do Arsenal Pro (oferta R$ 997) |
-| `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento) |
-| `/aovivo/` | `aovivo/index.html` | Transmissão ao vivo (player + status da roleta) |
+| `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento); CTA vai para o Google Meet do evento |
 | `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
 
 ## Rotas restritas (operador)
@@ -40,8 +39,7 @@ GitHub Pages, sem nenhuma configuração de servidor.
 
 ## Ligações entre as páginas
 
-- `/corujao/` → `/` (topbar "Conhecer o Arsenal Pro") e `/aovivo/` (CTA de entrar na live)
-- `/aovivo/` → `/#oferta` (CTAs "Quero o Arsenal Pro")
+- `/corujao/` → Google Meet do evento (CTA "Clique aqui e entre agora!", const `GROUP_URL`)
 - `/roleta/` → `/` (link "← Arsenal Pro") e `/roleta/admin/` (link "Painel Admin", nova aba)
 - `/roleta/admin/` → `/roleta/` (item "Abrir a roleta", nova aba)
 - `/` não tem navegação de saída (landing fechada na copy oficial; o checkout é a const `CHECKOUT_URL` no `index.html`)
@@ -49,7 +47,6 @@ GitHub Pages, sem nenhuma configuração de servidor.
 ## Pendências antes de publicar
 
 - `index.html` → `CHECKOUT_URL` (link real do checkout)
-- `aovivo/index.html` → `EMBED_URL` (player da transmissão)
 - `roleta/index.html` e `roleta/admin/index.html` → `ADMIN_PASS` (trocar a senha; manter a MESMA nos dois arquivos)
 
 ## Observações de hospedagem

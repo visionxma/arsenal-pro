@@ -37,6 +37,15 @@ export default {
     }
 
     let path = url.pathname;
+
+    // Página /aovivo retirada do ar — responde 410 Gone (não proxeia).
+    if (/^\/arsenal-pro\/aovivo(\/|$)/.test(path) || /^\/aovivo(\/|$)/.test(path)) {
+      return new Response("Página indisponível.", {
+        status: 410,
+        headers: { "Content-Type": "text/plain; charset=utf-8", ...SEC_HEADERS },
+      });
+    }
+
     if (url.hostname.startsWith("admin.")) {
       if (path === "/" || path === "") {
         return Response.redirect(url.origin + "/roleta/admin/", 302);
