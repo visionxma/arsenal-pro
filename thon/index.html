@@ -327,12 +327,14 @@ strong{color:var(--text)}
 .rowc .chev{flex:none;color:var(--accent-soft);transition:transform .3s}
 .rowc:hover .chev{transform:translateX(4px)}
 
-/* ---------- Value stack: cards que se empilham ao rolar ---------- */
-.split{max-width:760px;margin:0 auto}
-.split-intro{margin-bottom:34px;text-align:center}
+/* ---------- Value stack: 2 colunas no desktop, cards empilham ao rolar ---------- */
+/* Desktop: intro fica fixa à esquerda enquanto os cards passam à direita,
+   ocupando toda a largura e aproveitando as laterais. */
+.split{display:grid;grid-template-columns:minmax(300px,.82fr) 1.18fr;gap:30px 56px;align-items:start;max-width:var(--container)}
+.split-intro{position:sticky;top:120px;align-self:start;text-align:left}
 .split-intro .eyebrow{margin-bottom:18px}
-.split-intro h2{max-width:20ch;margin:0 auto}
-.split-intro p{margin:14px auto 0;max-width:34rem}
+.split-intro h2{max-width:16ch}
+.split-intro p{margin:14px 0 0;max-width:36ch}
 /* cada card gruda no topo com um leve degrau, formando a pilha */
 .stack-list{display:grid;gap:26px}
 .stack-card{
@@ -491,6 +493,11 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .pain-section .sec-left{position:static;top:auto;margin-bottom:8px}
   .pain-section .sec-left h2,.pain-section .sec-left .lead-note{max-width:none}
   .pain-list{max-width:760px;margin:0 auto;width:100%}
+  /* value stack: volta a uma coluna centralizada, intro deixa de ser sticky */
+  .split{grid-template-columns:1fr;gap:22px;max-width:760px}
+  .split-intro{position:static;top:auto;text-align:center;margin-bottom:12px}
+  .split-intro h2{max-width:20ch;margin:0 auto}
+  .split-intro p{margin:14px auto 0;max-width:34rem}
 }
 @media (max-width:768px){
   .section{padding:48px 0}
