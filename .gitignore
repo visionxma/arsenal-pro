@@ -2,3 +2,5 @@
 *.png
 Thumbs.db
 .DS_Store
+*.jpeg
+*.jpg
