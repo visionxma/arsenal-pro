@@ -361,16 +361,11 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
   .hero-copy h1 .text-brand{font-weight:500}
   .hero-copy h1 .text-brand b{font-weight:900}
   .hero-date{order:2;margin-top:14px;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.8)}
-  .hero-ctas{order:3;justify-content:center;margin-top:22px;width:100%}
-  .hero-ctas .btn .lbl-d{display:none}
-  .hero-ctas .btn .lbl-m{display:inline}
-  .hero-ctas .btn .lbl-m{font-weight:600}
-  .hero-ctas .btn .lbl-m b{font-weight:900}
+  .hero-ctas{order:5;justify-content:center;margin-top:8px;width:100%}
   .hero-ctas .btn .arr{display:none}
   .hero-ctas .btn{max-width:340px}
-  .hero-sub{order:4;margin:30px auto 20px;color:rgba(255,255,255,.78)}
-  .hero-list{order:5;margin-left:auto;margin-right:auto;width:fit-content}
-  .stats{order:6;margin:32px auto 0}
+  .hero-sub{order:3;margin:26px auto 18px;color:rgba(255,255,255,.82)}
+  .hero-list{order:4;margin:0 auto 24px;width:fit-content}
   .hero-bglow{top:-6%}
 }
 @media (max-width:640px){
@@ -437,44 +432,13 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
       </ul>
       <div class="hero-ctas" data-reveal style="--d:.32s">
         <a class="btn" href="#" id="ctaGroup">
-          <span class="lbl-d">Clique aqui e entre agora!</span><span class="lbl-m">Entrar&nbsp;<b>no grupo</b></span>
+          Clique aqui e entre agora!
           <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
         </a>
-      </div>
-
-      <div class="stats" data-reveal style="--d:.4s">
-        <div class="stat glass-light"><div class="v text-brand">9</div><div class="l">Experts ao vivo</div></div>
-        <div class="stat glass-light"><div class="v text-brand">18h</div><div class="l">Começa hoje</div></div>
-        <div class="stat glass-light"><div class="v text-brand">R$4.6k</div><div class="l">Em entregáveis</div></div>
       </div>
     </div>
   </div>
 </header>
-
-<!-- Ticker -->
-<div class="x-bar" aria-hidden="true">
-  <div class="x-bar-marquee">
-    <span class="x-bar-item">Corujão de Traders</span><span class="x-bar-item">Ao vivo agora</span><span class="x-bar-item">Safirion</span><span class="x-bar-item">Revelação do Arsenal Pro ainda hoje</span><span class="x-bar-item">Bônus exclusivos na live</span><span class="x-bar-item">Cupons Gamificados</span>
-    <span class="x-bar-item">Corujão de Traders</span><span class="x-bar-item">Ao vivo agora</span><span class="x-bar-item">Safirion</span><span class="x-bar-item">Revelação do Arsenal Pro ainda hoje</span><span class="x-bar-item">Bônus exclusivos na live</span><span class="x-bar-item">Cupons Gamificados</span>
-  </div>
-</div>
-
-<!-- CTA final -->
-<section class="final">
-  <div class="section-grid" aria-hidden="true"></div>
-  <div class="glow-top" aria-hidden="true"></div>
-  <div class="container">
-    <h2 data-reveal><span class="text-gradient">A noite é</span> <span class="text-brand">deles.</span><br /><span class="text-gradient">O lucro pode ser seu.</span></h2>
-    <p data-reveal style="--d:.1s">Os maiores traders da Safirion estão <b>ao vivo agora</b>. Entre no Corujão e lucre junto com eles.</p>
-    <div data-reveal style="--d:.18s">
-      <a class="btn" href="#" id="ctaGroup2">
-        Clique aqui e entre agora!
-        <svg class="arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
-      </a>
-      <span class="arsenal-link">Já conhece o evento? <a href="../">Veja o Arsenal Pro →</a></span>
-    </div>
-  </div>
-</section>
 
 <footer>
   <img src="../assets/logo.svg" alt="Safirion" />
@@ -486,7 +450,6 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
 // TODO: troque pelo link real do grupo (WhatsApp/Telegram)
 const GROUP_URL = "../aovivo/";
 document.getElementById("ctaGroup").href = GROUP_URL;
-document.getElementById("ctaGroup2").href = GROUP_URL;
 
 const io = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
