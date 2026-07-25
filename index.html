@@ -71,12 +71,14 @@ a{color:inherit;text-decoration:none}
 
 .container{max-width:var(--container);margin:0 auto;padding:0 24px}
 
-h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.02em;line-height:1.2;color:#fff}
+h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.02em;line-height:1.2;color:#fff;text-wrap:balance}
 h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
 h3{font-size:1.24rem}
-p{color:var(--muted)}
+p{color:var(--muted);text-wrap:pretty}
 strong{color:#fff}
-.lead{font-size:clamp(1.06rem,1.5vw,1.2rem);color:var(--muted)}
+.lead{font-size:clamp(1.06rem,1.5vw,1.2rem);line-height:1.66;color:var(--muted)}
+/* preços e estatísticas alinham dígito a dígito */
+.oc-row s,.oc-total .val,.oc-strike,.hstat .num,.stack-card .val,.total-band .now,.total-band .strike,.price-note{font-variant-numeric:lining-nums tabular-nums}
 /* dois tons nos títulos — o tom apagado agora é legível (padrão da referência) */
 .dm{color:#B9CBDA}
 .ac{color:var(--accent-soft)}
@@ -98,7 +100,10 @@ strong{color:#fff}
   display:inline-flex;align-items:center;justify-content:center;
   border:1px solid var(--line-strong);border-radius:999px;padding:4px 14px;
   font-family:var(--f-head);font-weight:700;font-size:.78rem;letter-spacing:.08em;color:var(--muted);
+  font-variant-numeric:tabular-nums;
+  transition:border-color .3s,color .3s;
 }
+.kcard:hover .nchip,.stack-card:hover .nchip{border-color:var(--accent-line);color:var(--accent-soft)}
 
 /* ---------- Botões (pill + seta em círculo) ---------- */
 .btn{
@@ -131,7 +136,7 @@ strong{color:#fff}
 .float{animation:heroFloat 6s ease-in-out infinite}
 
 .price-note{margin-top:16px;font-size:.98rem;color:var(--muted)}
-.price-note s{color:#5D7690}
+.price-note s{color:#7A90A8}
 .price-note b{color:var(--accent-soft);font-weight:800}
 
 /* ---------- Hero centralizado (padrão da referência) ---------- */
@@ -142,7 +147,7 @@ strong{color:#fff}
     var(--bg);
   overflow:hidden;
 }
-.hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);max-width:16ch;margin:0 auto 20px}
+.hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);font-weight:700;line-height:1.08;letter-spacing:-.028em;max-width:16ch;margin:0 auto 20px}
 .hero .lead{max-width:44rem;margin:0 auto}
 .hero-cta{margin-top:30px;display:flex;justify-content:center}
 
@@ -182,8 +187,22 @@ strong{color:#fff}
   border-bottom:1px solid rgba(214,237,248,.05);
   break-inside:avoid;
 }
+/* linhas da oferta entram em cascata quando o painel aparece */
+.browser-wrap[data-reveal] .oc-row{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s cubic-bezier(.22,1,.36,1);transition-delay:var(--rd,0s)}
+.browser-wrap[data-reveal].in .oc-row{opacity:1;transform:none}
+.browser-wrap.in .oc-row:nth-child(1){--rd:.2s}
+.browser-wrap.in .oc-row:nth-child(2){--rd:.26s}
+.browser-wrap.in .oc-row:nth-child(3){--rd:.32s}
+.browser-wrap.in .oc-row:nth-child(4){--rd:.38s}
+.browser-wrap.in .oc-row:nth-child(5){--rd:.44s}
+.browser-wrap.in .oc-row:nth-child(6){--rd:.5s}
+.browser-wrap.in .oc-row:nth-child(7){--rd:.56s}
+.browser-wrap.in .oc-row:nth-child(8){--rd:.62s}
+.browser-wrap.in .oc-row:nth-child(9){--rd:.68s}
+.browser-wrap.in .oc-row:nth-child(10){--rd:.74s}
+.browser-wrap.in .oc-row:nth-child(11){--rd:.8s}
 .oc-row span{color:var(--accent-pale)}
-.oc-row s{color:#5D7690;font-family:var(--f-head);font-weight:500;flex:none}
+.oc-row s{color:#7A90A8;font-family:var(--f-head);font-weight:500;flex:none}
 .oc-total{
   margin-top:18px;padding:16px 0 20px;border-top:1px solid var(--line);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
@@ -191,7 +210,7 @@ strong{color:#fff}
 .oc-total .lbl{font-size:.92rem;color:var(--muted)}
 .oc-total .val{font-family:var(--f-head);font-size:2.2rem;font-weight:700;color:#fff;line-height:1}
 .oc-strike{font-size:.94rem;color:var(--muted)}
-.oc-strike s{color:#5D7690}
+.oc-strike s{color:#7A90A8}
 .oc-badge{
   position:absolute;top:-15px;right:26px;z-index:2;
   background:var(--accent);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.1em;
@@ -286,8 +305,8 @@ strong{color:#fff}
   background:rgba(226,85,106,.09);border:1px solid rgba(226,85,106,.32);
   color:#F7BAC3;font-size:.98rem;font-weight:600;
 }
-/* chips entram um a um com "quique" quando a linha aparece */
-.frag-chips .chip{opacity:0;transform:scale(.6);transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1)}
+/* chips entram um a um quando a linha aparece */
+.frag-chips .chip{opacity:0;transform:scale(.82) translateY(6px);transition:opacity .5s ease,transform .55s cubic-bezier(.22,1,.36,1)}
 .frag-chips .chip:nth-child(2){transition-delay:.12s}
 .frag-chips .chip:nth-child(3){transition-delay:.24s}
 .frag-chips.in .chip{opacity:1;transform:none}
@@ -295,7 +314,7 @@ strong{color:#fff}
 .frag-wrap .resolve em{font-style:normal;color:var(--accent-soft)}
 
 /* ---------- Prosa (contexto) ---------- */
-.prose{max-width:760px;margin:40px auto 0}
+.prose{max-width:66ch;margin:40px auto 0}
 .prose p{margin-bottom:15px;font-size:1.08rem;color:var(--muted)}
 .pullquote{
   margin:24px 0;padding:24px 30px;border-radius:20px;
@@ -379,7 +398,7 @@ strong{color:#fff}
   background:radial-gradient(560px 240px at 50% -20%,rgba(105,184,255,.14),transparent 65%);
 }
 .total-band .strike{font-size:1rem;color:var(--muted)}
-.total-band .strike s{color:#4A6178}
+.total-band .strike s{color:#7A90A8}
 .total-band .now{
   font-family:var(--f-head);font-size:clamp(2.2rem,5vw,3.2rem);font-weight:700;
   color:#fff;margin:8px 0 0;line-height:1.1;
@@ -515,6 +534,15 @@ strong{color:#fff}
 .final-list .ico{flex:none}
 .final .hero-cta{margin-top:0}
 
+/* ---------- Barra de progresso de leitura ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:40;pointer-events:none}
+.progress i{
+  display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,var(--accent),var(--accent-soft));
+  transform:scaleX(0);transform-origin:0 50%;
+  box-shadow:0 0 8px rgba(35,137,230,.6);
+}
+
 /* ---------- Footer ---------- */
 footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-2)}
 .foot{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
@@ -533,6 +561,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   html{scroll-behavior:auto}
   [data-reveal]{opacity:1;transform:none;transition:none}
   .frag-chips .chip{opacity:1;transform:none;transition:none}
+  .browser-wrap[data-reveal] .oc-row{opacity:1;transform:none;transition:none}
   .btn,.kcard,.rowc,.browser{transition:none}
   .cta-pulse,.float{animation:none}
   .g-badge,.g-badge::before{animation:none}
@@ -635,6 +664,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 </style>
 </head>
 <body>
+
+<div class="progress" aria-hidden="true"><i id="scrollProgress"></i></div>
 
 <!-- 01 · HERO -->
 <header class="hero">
@@ -1077,6 +1108,18 @@ if (bw) {
     addEventListener("resize", onScroll, { passive: true });
     update();
   }
+}
+
+// Barra de progresso de leitura no topo
+const prog = document.getElementById("scrollProgress");
+if (prog) {
+  const paint = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.transform = "scaleX(" + (max > 0 ? (window.scrollY / max).toFixed(4) : 0) + ")";
+  };
+  addEventListener("scroll", paint, { passive: true });
+  addEventListener("resize", paint, { passive: true });
+  paint();
 }
 </script>
 </body>
