@@ -1,0 +1,50 @@
+# Rotas do Arsenal Pro
+
+Mapa de rotas para publicação sob um domínio próprio (ex.: `arsenalpro.com.br`).
+Todas as páginas são estáticas (`index.html` por pasta) e **todos os links internos são
+relativos** — o site funciona igual na raiz de um domínio, em um subdiretório ou no
+GitHub Pages, sem nenhuma configuração de servidor.
+
+## Rotas públicas
+
+| Rota | Arquivo | O que é |
+|---|---|---|
+| `/` | `index.html` | Landing page do Arsenal Pro (oferta R$ 997) |
+| `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento) |
+| `/aovivo/` | `aovivo/index.html` | Transmissão ao vivo (player + status da roleta) |
+| `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
+
+## Rotas restritas (operador)
+
+| Rota | Arquivo | O que é |
+|---|---|---|
+| `/roleta/admin/` | `roleta/admin/index.html` | Painel Admin da roleta (senha no arquivo, const `ADMIN_PASS`) |
+
+## Extras
+
+| Rota | Arquivo | O que é |
+|---|---|---|
+| `404` | `404.html` | Página de erro; redireciona para `/` em 6s (usada automaticamente por GitHub Pages, Netlify, Vercel e Cloudflare Pages) |
+| — | `assets/` | Logo e imagens compartilhadas |
+
+## Ligações entre as páginas
+
+- `/corujao/` → `/` (topbar "Conhecer o Arsenal Pro") e `/aovivo/` (CTA de entrar na live)
+- `/aovivo/` → `/#oferta` (CTAs "Quero o Arsenal Pro")
+- `/roleta/` → `/` (link "← Arsenal Pro") e `/roleta/admin/` (link "Painel Admin", nova aba)
+- `/roleta/admin/` → `/roleta/` (item "Abrir a roleta", nova aba)
+- `/` não tem navegação de saída (landing fechada na copy oficial; o checkout é a const `CHECKOUT_URL` no `index.html`)
+
+## Pendências antes de publicar
+
+- `index.html` → `CHECKOUT_URL` (link real do checkout)
+- `aovivo/index.html` → `EMBED_URL` (player da transmissão)
+- `roleta/index.html` e `roleta/admin/index.html` → `ADMIN_PASS` (trocar a senha; manter a MESMA nos dois arquivos)
+
+## Observações de hospedagem
+
+- **Painel × Roleta**: comunicam por `localStorage` + `BroadcastChannel` → precisam do
+  **mesmo domínio e mesmo navegador** (abas/janelas do operador). Servidos como rotas do
+  mesmo domínio, isso já está garantido.
+- Não há rewrites nem rotas dinâmicas: qualquer host estático serve o site como está.
+- Se o host oferecer "clean URLs", nada muda — as rotas já são pastas com `index.html`.
