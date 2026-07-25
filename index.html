@@ -24,8 +24,8 @@
   --line:rgba(214,237,248,.08);
   --line-strong:rgba(214,237,248,.16);
   --text:#EEF4FB;
-  --muted:#C3D3E0;
-  --muted-2:#A2B6C6;
+  --muted:#CFDDE9;
+  --muted-2:#AFC2D2;
   --accent:#2389E6;
   --accent-strong:#146AC7;
   --accent-soft:#69B8FF;
@@ -75,12 +75,14 @@ h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.02em;line-he
 h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
 h3{font-size:1.24rem}
 p{color:var(--muted);text-wrap:pretty}
-strong{color:#fff}
+strong{color:#fff;font-weight:800}
+/* ênfase azul nas frases de poder da copy */
+em{font-style:normal;color:var(--accent-soft);font-weight:700}
 .lead{font-size:clamp(1.06rem,1.5vw,1.2rem);line-height:1.66;color:var(--muted)}
 /* preços e estatísticas alinham dígito a dígito */
 .oc-row s,.oc-total .val,.oc-strike,.hstat .num,.stack-card .val,.total-band .now,.total-band .strike,.price-note{font-variant-numeric:lining-nums tabular-nums}
-/* dois tons nos títulos — o tom apagado agora é legível (padrão da referência) */
-.dm{color:#B9CBDA}
+/* dois tons nos títulos: base quase branca + palavras-chave em azul da marca */
+.dm{color:#DCE7F2}
 .ac{color:var(--accent-soft)}
 
 /* ---------- Badge duplo (ícone + rótulo) ---------- */
@@ -511,8 +513,8 @@ strong{color:#fff}
 .guarantee p{margin-bottom:12px;color:var(--muted)}
 .g-note{
   margin-top:6px;padding:16px 22px;border-radius:14px;
-  background:var(--accent-tint);border:1px solid var(--accent-line);
-  color:var(--accent-pale);font-weight:600;font-size:1.02rem;
+  background:rgba(35,137,230,.16);border:1px solid var(--accent-line);
+  color:#fff;font-weight:700;font-size:1.06rem;
 }
 
 /* ---------- CTA Final ---------- */
@@ -673,7 +675,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
     <h1 data-reveal style="--d:.08s">Você Não Precisa<br /><span class="ac">de Mais Um Curso</span></h1>
     <p class="lead" data-reveal style="--d:.16s">
       Os maiores traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar —
-      estratégias reais, indicadores exclusivos e IA integrada. Você para de adivinhar e começa a operar como profissional a partir de hoje.
+      <strong>estratégias reais, indicadores exclusivos e IA integrada</strong>. Você para de adivinhar e começa a operar como profissional <em>a partir de hoje</em>.
     </p>
     <div class="hero-cta" data-reveal style="--d:.24s">
       <a class="btn btn--lg cta-pulse" href="#" data-checkout>
@@ -734,8 +736,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <section class="section">
   <div class="container">
     <div class="two-col glowline" data-reveal>
-      <h2><span class="dm">Por Que os Maiores</span> Traders Decidiram <span class="dm">Juntar</span> Tudo <span class="dm">Dentro do</span> Arsenal Pro</h2>
-      <p>Cada um deles chegou onde chegou com anos de dedicação, erros caros e um sistema construído na prática — não na teoria. E cada um sabe, melhor do que ninguém, o que separa quem opera com consistência de quem fica testando estratégia por estratégia sem nunca sair do lugar.</p>
+      <h2><span class="dm">Por Que os Maiores</span> Traders Decidiram <span class="dm">Juntar</span> Tudo <span class="dm">Dentro do</span> <span class="ac">Arsenal Pro</span></h2>
+      <p>Cada um deles chegou onde chegou com anos de dedicação, erros caros e um sistema construído na prática — <strong>não na teoria</strong>. E cada um sabe, melhor do que ninguém, <em>o que separa quem opera com consistência</em> de quem fica testando estratégia por estratégia sem nunca sair do lugar.</p>
     </div>
     <div class="prose">
       <p data-reveal>O problema é que esse arsenal, normalmente, fica espalhado.</p>
@@ -744,7 +746,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         <span class="chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Um indicador ali</span>
         <span class="chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Uma aula sobre gestão de risco acolá.</span>
       </div>
-      <p data-reveal>Mas nunca tudo junto, funcionando ao mesmo tempo, construído por quem realmente vive disso.</p>
+      <p data-reveal>Mas <strong>nunca tudo junto, funcionando ao mesmo tempo</strong>, construído por quem realmente vive disso.</p>
       <div class="pullquote" data-reveal="zoom">O Safirion Corujão de Traders foi o <em>momento certo</em> para mudar isso.</div>
       <p data-reveal>Os maiores traders, uma única noite, um produto que não existia antes — e que só faz sentido nesse formato, nessa ocasião. <strong>O Arsenal Pro é o resultado disso.</strong></p>
     </div>
@@ -760,32 +762,32 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         <span class="ei" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><circle cx="12" cy="16" r=".6" fill="currentColor"/></svg></span>
         <span class="el">O problema real</span>
       </span>
-      <h2><span class="dm">Você Já Passou por</span> Alguma Dessas Situações?</h2>
+      <h2><span class="dm">Você Já Passou por</span> <span class="ac">Alguma Dessas Situações?</span></h2>
     </div>
     <div class="pain-list">
       <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="21 11 21 17 15 17"/></svg></div>
-        <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, o mercado não se comportou como deveria.</p>
+        <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p>
         <div class="kfoot"><span class="nchip">001</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
       <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg></div>
-        <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico sem saber quando confiar no sinal.</p>
+        <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p>
         <div class="kfoot"><span class="nchip">002</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
       <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 8 8 8"/></svg></div>
-        <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte perdeu tudo que tinha conquistado.</p>
+        <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p>
         <div class="kfoot"><span class="nchip">003</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
       <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
-        <p>Viu traders postando resultado todo dia e ainda não entendeu o que eles enxergam que você não enxerga.</p>
+        <p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p>
         <div class="kfoot"><span class="nchip">004</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
       <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h4"/><path d="M12 3v9"/><polyline points="8 8 12 12 16 8"/></svg></div>
-        <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas a peça certa nunca aparece.</p>
+        <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p>
         <div class="kfoot"><span class="nchip">005</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
     </div>
@@ -809,9 +811,9 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           <span class="el">Apresentação do Arsenal Pro</span>
         </span>
         <h2 style="font-size:clamp(2rem,4.2vw,3rem)"><span class="dm">Arsenal</span> <span class="ac">Pro</span>.</h2>
-        <p class="lead" style="margin-top:14px;max-width:30rem">O Arsenal Pro reúne o que 11 traders levaram anos para construir: suas melhores estratégias, seus indicadores exclusivos e uma IA integrada diretamente na Safirion — tudo entregue em uma única noite, por uma fração do valor real.</p>
-        <p style="margin-top:12px;max-width:30rem">Não é uma coleção de conteúdo jogado em uma pasta.</p>
-        <p style="margin-top:8px;max-width:30rem">É um sistema com três dimensões:</p>
+        <p class="lead" style="margin-top:14px;max-width:30rem">O Arsenal Pro reúne o que 11 traders levaram anos para construir: <strong>suas melhores estratégias, seus indicadores exclusivos e uma IA integrada diretamente na Safirion</strong> — tudo entregue em uma única noite, <em>por uma fração do valor real</em>.</p>
+        <p style="margin-top:12px;max-width:30rem"><strong>Não é uma coleção de conteúdo jogado em uma pasta.</strong></p>
+        <p style="margin-top:8px;max-width:30rem">É um sistema com <em>três dimensões</em>:</p>
       </div>
       <div class="rowc-stack">
         <div class="rowc fx" data-reveal="right">
@@ -854,8 +856,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         <span class="ei" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></span>
         <span class="el">O que você recebe</span>
       </span>
-      <h2><span class="dm">O Que Está</span> Dentro <span class="dm">do</span> Arsenal Pro</h2>
-      <p>Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam o sistema mais completo disponível nessa noite.</p>
+      <h2><span class="dm">O Que Está</span> Dentro <span class="dm">do</span> <span class="ac">Arsenal Pro</span></h2>
+      <p>Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam <em>o sistema mais completo disponível nessa noite</em>.</p>
     </div>
 
     <div class="stack-list">
@@ -977,11 +979,11 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <section class="section urgency">
   <div class="container">
     <div class="two-col">
-      <h2 data-reveal><span class="dm">Esse Produto</span> Não Vai Existir <span class="dm">Depois Dessa</span> Noite.</h2>
+      <h2 data-reveal><span class="dm">Esse Produto</span> <span class="ac">Não Vai Existir</span> <span class="dm">Depois Dessa</span> Noite.</h2>
       <div>
-        <p data-reveal>Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, o produto dessa noite.</p>
+        <p data-reveal>Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, <strong>o produto dessa noite</strong>.</p>
         <p data-reveal>Para reunir os maiores traders com sistemas diferentes, indicadores exclusivos e uma IA integrada em um único produto — foi preciso criar algo que não existia antes. Cada trader contribuiu com o seu melhor por uma razão específica: o Safirion Corujão de Traders.</p>
-        <p data-reveal>Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, não se repete.</p>
+        <p data-reveal>Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, <em>não se repete</em>.</p>
       </div>
     </div>
     <div class="final-box" data-reveal="zoom">
@@ -1009,9 +1011,9 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         </div>
       </div>
       <div>
-        <h2><span class="dm">Você Tem</span> 7 Dias <span class="dm">Para Testar.</span> Sem Risco.</h2>
-        <p>Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o reembolso em até 7 dias. Sem perguntas. Sem burocracia.</p>
-        <p>Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar — devolvemos 100% do seu investimento.</p>
+        <h2><span class="dm">Você Tem</span> <span class="ac">7 Dias</span> <span class="dm">Para Testar.</span> Sem Risco.</h2>
+        <p>Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o <em>reembolso em até 7 dias</em>. <strong>Sem perguntas. Sem burocracia.</strong></p>
+        <p>Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar — <em>devolvemos 100% do seu investimento</em>.</p>
         <div class="g-note">A única coisa que não devolvemos é o conhecimento que você já vai ter absorvido.</div>
       </div>
     </div>
@@ -1021,8 +1023,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <!-- 10 · CTA FINAL — FECHAMENTO -->
 <section class="section final section--tint">
   <div class="container">
-    <h2 data-reveal><span class="dm">Você Decide</span> Agora.</h2>
-    <p class="lead" data-reveal>Do outro lado do botão está o arsenal completo dos maiores traders da Safirion — estratégias, indicadores e IA — em um único sistema. Não mais um pedaço. Tudo junto, funcionando ao mesmo tempo.</p>
+    <h2 data-reveal><span class="dm">Você Decide</span> <span class="ac">Agora.</span></h2>
+    <p class="lead" data-reveal>Do outro lado do botão está o arsenal completo dos maiores traders da Safirion — <strong>estratégias, indicadores e IA</strong> — em um único sistema. Não mais um pedaço. <em>Tudo junto, funcionando ao mesmo tempo.</em></p>
     <p data-reveal style="margin-bottom:20px;font-weight:700;color:#fff">O que você leva hoje:</p>
     <ul class="final-list">
       <li data-reveal="left"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Os maiores traders que operam ao vivo, em um único lugar</li>
