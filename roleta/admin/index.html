@@ -510,23 +510,10 @@ const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); ret
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
-/* Migração aditiva (RODA UMA ÚNICA VEZ por navegador): garante que os experts
-   padrão existam na lista salva. Depois de marcada a flag, remoções feitas no
-   painel são definitivas — ninguém "volta" ao recarregar. */
+/* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
+   durante a live. Mantê-la fazia remoções "voltarem" ao recarregar. A lista salva
+   é a fonte única da verdade — remover no painel é definitivo.) */
 let MIGRATED = false;
-(function(){
-  const FLAG = "cj_mig16_done_v1";
-  try { if (localStorage.getItem(FLAG)) return; } catch {}
-  const have = new Set(experts.map(e => (e.name || "").trim().toLowerCase()));
-  let added = 0;
-  DEFAULT_EXPERTS.forEach(d => {
-    if (!have.has(d.name.trim().toLowerCase())){
-      experts.push({ id:"m" + Date.now().toString(36) + (added++), name:d.name, photo:d.photo, active:true, minutes:null });
-    }
-  });
-  if (added){ save(LS_EXPERTS, experts); MIGRATED = true; }
-  try { localStorage.setItem(FLAG, "1"); } catch {}
-})();
 let cfg       = Object.assign({}, CFG_DEF, load(LS_CFG, {}));
 let hist      = load(LS_HIST, []);
 let sorteados = load(LS_RODADA, []);

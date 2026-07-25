@@ -810,22 +810,10 @@ const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); ret
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
-/* Migração aditiva (RODA UMA ÚNICA VEZ por navegador): garante que os experts
-   padrão existam na lista salva. Depois de marcada a flag, remoções feitas no
-   painel são definitivas — ninguém "volta" ao recarregar. */
-(function(){
-  const FLAG = "cj_mig16_done_v1";
-  try { if (localStorage.getItem(FLAG)) return; } catch {}
-  const have = new Set(experts.map(e => (e.name || "").trim().toLowerCase()));
-  let added = 0;
-  DEFAULT_EXPERTS.forEach(d => {
-    if (!have.has(d.name.trim().toLowerCase())){
-      experts.push({ id:"m" + Date.now().toString(36) + (added++), name:d.name, photo:d.photo, active:true, minutes:null });
-    }
-  });
-  if (added) save(LS_EXPERTS, experts);
-  try { localStorage.setItem(FLAG, "1"); } catch {}
-})();
+/* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
+   durante a live. Mantê-la fazia remoções "voltarem" ao recarregar, porque cada
+   página recompletava a lista com os experts padrão. Agora a lista salva é a
+   fonte única da verdade — remover no painel é definitivo.) */
 let cfg       = Object.assign(
   { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
   load(LS_CFG, {})
