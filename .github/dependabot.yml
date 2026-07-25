@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # Actions usadas nos workflows (CVE / versões vulneráveis)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["seguranca", "dependencias"]

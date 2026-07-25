@@ -1,0 +1,17 @@
+# Regras do Gitleaks para este repositório.
+# A chave "anon" do Supabase e a chave da sala do Realtime SÃO públicas por design
+# (o cliente precisa delas). Elas ficam permitidas; qualquer OUTRO segredo é bloqueado.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Chaves publicas por design (anon Supabase, sala Realtime)"
+regexes = [
+  # JWT anon do Supabase (role:anon) — publico
+  '''eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]*InJvbGUiOiJhbm9u[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+''',
+  # nome da sala do Realtime
+  '''cj-corujao''',
+]
+paths = [
+  '''ROTAS\.md''',
+]

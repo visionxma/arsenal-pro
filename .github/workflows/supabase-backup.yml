@@ -1,0 +1,45 @@
+name: Backup do Supabase
+
+# Dump diário do banco Supabase, criptografado e guardado como artefato (retenção 30 dias).
+# Requer 2 secrets no repo (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL  → string de conexão (Supabase → Project Settings → Database → Connection string → URI)
+#   BACKUP_PASSPHRASE → senha forte para criptografar o dump
+on:
+  schedule:
+    - cron: "0 5 * * *"   # todo dia 05:00 UTC (~02:00 BRT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar Postgres client 16
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update && sudo apt-get install -y postgresql-client-16 gnupg
+
+      - name: Dump + criptografia
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          test -n "$DB_URL" || { echo "::error::Secret SUPABASE_DB_URL ausente"; exit 1; }
+          test -n "$PASSPHRASE" || { echo "::error::Secret BACKUP_PASSPHRASE ausente"; exit 1; }
+          STAMP=$(date -u +%Y%m%d-%H%M)
+          pg_dump --no-owner --no-privileges "$DB_URL" \
+            | gzip -9 \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASSPHRASE" \
+            > "supabase-$STAMP.sql.gz.gpg"
+          ls -lh supabase-*.sql.gz.gpg
+
+      - name: Guardar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup
+          path: "*.sql.gz.gpg"
+          retention-days: 30

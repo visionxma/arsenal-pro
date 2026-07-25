@@ -1,0 +1,54 @@
+name: Segurança (SAST · Secrets · Deps)
+
+# SAST (CodeQL), varredura de segredos (Gitleaks) e headers em produção.
+# Roda em push/PR na main e semanalmente.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"   # toda segunda 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write   # publica alertas na aba Security do repo
+
+jobs:
+  codeql:
+    name: SAST · CodeQL (JavaScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v3
+
+  secrets:
+    name: Varredura de segredos · Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  headers:
+    name: Headers de segurança em produção
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir headers do domínio
+        run: |
+          set -e
+          URL="https://safiriontradingbrasil.com/arsenal-pro/"
+          H=$(curl -s -I --max-time 20 "$URL")
+          echo "$H"
+          for header in "content-security-policy" "strict-transport-security" "x-frame-options" "x-content-type-options" "referrer-policy" "permissions-policy"; do
+            echo "$H" | grep -iq "$header" || { echo "::error::Header ausente: $header"; exit 1; }
+          done
+          echo "Todos os headers de segurança presentes."
