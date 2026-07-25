@@ -777,27 +777,30 @@
 <script>
 "use strict";
 /* ================= Dados ================= */
-const LS_EXPERTS = "cj_experts_v5";
+const LS_EXPERTS = "cj_experts_v6";
 const LS_CFG     = "cj_cfg_v2";
 const LS_HIST    = "cj_hist_v1";
 const LS_RODADA  = "cj_rodada_v1";
 const LS_LIVE    = "cj_live_state_v1";
 
-/* fotos recortadas de assets/*.png (rosto centralizado) em assets/experts/
-   outros recortes disponíveis para uso futuro: allan, bigboos,
-   mineirinho, molina, trader-estoico */
+/* Os 16 experts = uma foto para cada arquivo em assets/experts/ */
 const DEFAULT_EXPERTS = [
   ["Taylon",         "taylon"],
   ["Patrick",        "patrick"],
   ["Miriele",        "mirieli"],
   ["Julin",          "julinho"],
   ["Thon Carvalho",  "thon"],
-  ["Ed Trader",      "edlaine"],   // Ed Trader = Edlaine (Edlaine.png)
+  ["Ed Trader",      "edlaine"],   // Ed Trader = Edlaine (edlaine.webp)
   ["Vitor Lela",     "vitor-lela"],
   ["Eduardo Bastos", "eduardo-bastos"],
   ["Tio Vitão",      "vitao"],
   ["Gustavo",        "gustavo"],
   ["Lucas Bemfica",  "lucas-bemfica"],
+  ["Allan",          "allan"],
+  ["Big Boss",       "bigboos"],
+  ["Mineirinho",     "mineirinho"],
+  ["Molina",         "molina"],
+  ["Trader Estoico", "trader-estoico"],
 ].map(([n,slug],i) => ({
   id:"d"+i, name:n, photo: slug ? "../assets/experts/"+slug+".webp" : null,
   active:true, minutes:null

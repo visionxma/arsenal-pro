@@ -457,7 +457,7 @@
 <script>
 "use strict";
 /* ================= Dados (mesmas chaves da roleta) ================= */
-const LS_EXPERTS = "cj_experts_v5";
+const LS_EXPERTS = "cj_experts_v6";
 const LS_CFG     = "cj_cfg_v2";
 const LS_HIST    = "cj_hist_v1";
 const LS_RODADA  = "cj_rodada_v1";
@@ -479,6 +479,11 @@ const DEFAULT_EXPERTS = [
   ["Tio Vitão",      "vitao"],
   ["Gustavo",        "gustavo"],
   ["Lucas Bemfica",  "lucas-bemfica"],
+  ["Allan",          "allan"],
+  ["Big Boss",       "bigboos"],
+  ["Mineirinho",     "mineirinho"],
+  ["Molina",         "molina"],
+  ["Trader Estoico", "trader-estoico"],
 ].map(([n,slug],i) => ({
   id:"d"+i, name:n, photo: slug ? "../assets/experts/"+slug+".webp" : null,
   active:true, minutes:null
