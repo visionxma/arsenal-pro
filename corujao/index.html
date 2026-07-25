@@ -298,13 +298,16 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
   .hero{padding:22px 0 40px;background:#05070c}
   .hero-grid{display:block;text-align:center}
   /* fundo do pôster: cidade + fx + light leaks */
-  .hero-bg-m{display:block;position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .hero-bg-m{display:block;position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#04060b}
   .hero-bg-m img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .hero-bg-m .bg-fx{mix-blend-mode:screen;opacity:.85}
-  .hero-bg-m .bg-leaks{mix-blend-mode:screen;opacity:.8}
+  .hero-bg-m .bg-city{opacity:.55;filter:brightness(.6) saturate(1.15)}
+  .hero-bg-m .bg-fx{mix-blend-mode:screen;opacity:.28}
+  .hero-bg-m .bg-leaks{mix-blend-mode:screen;opacity:.22}
   .hero-bg-m::after{
     content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(4,7,12,.42) 0%,rgba(4,7,12,.12) 34%,rgba(4,7,12,.3) 68%,rgba(8,10,14,.82) 100%);
+    background:
+      radial-gradient(130% 70% at 50% 28%,rgba(4,6,11,.15) 0%,rgba(4,6,11,.55) 78%),
+      linear-gradient(180deg,rgba(4,6,11,.6) 0%,rgba(4,6,11,.3) 32%,rgba(4,6,11,.45) 66%,rgba(5,7,11,.92) 100%);
   }
   .hero-grid-bg,.glow-top,.hero-bglow{display:none}
   .hero-top-m{display:block;position:relative;z-index:2}
