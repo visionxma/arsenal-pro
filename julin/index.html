@@ -550,6 +550,31 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .hstat .num{font-size:.9rem}
   .hstat .lbl{font-size:.6rem}
 }
+
+/* ---------- Selo do expert no hero (avatar + nome) ---------- */
+.expert-badge{
+  display:inline-flex;align-items:center;gap:14px;margin:0 auto 26px;
+  padding:8px 20px 8px 8px;border-radius:999px;
+  background:var(--bg-3);border:1px solid var(--accent-line);
+  box-shadow:0 0 34px -10px rgba(35,137,230,.5);
+}
+.expert-badge .ph{
+  flex:none;width:52px;height:52px;border-radius:50%;overflow:hidden;
+  border:2px solid var(--accent-soft);
+  box-shadow:0 0 0 3px rgba(35,137,230,.18),0 0 20px rgba(35,137,230,.45);
+}
+.expert-badge .ph img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.expert-badge .tx{text-align:left;line-height:1.15}
+.expert-badge .tag{
+  display:block;font-family:var(--f-head);font-size:.64rem;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--accent-soft);
+}
+.expert-badge .nm{display:block;font-family:var(--f-head);font-weight:700;font-size:1.02rem;color:#fff}
+@media (max-width:560px){
+  .expert-badge{gap:11px;padding:6px 16px 6px 6px;margin-bottom:20px}
+  .expert-badge .ph{width:44px;height:44px}
+  .expert-badge .nm{font-size:.92rem}
+}
 </style>
 </head>
 <body>
@@ -557,6 +582,10 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <!-- 01 · HERO -->
 <header class="hero">
   <div class="container">
+    <div class="expert-badge" data-reveal style="--d:.02s">
+      <span class="ph"><img src="../assets/experts/julinho.webp" alt="Julin" width="52" height="52" loading="eager" /></span>
+      <span class="tx"><span class="tag">Indicado por</span><span class="nm">Julin</span></span>
+    </div>
     <h1 data-reveal style="--d:.08s">Você Não Precisa<br /><span class="ac">de Mais Um Curso</span></h1>
     <p class="lead" data-reveal style="--d:.16s">
       Os maiores traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar —
