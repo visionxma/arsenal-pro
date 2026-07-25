@@ -810,6 +810,18 @@ const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); ret
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
+/* Migração aditiva: garante que todos os experts padrão existam na lista salva.
+   Compara por nome, gera id novo (sem colidir) e NÃO mexe em ativos/sorteados. */
+(function(){
+  const have = new Set(experts.map(e => (e.name || "").trim().toLowerCase()));
+  let added = 0;
+  DEFAULT_EXPERTS.forEach(d => {
+    if (!have.has(d.name.trim().toLowerCase())){
+      experts.push({ id:"m" + Date.now().toString(36) + (added++), name:d.name, photo:d.photo, active:true, minutes:null });
+    }
+  });
+  if (added) save(LS_EXPERTS, experts);
+})();
 let cfg       = Object.assign(
   { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
   load(LS_CFG, {})
