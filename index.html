@@ -250,6 +250,21 @@ strong{color:var(--text)}
 .sec-left h2{max-width:24ch}
 .sec-left p{max-width:44rem;margin-top:12px}
 
+/* ---------- Efeito de card (spotlight + realce) — 10% de acento ---------- */
+/* Brilho que segue o mouse/toque; --mx/--my são atualizados via JS.
+   No mobile, .lit acende o card ao entrar na tela (sem hover). */
+.fx{position:relative;isolation:isolate}
+.fx::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity .4s ease;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(35,137,230,.16),transparent 60%);
+}
+.fx:hover::before,.fx.lit::before{opacity:1}
+.fx > *{position:relative;z-index:1}
+@media (hover:hover){
+  .fx:hover{border-color:var(--accent-line)!important}
+}
+
 /* ---------- Cards numerados (padrão features da referência) ---------- */
 .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .kcard{
@@ -258,7 +273,7 @@ strong{color:var(--text)}
   padding:26px 24px 16px;
   transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;
 }
-.kcard:hover{transform:translateY(-5px);border-color:var(--accent-line);box-shadow:0 0 55px -20px rgba(35,137,230,.35)}
+.kcard:hover,.kcard.lit{transform:translateY(-5px);border-color:var(--accent-line);box-shadow:0 0 55px -20px rgba(35,137,230,.35)}
 .kcard .ibox{
   width:46px;height:46px;border-radius:13px;display:grid;place-items:center;margin-bottom:18px;
   background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
@@ -302,7 +317,7 @@ strong{color:var(--text)}
   padding:16px 20px;
   transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s;
 }
-.rowc:hover{transform:translateX(5px);border-color:var(--accent-line);box-shadow:0 0 45px -18px rgba(35,137,230,.3)}
+.rowc:hover,.rowc.lit{transform:translateX(5px);border-color:var(--accent-line);box-shadow:0 0 45px -18px rgba(35,137,230,.3)}
 .rowc .ric{
   flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
   background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
@@ -326,7 +341,7 @@ strong{color:var(--text)}
   padding:22px 26px 16px;
   transition:border-color .3s,box-shadow .3s;
 }
-.stack-card:hover{border-color:var(--accent-line);box-shadow:0 0 55px -22px rgba(35,137,230,.35)}
+.stack-card:hover,.stack-card.lit{border-color:var(--accent-line);box-shadow:0 0 55px -22px rgba(35,137,230,.35)}
 .stack-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .stack-card .who{
   display:inline-flex;align-items:center;gap:8px;
@@ -624,27 +639,27 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
       <h2><span class="dm">Você Já Passou por</span> Alguma Dessas Situações?</h2>
     </div>
     <div class="kgrid">
-      <div class="kcard" data-reveal>
+      <div class="kcard fx" data-reveal>
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="21 11 21 17 15 17"/></svg></div>
         <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, o mercado não se comportou como deveria.</p>
         <div class="kfoot"><span class="nchip">001</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard" data-reveal style="--d:.06s">
+      <div class="kcard fx" data-reveal style="--d:.06s">
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg></div>
         <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico sem saber quando confiar no sinal.</p>
         <div class="kfoot"><span class="nchip">002</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard" data-reveal style="--d:.12s">
+      <div class="kcard fx" data-reveal style="--d:.12s">
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 8 8 8"/></svg></div>
         <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte perdeu tudo que tinha conquistado.</p>
         <div class="kfoot"><span class="nchip">003</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard" data-reveal style="--d:.18s">
+      <div class="kcard fx" data-reveal style="--d:.18s">
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
         <p>Viu traders postando resultado todo dia e ainda não entendeu o que eles enxergam que você não enxerga.</p>
         <div class="kfoot"><span class="nchip">004</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard" data-reveal style="--d:.24s">
+      <div class="kcard fx" data-reveal style="--d:.24s">
         <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h4"/><path d="M12 3v9"/><polyline points="8 8 12 12 16 8"/></svg></div>
         <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas a peça certa nunca aparece.</p>
         <div class="kfoot"><span class="nchip">005</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
@@ -674,7 +689,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         <p style="margin-top:8px;max-width:30rem">É um sistema com três dimensões:</p>
       </div>
       <div class="rowc-stack" data-reveal style="--d:.12s">
-        <div class="rowc">
+        <div class="rowc fx">
           <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 1</span>
@@ -683,7 +698,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           </div>
           <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
         </div>
-        <div class="rowc">
+        <div class="rowc fx">
           <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 2</span>
@@ -692,7 +707,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           </div>
           <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
         </div>
-        <div class="rowc">
+        <div class="rowc fx">
           <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/><line x1="2" y1="9" x2="5" y2="9"/><line x1="2" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="22" y2="9"/><line x1="19" y1="15" x2="22" y2="15"/><circle cx="12" cy="12" r="2.4"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 3</span>
@@ -719,77 +734,77 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
     </div>
 
     <div class="stack-list">
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Taylon</span><span class="nchip">01</span></div>
         <h3>Método PHIZ 5K</h3>
         <p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Patrick</span><span class="nchip">02</span></div>
         <h3>Mestre do Price Action</h3>
         <p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Miriele</span><span class="nchip">03</span></div>
         <h3>Ultra Sniper + Aula Especializada</h3>
         <p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Julin</span><span class="nchip">04</span></div>
         <h3>Mentoria Completa — Do Zero ao Avançado</h3>
         <p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Thon Carvalho</span><span class="nchip">05</span></div>
         <h3>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</h3>
         <p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Ed Trader</span><span class="nchip">06</span></div>
         <h3>Método VPA — Leitura de Velas e Controle Emocional</h3>
         <p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Vitor Lela</span><span class="nchip">07</span></div>
         <h3>Estratégia Validada em 6 Anos + Indicador Exclusivo</h3>
         <p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 397</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Eduardo Bastos</span><span class="nchip">08</span></div>
         <h3>MACD Sniper</h3>
         <p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 197</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Tio Vitão</span><span class="nchip">09</span></div>
         <h3>Olho de Deus — IA Integrada com a Safirion</h3>
         <p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Molina</span><span class="nchip">10</span></div>
         <h3>Indicador LEAD + Aula Fluxo Ultra</h3>
         <p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card" data-reveal>
+      <article class="stack-card fx" data-reveal>
         <div class="stack-head"><span class="who">— Suzana</span><span class="nchip">11</span></div>
         <h3>Retração ST + Treinamento Completo</h3>
         <p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p>
@@ -810,7 +825,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <section class="section">
   <div class="container">
     <div class="qual-grid">
-      <div class="qual-panel qual-panel--yes" data-reveal>
+      <div class="qual-panel qual-panel--yes fx" data-reveal>
         <h3>O Arsenal Pro É Para Você Se...</h3>
         <ul class="qual-list">
           <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</li>
@@ -821,7 +836,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</li>
         </ul>
       </div>
-      <div class="qual-panel qual-panel--no" data-reveal style="--d:.12s">
+      <div class="qual-panel qual-panel--no fx" data-reveal style="--d:.12s">
         <h3>O Arsenal Pro Não É Para Você Se...</h3>
         <ul class="qual-list">
           <li><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E2556A" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</li>
@@ -919,6 +934,28 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+
+// ---- Efeito de card: spotlight que segue o ponteiro/toque ----
+(function(){
+  const cards = document.querySelectorAll('.fx');
+  const move = (el, x, y) => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', ((x - r.left) / r.width * 100) + '%');
+    el.style.setProperty('--my', ((y - r.top) / r.height * 100) + '%');
+  };
+  cards.forEach(el => {
+    el.addEventListener('pointermove', e => move(el, e.clientX, e.clientY), { passive:true });
+    el.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(el, t.clientX, t.clientY); }, { passive:true });
+  });
+  // No mobile (sem hover), acende o card ao entrar na tela e apaga ao sair
+  if (!window.matchMedia('(hover:hover)').matches){
+    const io2 = new IntersectionObserver(es => es.forEach(e => {
+      e.target.classList.toggle('lit', e.isIntersecting && e.intersectionRatio > 0.55);
+    }), { threshold:[0,0.55,1] });
+    cards.forEach(el => io2.observe(el));
+  }
+})();
+
 
 // Painel inclinado: endireita ao entrar na tela (efeito usado no mobile, onde não há hover)
 const bw = document.querySelector(".browser-wrap");
