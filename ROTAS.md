@@ -20,9 +20,18 @@ GitHub Pages, sem nenhuma configuração de servidor.
 
 | Rota | Arquivo | O que é |
 |---|---|---|
-| `/` | `index.html` | Landing page do Arsenal Pro (oferta R$ 997) |
+| `/` | `index.html` | Landing page do Arsenal Pro (oferta R$ 997) — checkout genérico na const `CHECKOUT_URL` |
+| `/julin/` | `julin/index.html` | LP do Arsenal Pro do Julin trader (checkout PerfectPay próprio) |
+| `/eduardo/` | `eduardo/index.html` | LP do Arsenal Pro do Eduardo Bastos (checkout PerfectPay próprio) |
+| `/thon/` | `thon/index.html` | LP do Arsenal Pro do Thon trader (checkout PerfectPay próprio) |
+| `/vitao/` | `vitao/index.html` | LP do Arsenal Pro do Vitão trader (checkout PerfectPay próprio) |
+| `/edlaine/` | `edlaine/index.html` | LP do Arsenal Pro da Edlaine trader (checkout PerfectPay próprio) |
 | `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento); CTA vai para o Google Meet do evento |
 | `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
+
+As LPs por expert são cópias idênticas da landing; a única diferença é a const
+`CHECKOUT_URL` (link do produto de cada expert na PerfectPay). O logo do rodapé
+usa `../assets/logo.svg` por estarem um nível abaixo da raiz.
 
 ## Rotas restritas (operador)
 

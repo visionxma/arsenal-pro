@@ -416,32 +416,13 @@ strong{color:var(--text)}
 }
 .g-badge{
   width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;
-  background:radial-gradient(circle at 32% 24%,#5FB2FF 0%,var(--accent) 48%,var(--accent-strong) 100%);
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 24px 60px -18px rgba(35,137,230,.6), inset 0 1px 0 rgba(255,255,255,.35);
+  background:var(--accent);box-shadow:0 24px 60px -18px rgba(35,137,230,.6);
   position:relative;flex:none;
-  animation:badgePulse 2.8s ease-in-out infinite;
-}
-@keyframes badgePulse{
-  0%,100%{transform:scale(1);box-shadow:0 24px 60px -18px rgba(35,137,230,.55), inset 0 1px 0 rgba(255,255,255,.35)}
-  50%{transform:scale(1.045);box-shadow:0 24px 74px -12px rgba(35,137,230,.85), 0 0 46px rgba(105,184,255,.35), inset 0 1px 0 rgba(255,255,255,.45)}
 }
 .g-badge::before{content:"";position:absolute;inset:10px;border-radius:50%;border:1px dashed rgba(255,255,255,.45);animation:ringSpin 16s linear infinite}
 @keyframes ringSpin{to{transform:rotate(360deg)}}
-/* ondas que se expandem a partir do selo (efeito sonar) */
-.g-ripple{
-  position:absolute;inset:-1px;border-radius:50%;pointer-events:none;
-  border:1.5px solid rgba(105,184,255,.55);
-  animation:gRipple 2.8s ease-out infinite;
-}
-.g-ripple--2{animation-delay:1.4s}
-@keyframes gRipple{
-  0%{transform:scale(1);opacity:.65}
-  70%,100%{transform:scale(1.42);opacity:0}
-}
-.g-badge .gi{display:block;margin:0 auto 6px;opacity:.95;filter:drop-shadow(0 2px 6px rgba(2,8,20,.35))}
-.g-badge .d{font-family:var(--f-head);font-size:2.2rem;font-weight:700;line-height:1;color:#fff;text-shadow:0 2px 10px rgba(2,8,20,.3)}
-.g-badge .t{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.92);font-weight:800;margin-top:3px}
+.g-badge .d{font-family:var(--f-head);font-size:2.4rem;font-weight:700;line-height:1;color:#fff}
+.g-badge .t{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:#fff;font-weight:800}
 .guarantee h2{margin-bottom:14px}
 .guarantee p{margin-bottom:12px;color:var(--muted)}
 .g-note{
@@ -489,8 +470,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .frag-chips .chip{opacity:1;transform:none;transition:none}
   .btn,.kcard,.rowc,.browser{transition:none}
   .cta-pulse,.float{animation:none}
-  .g-badge,.g-badge::before{animation:none}
-  .g-ripple{animation:none;opacity:0}
+  .g-badge::before{animation:none}
 }
 
 /* ---------- Responsivo ---------- */
@@ -945,7 +925,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 
 <footer>
   <div class="container foot">
-    <img src="assets/logo.svg" alt="Safirion" />
+    <img src="../assets/logo.svg" alt="Safirion" />
   </div>
 </footer>
 
@@ -953,7 +933,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 // ============================================
 // CONFIGURAÇÃO: troque o link abaixo
 // ============================================
-const CHECKOUT_URL = "#";      // TODO: link de checkout do Arsenal Pro
+const CHECKOUT_URL = "https://go.perfectpay.com.br/PPU38CQELGR";  // link do produto - eduardo
 
 document.querySelectorAll("[data-checkout]").forEach(a => a.href = CHECKOUT_URL);
 
