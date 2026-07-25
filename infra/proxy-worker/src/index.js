@@ -5,11 +5,38 @@
 // (AAAA @100:: com proxy laranja) e publicar este Worker na conta da zona.
 const ORIGIN = "https://visionxma.github.io";
 
+// Cabeçalhos de segurança aplicados a todas as respostas
+const SEC_HEADERS = {
+  "Strict-Transport-Security": "max-age=15552000",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), fullscreen=(self)",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src https://fonts.gstatic.com",
+    "img-src 'self' data: blob:",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join("; "),
+};
+
 export default {
   async fetch(req) {
     const url = new URL(req.url);
-    let path = url.pathname;
 
+    // proxy só de leitura: métodos de escrita não fazem sentido em site estático
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      return new Response("Method Not Allowed", { status: 405, headers: { "Allow": "GET, HEAD" } });
+    }
+
+    let path = url.pathname;
     if (url.hostname.startsWith("admin.")) {
       if (path === "/" || path === "") {
         return Response.redirect(url.origin + "/roleta/admin/", 302);
@@ -25,7 +52,7 @@ export default {
     });
 
     const res = new Response(upstream.body, upstream);
-    res.headers.delete("X-Frame-Options");
+    for (const [k, v] of Object.entries(SEC_HEADERS)) res.headers.set(k, v);
     return res;
   },
 };

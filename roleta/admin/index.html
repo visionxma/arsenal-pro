@@ -455,7 +455,7 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
 /* ================= Dados (mesmas chaves da roleta) ================= */
@@ -523,9 +523,14 @@ const SYNC_ROOM = "cj-corujao";
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 const SB = window.supabase ? window.supabase.createClient(SYNC_URL, SYNC_ANON) : null;
 let syncCh = null, syncOn = false, lastPongPrim = 0, lastPongStb = 0;
+let authTok = null;
+if (SB){
+  SB.auth.getSession().then(({ data }) => { authTok = data && data.session ? data.session.access_token : null; });
+  SB.auth.onAuthStateChange((_ev, session) => { authTok = session ? session.access_token : null; });
+}
 function syncSend(o){
   if (!syncCh || !syncOn) return false;
-  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); return true; } catch { return false; }
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY, t: authTok }, o) }); return true; } catch { return false; }
 }
 function sendState(){ syncSend({ type:"state", experts, cfg }); }
 function sendStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
@@ -598,6 +603,7 @@ let live = load(LS_LIVE, { status:"idle" });
 let liveRAF = null;
 const fmt = s => { s = Math.max(0, Math.ceil(s));
   return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
+const escHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 function renderLive(){
   const card = document.getElementById("liveCard");
   const st = document.getElementById("liveStatus");
@@ -611,9 +617,9 @@ function renderLive(){
     st.textContent = "EM OPERAÇÃO AGORA";
     (function tick(){
       const left = (live.endsAt - Date.now())/1000;
-      main.innerHTML = `<b>${live.name || "Expert"}</b> · <span class="lc-timer">${fmt(left)}</span> restantes`;
+      main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="lc-timer">${fmt(left)}</span> restantes`;
       if (left > 0) liveRAF = requestAnimationFrame(tick);
-      else main.innerHTML = `<b>${live.name || "Expert"}</b> · tempo encerrado`;
+      else main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · tempo encerrado`;
     })();
   } else {
     card.classList.remove("running");

@@ -783,7 +783,7 @@
 
   <div class="toast glass" id="toast" role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
 /* ================= Dados ================= */
@@ -1510,6 +1510,21 @@ function syncSend(o){
   try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); } catch {}
 }
 function syncStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
+/* comandos privilegiados exigem sessão válida do painel (token verificado no Supabase) */
+const AUTH_CACHE = { token:null, okUntil:0 };
+async function verifyAdmin(tok){
+  if (!tok) return false;
+  if (tok === AUTH_CACHE.token && Date.now() < AUTH_CACHE.okUntil) return true;
+  try {
+    const r = await fetch(SYNC_URL + "/auth/v1/user", {
+      headers: { "apikey": SYNC_ANON, "Authorization": "Bearer " + tok }
+    });
+    if (!r.ok) return false;
+    AUTH_CACHE.token = tok;
+    AUTH_CACHE.okUntil = Date.now() + 5*60*1000;
+    return true;
+  } catch { return false; }
+}
 function applyAdminState(m){
   if (Array.isArray(m.experts) && m.experts.length){
     experts = m.experts; save(LS_EXPERTS, experts);
@@ -1537,19 +1552,25 @@ function applyStateR(m){
   if (!window.supabase) return;
   const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
   syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
-  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+  syncCh.on("broadcast", { event:"msg" }, async ({ payload }) => {
     const m = payload || {};
     if (m.k !== SYNC_KEY) return;
+    // tipos sem privilégio
+    if (m.type === "ping"){ syncSend({ type:"pong", standby: !isPrimary }); return; }
+    if (m.type === "hello"){
+      if (m.role === "admin" && isPrimary){
+        syncStateR();
+        syncSend(Object.assign({ type:"live" }, load(LS_LIVE, { status:"idle" })));
+      }
+      return;
+    }
+    // daqui em diante, só com sessão válida do painel
+    if (!(await verifyAdmin(m.t))){
+      if (m.type === "spin" || m.type === "endOp")
+        syncSend({ type:"ack", cmd:m.type, ok:false, reason:"Sessão do painel inválida — faça login novamente." });
+      return;
+    }
     switch (m.type){
-      case "ping":
-        syncSend({ type:"pong", standby: !isPrimary });
-        break;
-      case "hello":
-        if (m.role === "admin" && isPrimary){
-          syncStateR();
-          syncSend(Object.assign({ type:"live" }, load(LS_LIVE, { status:"idle" })));
-        }
-        break;
       case "state":   applyAdminState(m); break;
       case "state-r": applyStateR(m); break;
       case "force":
