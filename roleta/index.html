@@ -75,7 +75,7 @@
   .stage{
     position:relative; z-index:1; width:100%; max-width:560px;
     padding:14px 20px 130px; display:flex; flex-direction:column;
-    align-items:center; text-align:center;
+    align-items:center; text-align:center; overflow-x:clip;
   }
   .headline{
     font-family:'Montserrat',sans-serif; font-weight:800;
@@ -258,9 +258,10 @@
   .drawer-bg{ position:fixed; inset:0; z-index:70; background:rgba(4,6,12,.7); opacity:0; pointer-events:none; transition:opacity .3s; }
   .drawer{ position:fixed; top:0; right:0; bottom:0; z-index:71; width:min(440px,100vw);
     background:var(--bg-1); border-left:1px solid rgba(255,255,255,.12);
-    transform:translateX(100%); transition:transform .4s cubic-bezier(.16,1,.3,1);
+    transform:translateX(100%); visibility:hidden;
+    transition:transform .4s cubic-bezier(.16,1,.3,1), visibility 0s .4s;
     display:flex; flex-direction:column; }
-  body.admin-open .drawer{ transform:none; }
+  body.admin-open .drawer{ transform:none; visibility:visible; transition:transform .4s cubic-bezier(.16,1,.3,1), visibility 0s; }
   body.admin-open .drawer-bg{ opacity:1; pointer-events:auto; }
   .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
   .drawer-head h2{ font-family:'Montserrat',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; }
