@@ -443,11 +443,12 @@
     <form class="gate-card" id="loginCard">
       <img src="../../assets/logo.svg" alt="Safirion" />
       <h2>Acesso restrito</h2>
-      <p class="g-sub">Digite a senha do operador para abrir o Painel Admin.</p>
-      <input type="text" name="username" value="operador" autocomplete="username" hidden aria-hidden="true" tabindex="-1" />
+      <p class="g-sub">Entre com o e-mail e a senha do operador.</p>
+      <div class="gate-field"><label for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" placeholder="voce@email.com" autocomplete="username"></div>
       <div class="gate-field"><label for="loginPass">Senha</label>
         <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-      <p class="gate-err">Senha incorreta. Tente novamente.</p>
+      <p class="gate-err">E-mail ou senha incorretos.</p>
       <button type="submit" class="gate-btn">Entrar no painel</button>
     </form>
   </div>
@@ -464,8 +465,6 @@ const LS_HIST    = "cj_hist_v1";
 const LS_RODADA  = "cj_rodada_v1";
 const LS_LIVE    = "cj_live_state_v1";
 const LS_SB      = "cj_admin_sb";
-const ADMIN_PASS = "corujao2026"; // TODO: troque a senha antes do evento (igual à da roleta)
-const SS_AUTH    = "cj_admin_ok";
 
 const CFG_DEF = { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true };
 
@@ -522,6 +521,7 @@ const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
 const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
 const SYNC_ROOM = "cj-corujao";
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
+const SB = window.supabase ? window.supabase.createClient(SYNC_URL, SYNC_ANON) : null;
 let syncCh = null, syncOn = false, lastPongPrim = 0, lastPongStb = 0;
 function syncSend(o){
   if (!syncCh || !syncOn) return false;
@@ -558,9 +558,8 @@ function updateConn(){
   }
 }
 (function initSync(){
-  if (!window.supabase){ toast("Falha ao carregar a sincronização."); return; }
-  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
-  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  if (!SB){ toast("Falha ao carregar a sincronização."); return; }
+  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
   syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
     const m = payload || {};
     if (m.k !== SYNC_KEY) return;
@@ -941,29 +940,43 @@ document.querySelectorAll(".sb-item[data-goto]").forEach(btn => {
 /* ================= Login ================= */
 const loginOverlay = document.getElementById("loginOverlay");
 const loginCard = document.getElementById("loginCard");
+const loginEmail = document.getElementById("loginEmail");
 const loginPass = document.getElementById("loginPass");
 function unlock(){
   document.body.classList.remove("locked");
   loginOverlay.classList.remove("show");
   render(); renderLive();
 }
-loginCard.addEventListener("submit", e => {
+loginCard.addEventListener("submit", async e => {
   e.preventDefault();
-  if (loginPass.value === ADMIN_PASS){
-    sessionStorage.setItem(SS_AUTH, "1");
-    unlock();
-  } else {
+  if (!SB){ toast("Autenticação indisponível — verifique a internet."); return; }
+  const btn = loginCard.querySelector(".gate-btn");
+  btn.disabled = true; btn.textContent = "Entrando…";
+  const { error } = await SB.auth.signInWithPassword({
+    email: loginEmail.value.trim(),
+    password: loginPass.value
+  });
+  btn.disabled = false; btn.textContent = "Entrar no painel";
+  if (error){
     loginCard.classList.add("wrong");
     loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
     loginPass.select();
+  } else {
+    unlock();
   }
 });
-document.getElementById("btnLogout").addEventListener("click", () => {
-  sessionStorage.removeItem(SS_AUTH);
+document.getElementById("btnLogout").addEventListener("click", async () => {
+  try { if (SB) await SB.auth.signOut(); } catch {}
   location.reload();
 });
-if (sessionStorage.getItem(SS_AUTH) === "1") unlock();
-else loginPass.focus();
+(async function checkSession(){
+  try {
+    if (!SB){ loginEmail.focus(); return; }
+    const { data } = await SB.auth.getSession();
+    if (data && data.session) unlock();
+    else loginEmail.focus();
+  } catch { loginEmail.focus(); }
+})();
 
 /* ================= Toast ================= */
 let toastT = null;
