@@ -1527,11 +1527,15 @@ async function verifyAdmin(tok){
   } catch { return false; }
 }
 function applyAdminState(m){
-  if (Array.isArray(m.experts) && m.experts.length){
+  /* O PAINEL É A AUTORIDADE da lista de experts. Sempre que ele manda a lista,
+     a roleta adota EXATAMENTE essa lista — inclusive quando alguém foi removido
+     (a lista chega menor). Só ignoramos o caso degenerado de lista ausente. */
+  if (Array.isArray(m.experts)){
     experts = m.experts; save(LS_EXPERTS, experts);
     const ids = experts.map(e => e.id);
     sorteados = sorteados.filter(id => ids.includes(id));
     save(LS_RODADA, sorteados);
+    if (currentOpId && !ids.includes(currentOpId)) currentOpId = null;
   }
   if (m.cfg){
     cfg = Object.assign(
@@ -1607,7 +1611,19 @@ function applyStateR(m){
     }
   }).subscribe(st => {
     syncOn = st === "SUBSCRIBED";
-    if (syncOn) syncSend({ type:"hello", role:"roleta" });
+    if (syncOn){
+      /* Ao conectar/reconectar, a roleta anuncia presença E pede a lista atual
+         ao painel. Reenvia algumas vezes para vencer qualquer corrida de timing
+         (admin ainda carregando, rede lenta) — o painel responde a cada pedido. */
+      let tries = 0;
+      const askAdmin = () => {
+        if (!syncOn) return;
+        syncSend({ type:"hello", role:"roleta" });
+        syncSend({ type:"reqState" });
+        if (++tries < 6) setTimeout(askAdmin, 1200);
+      };
+      askAdmin();
+    }
   });
 })();
 

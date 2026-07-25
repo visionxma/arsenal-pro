@@ -613,7 +613,12 @@ function updateConn(){
         render();
         break;
       case "hello":
-        if (m.role === "roleta"){ sendState(); syncSend({ type:"ping" }); }
+        /* a roleta apareceu (subiu/reconectou): manda a lista autoritativa na hora */
+        if (m.role === "roleta"){ sendState(); sendStateR(); syncSend({ type:"ping" }); }
+        break;
+      case "reqState":
+        /* a roleta pediu explicitamente o estado atual — o painel é a autoridade */
+        sendState(); sendStateR();
         break;
       case "getLiveUrl":
         // a página do Corujão pediu o link atual ao conectar
