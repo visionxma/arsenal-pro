@@ -329,18 +329,32 @@ strong{color:var(--text)}
 .rowc .chev{flex:none;color:var(--accent-soft);transition:transform .3s}
 .rowc:hover .chev{transform:translateX(4px)}
 
-/* ---------- Split: intro fixa + lista (value stack) ---------- */
-.split{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
-.split-intro{position:sticky;top:110px}
+/* ---------- Value stack: cards que se empilham ao rolar ---------- */
+.split{max-width:760px;margin:0 auto}
+.split-intro{margin-bottom:34px;text-align:center}
 .split-intro .eyebrow{margin-bottom:18px}
-.split-intro h2{max-width:16ch}
-.split-intro p{margin-top:14px;max-width:26rem}
-.stack-list{display:grid;gap:14px}
+.split-intro h2{max-width:20ch;margin:0 auto}
+.split-intro p{margin:14px auto 0;max-width:34rem}
+/* cada card gruda no topo com um leve degrau, formando a pilha */
+.stack-list{display:grid;gap:26px}
 .stack-card{
+  position:sticky;
   background:var(--grad-card);border:1px solid var(--line);border-radius:18px;
-  padding:22px 26px 16px;
+  padding:24px 28px 18px;
+  box-shadow:0 -10px 40px -24px rgba(2,8,20,.9);
   transition:border-color .3s,box-shadow .3s;
 }
+.stack-card:nth-child(1){top:96px}
+.stack-card:nth-child(2){top:104px}
+.stack-card:nth-child(3){top:112px}
+.stack-card:nth-child(4){top:120px}
+.stack-card:nth-child(5){top:128px}
+.stack-card:nth-child(6){top:136px}
+.stack-card:nth-child(7){top:144px}
+.stack-card:nth-child(8){top:152px}
+.stack-card:nth-child(9){top:160px}
+.stack-card:nth-child(10){top:168px}
+.stack-card:nth-child(11){top:176px}
 .stack-card:hover,.stack-card.lit{border-color:var(--accent-line);box-shadow:0 0 55px -22px rgba(35,137,230,.35)}
 .stack-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .stack-card .who{
@@ -466,8 +480,6 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 @media (max-width:1024px){
   .two-col{grid-template-columns:1fr;gap:14px}
   .kgrid{grid-template-columns:1fr 1fr}
-  .split{grid-template-columns:1fr}
-  .split-intro{position:static}
   .qual-grid{grid-template-columns:1fr}
   .oc-rows{columns:1}
 }
@@ -491,6 +503,19 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .pullquote{padding:20px 18px}
   .prose{margin-top:30px}
   .glowline::before{inset:-30px 0}
+  /* empilhamento no mobile: degrau menor, gruda logo abaixo da topbar */
+  .stack-list{gap:18px}
+  .stack-card:nth-child(1){top:78px}
+  .stack-card:nth-child(2){top:84px}
+  .stack-card:nth-child(3){top:90px}
+  .stack-card:nth-child(4){top:96px}
+  .stack-card:nth-child(5){top:102px}
+  .stack-card:nth-child(6){top:108px}
+  .stack-card:nth-child(7){top:114px}
+  .stack-card:nth-child(8){top:120px}
+  .stack-card:nth-child(9){top:126px}
+  .stack-card:nth-child(10){top:132px}
+  .stack-card:nth-child(11){top:138px}
 }
 @media (max-width:560px){
   .btn{width:100%;white-space:normal;text-align:center;justify-content:space-between}
