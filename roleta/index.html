@@ -1500,6 +1500,8 @@ const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 const SYNC_ROOM = "cj-corujao";
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 let syncCh = null, syncOn = false;
+/* último link da live recebido de um admin autenticado (url + token que o validou) */
+let LIVE_URL = { url: (function(){ try { return localStorage.getItem("cj_live_url_v1") || null; } catch { return null; } })(), t: null };
 function syncSend(o){
   if (!syncCh || !syncOn) return;
   try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); } catch {}
@@ -1559,6 +1561,13 @@ function applyStateR(m){
       }
       return;
     }
+    // a página do Corujão pediu o link atual da live — a roleta reencaminha o último
+    // link que recebeu de um admin autenticado (guarda o token junto para o Corujão validar)
+    if (m.type === "getLiveUrl"){
+      if (isPrimary && LIVE_URL.url && LIVE_URL.t)
+        syncSend({ type:"liveUrl", url: LIVE_URL.url, t: LIVE_URL.t });
+      return;
+    }
     // daqui em diante, só com sessão válida do painel
     if (!(await verifyAdmin(m.t))){
       if (m.type === "spin" || m.type === "endOp")
@@ -1568,6 +1577,12 @@ function applyStateR(m){
     switch (m.type){
       case "state":   applyAdminState(m); break;
       case "state-r": applyStateR(m); break;
+      case "liveUrl": {
+        // guarda o link + o token que o autenticou, para reencaminhar ao Corujão
+        const u = (function(x){ try { const p = new URL(String(x)); return (p.protocol==="https:"||p.protocol==="http:") ? p.href : null; } catch { return null; } })(m.url);
+        if (u){ LIVE_URL = { url:u, t:m.t }; try { localStorage.setItem("cj_live_url_v1", u); } catch {} }
+        break;
+      }
       case "force":
         if (!isPrimary) break;
         forcedId = m.id || null;

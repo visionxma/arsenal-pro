@@ -480,13 +480,27 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
 <p>Operar no mercado financeiro envolve riscos e pode resultar em perda do capital investido.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
-const GROUP_URL = "https://meet.google.com/jie-trza-gqm";
+// Link padrão da live (fallback). O painel admin pode trocá-lo em tempo real.
+const GROUP_URL_DEFAULT = "https://meet.google.com/jie-trza-gqm";
+const LS_LIVE_URL = "cj_live_url_v1";
 const ctaEl = document.getElementById("ctaGroup");
-ctaEl.href = GROUP_URL;
-ctaEl.target = "_blank";
-ctaEl.rel = "noopener";
+
+// aceita só http(s); evita javascript:, data:, etc.
+function safeLiveUrl(u){
+  try { const p = new URL(String(u)); return (p.protocol === "https:" || p.protocol === "http:") ? p.href : null; }
+  catch { return null; }
+}
+function applyLiveUrl(u){
+  const url = safeLiveUrl(u) || GROUP_URL_DEFAULT;
+  ctaEl.href = url;
+  ctaEl.target = "_blank";
+  ctaEl.rel = "noopener";
+}
+// no load: usa o último link salvo (se houver), senão o padrão
+applyLiveUrl(localStorage.getItem(LS_LIVE_URL));
 
 // Meta Pixel: evento de Lead ao clicar para entrar na live
 ctaEl.addEventListener("click", () => {
@@ -537,6 +551,46 @@ tick();
       bump();
     }, 35000 + Math.random() * 40000);
   })();
+})();
+
+// ---- Link da live em tempo real (comandado pelo painel admin via Supabase) ----
+(function(){
+  if (!window.supabase) return;
+  const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+  const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+  const SYNC_ROOM = "cj-corujao";
+  const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
+  const AUTH_CACHE = { token:null, okUntil:0 };
+  async function verifyAdmin(tok){
+    if (!tok) return false;
+    if (tok === AUTH_CACHE.token && Date.now() < AUTH_CACHE.okUntil) return true;
+    try {
+      const r = await fetch(SYNC_URL + "/auth/v1/user", {
+        headers: { "apikey": SYNC_ANON, "Authorization": "Bearer " + tok }
+      });
+      if (!r.ok) return false;
+      AUTH_CACHE.token = tok; AUTH_CACHE.okUntil = Date.now() + 5*60*1000;
+      return true;
+    } catch { return false; }
+  }
+  let ch = null, on = false;
+  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+  ch = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  ch.on("broadcast", { event:"msg" }, async ({ payload }) => {
+    const m = payload || {};
+    if (m.k !== SYNC_KEY) return;
+    if (m.type !== "liveUrl") return;
+    // só aceita de sessão de admin válida
+    if (!(await verifyAdmin(m.t))) return;
+    const url = safeLiveUrl(m.url);
+    if (!url) return;
+    localStorage.setItem(LS_LIVE_URL, url);
+    applyLiveUrl(url);
+  }).subscribe(st => {
+    on = st === "SUBSCRIBED";
+    // pede ao painel o link atual ao conectar (o admin responde com liveUrl)
+    if (on){ try { ch.send({ type:"broadcast", event:"msg", payload:{ k:SYNC_KEY, type:"getLiveUrl" } }); } catch {} }
+  });
 })();
 </script>
 </body>

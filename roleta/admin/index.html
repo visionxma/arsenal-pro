@@ -318,6 +318,22 @@
         </div>
       </div>
 
+      <!-- LINK DA LIVE (botão "Entrar na live" do /corujao) -->
+      <section class="card" id="secLiveUrl">
+        <h2><span class="hi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg></span> Link do botão “Entrar na live”</h2>
+        <div class="card-body">
+          <div class="field">
+            <label for="fLiveUrl">Endereço da live (página do Corujão)</label>
+            <input type="url" id="fLiveUrl" inputmode="url" placeholder="https://meet.google.com/..." autocomplete="off" spellcheck="false" />
+            <p class="sub">Troca o link do botão <b>Entrar na live</b> em tempo real, para todos que estão na página do Corujão. Aceita apenas http(s).</p>
+          </div>
+          <div class="lc-actions">
+            <button class="abtn" id="btnSaveLiveUrl" type="button">Aplicar link</button>
+          </div>
+          <p class="sub" style="margin-top:8px">Atual: <b id="liveUrlNow">padrão (Google Meet)</b></p>
+        </div>
+      </section>
+
       <!-- TEMPOS & GIRO -->
       <section class="card" id="secTimes">
         <h2><span class="hi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg></span> Tempos &amp; giro</h2>
@@ -462,6 +478,7 @@ const LS_CFG     = "cj_cfg_v2";
 const LS_HIST    = "cj_hist_v1";
 const LS_RODADA  = "cj_rodada_v1";
 const LS_LIVE    = "cj_live_state_v1";
+const LS_LIVE_URL = "cj_live_url_v1";
 const LS_SB      = "cj_admin_sb";
 
 const CFG_DEF = { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true };
@@ -593,6 +610,10 @@ function updateConn(){
         break;
       case "hello":
         if (m.role === "roleta"){ sendState(); syncSend({ type:"ping" }); }
+        break;
+      case "getLiveUrl":
+        // a página do Corujão pediu o link atual ao conectar
+        sendLiveUrl();
         break;
     }
   }).subscribe(st => {
@@ -860,6 +881,38 @@ document.getElementById("btnSpinNow").addEventListener("click", () => {
 document.getElementById("btnEndOp").addEventListener("click", () => {
   sendCmd({ type:"endOp" });
 });
+
+/* ================= Link da live (botão "Entrar na live" do /corujao) ================= */
+const fLiveUrl    = document.getElementById("fLiveUrl");
+const liveUrlNow  = document.getElementById("liveUrlNow");
+function safeLiveUrl(u){
+  try { const p = new URL(String(u)); return (p.protocol === "https:" || p.protocol === "http:") ? p.href : null; }
+  catch { return null; }
+}
+function showLiveUrl(){
+  const u = localStorage.getItem(LS_LIVE_URL);
+  liveUrlNow.textContent = u ? u : "padrão (Google Meet)";
+  if (u && !fLiveUrl.value) fLiveUrl.value = u;
+}
+/* reenvia o link atual (para a página do Corujão que acabou de conectar) */
+function sendLiveUrl(){
+  const u = localStorage.getItem(LS_LIVE_URL);
+  if (u) syncSend({ type:"liveUrl", url:u });
+}
+document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
+  const raw = fLiveUrl.value.trim();
+  if (!raw){ toast("Informe o link da live."); return; }
+  const url = safeLiveUrl(raw);
+  if (!url){ toast("Link inválido — use um endereço http(s) completo."); return; }
+  localStorage.setItem(LS_LIVE_URL, url);
+  showLiveUrl();
+  // vai direto pelo canal (o alvo é a página do Corujão, não a roleta):
+  if (syncSend({ type:"liveUrl", url }))
+    toast("Link da live atualizado na página do Corujão.");
+  else
+    toast("Sincronização offline — o link foi salvo e será enviado ao reconectar.");
+});
+showLiveUrl();
 document.getElementById("btnResetRound").addEventListener("click", () => {
   sorteados = []; save(LS_RODADA, sorteados);
   sendStateR();
