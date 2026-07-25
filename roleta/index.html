@@ -784,7 +784,7 @@ const LS_RODADA  = "cj_rodada_v1";
 const LS_LIVE    = "cj_live_state_v1";
 
 /* fotos recortadas de assets/*.png (rosto centralizado) em assets/experts/
-   outros recortes disponíveis para uso futuro: allan, bigboos, gustavo,
+   outros recortes disponíveis para uso futuro: allan, bigboos,
    mineirinho, molina, trader-estoico */
 const DEFAULT_EXPERTS = [
   ["Taylon",         "taylon"],
@@ -796,6 +796,8 @@ const DEFAULT_EXPERTS = [
   ["Vitor Lela",     "vitor-lela"],
   ["Eduardo Bastos", "eduardo-bastos"],
   ["Tio Vitão",      "vitao"],
+  ["Gustavo",        "gustavo"],
+  ["Lucas Bemfica",  "lucas-bemfica"],
 ].map(([n,slug],i) => ({
   id:"d"+i, name:n, photo: slug ? "../assets/experts/"+slug+".webp" : null,
   active:true, minutes:null
