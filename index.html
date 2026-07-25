@@ -134,32 +134,6 @@ strong{color:var(--text)}
 .price-note s{color:#4A6178}
 .price-note b{color:var(--accent-soft);font-weight:800}
 
-/* ---------- Topbar (idêntica ao /corujao) ---------- */
-.topbar{
-  position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
-  background:rgba(10,10,10,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-}
-.topbar-inner{
-  max-width:1200px;margin:0 auto;padding:0 24px;height:72px;
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-}
-.topbar img{height:34px;width:auto;transition:filter .3s}
-.topbar a:hover img{filter:drop-shadow(0 0 14px rgba(0,167,255,.6))}
-.topbar .lp-link{
-  display:inline-flex;align-items:center;
-  font-size:.9rem;font-weight:700;color:#fff;
-  padding:11px 20px;border-radius:13px;
-  background:rgba(0,167,255,.12);border:1px solid rgba(0,167,255,.45);
-  box-shadow:0 0 22px rgba(0,167,255,.18), inset 0 1px 0 rgba(255,255,255,.1);
-  transition:background .3s,box-shadow .3s,transform .3s;
-}
-.topbar .lp-link:hover{
-  background:rgba(0,167,255,.24);transform:translateY(-1px);
-  box-shadow:0 0 30px rgba(0,167,255,.35), inset 0 1px 0 rgba(255,255,255,.15);
-}
-.topbar .lp-link .arr{margin-left:9px;flex:none;transition:transform .3s}
-.topbar .lp-link:hover .arr{transform:translateX(4px)}
-
 /* ---------- Hero centralizado (padrão da referência) ---------- */
 .hero{
   position:relative;padding:80px 0 88px;text-align:center;
@@ -491,8 +465,6 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .guarantee{grid-template-columns:1fr;gap:26px;justify-items:center;text-align:center;padding:30px 24px}
   .guarantee > div:last-child{text-align:left}
   .kgrid{grid-template-columns:1fr}
-  .topbar-inner{height:64px;padding:0 18px}
-  .topbar img{height:28px}
   /* no celular o painel entra inclinado e se endireita ao aparecer na tela */
   .browser{transform:rotateX(10deg) scale(.99)}
   .browser-wrap.in-view .browser{transform:rotateX(0deg) scale(1)}
@@ -503,7 +475,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .pullquote{padding:20px 18px}
   .prose{margin-top:30px}
   .glowline::before{inset:-30px 0}
-  /* empilhamento no mobile: degrau menor, gruda logo abaixo da topbar */
+  /* empilhamento no mobile: degrau menor */
   .stack-list{gap:18px}
   .stack-card:nth-child(1){top:78px}
   .stack-card:nth-child(2){top:84px}
@@ -519,8 +491,6 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 }
 @media (max-width:560px){
   .btn{width:100%;white-space:normal;text-align:center;justify-content:space-between}
-  .topbar .lp-link{padding:10px 14px;font-size:.82rem}
-  .topbar .lp-link .pre{display:none}
   .qual-panel{padding:24px 18px}
   .oc-row{font-size:.84rem;gap:10px}
   .oc-total .val{font-size:1.7rem}
@@ -556,18 +526,6 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 </style>
 </head>
 <body>
-
-<!-- Topbar (idêntica ao /corujao) -->
-<nav class="topbar" aria-label="Navegação principal">
-  <div class="topbar-inner">
-    <a href="#" aria-label="Safirion">
-      <img src="assets/logo.svg" alt="Safirion — Confiança para investir" />
-    </a>
-    <a class="lp-link" href="#" data-checkout><span class="pre">Quero&nbsp;o&nbsp;</span><span>Arsenal&nbsp;Pro</span>
-      <svg class="arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
-    </a>
-  </div>
-</nav>
 
 <!-- 01 · HERO -->
 <header class="hero">

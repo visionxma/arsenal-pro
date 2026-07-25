@@ -160,14 +160,10 @@
     background:radial-gradient(ellipse 90% 65% at 50% 45%, transparent 40%, rgba(3,5,10,.72) 100%); }
 
   /* ================= LAYOUT ================= */
-  .topbar{
-    position:relative; z-index:3; max-width:1220px; margin:0 auto;
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:18px 24px 0;
-  }
-  .admin-hot{ width:44px; height:36px; display:block; cursor:default; }
-  .tb-right{ display:flex; align-items:center; gap:9px; }
-  .mute{ display:flex; align-items:center; justify-content:center; width:38px; height:38px; padding:0; cursor:pointer;
+  /* controle de som flutuante (sem navbar) + zona invisível de acesso ao admin */
+  .admin-hot{ position:fixed; top:14px; left:14px; z-index:6; width:44px; height:36px; display:block; cursor:default; }
+  .mute{ position:fixed; top:14px; right:16px; z-index:6;
+    display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; cursor:pointer;
     border-radius:999px; color:#b6c2dd; transition:.2s; }
   .mute:hover{ color:#fff; background-color:rgba(0,167,255,.16); }
   .mute svg{ width:17px; height:17px; }
@@ -631,7 +627,6 @@
   }
   @media (max-width:600px){
     .wrap{ padding:16px 16px 44px; }
-    .topbar{ padding:14px 16px 0; }
     .wheel-wrap{ width:min(90vw,52vh,400px); }
     .cta{ padding:18px 26px; }
     .live{ padding:22px 18px 20px; }
@@ -679,13 +674,9 @@
     <div class="bg-vignette"></div>
   </div>
 
-  <div class="topbar">
-    <!-- zona discreta: 2 cliques abrem o Painel Admin em outra aba (também no atalho Shift+A) -->
-    <span class="admin-hot" id="adminHot" title="Painel Admin" aria-hidden="true"></span>
-    <div class="tb-right">
-      <button id="muteBtn" class="mute glass--soft" type="button" aria-label="Ativar ou desativar som"></button>
-    </div>
-  </div>
+  <!-- zona discreta: 2 cliques abrem o Painel Admin em outra aba (também no atalho Shift+A) -->
+  <span class="admin-hot" id="adminHot" title="Painel Admin" aria-hidden="true"></span>
+  <button id="muteBtn" class="mute glass--soft" type="button" aria-label="Ativar ou desativar som"></button>
 
   <main class="wrap">
     <div class="cols">
