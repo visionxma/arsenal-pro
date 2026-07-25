@@ -64,6 +64,7 @@ body::before{
   background-size:22px 22px;
 }
 body > *{position:relative;z-index:1}
+main{overflow-x:clip}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 ::selection{background:rgba(35,137,230,.4)}
@@ -456,26 +457,61 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .oc-rows{columns:1}
 }
 @media (max-width:768px){
-  .section{padding:52px 0}
-  .hero{padding:52px 0 60px}
+  .section{padding:48px 0}
+  .hero{padding:44px 0 56px}
+  .hero h1{font-size:clamp(1.8rem,8vw,2.6rem)}
   .hero-cta .btn{width:100%;justify-content:space-between}
   .guarantee{grid-template-columns:1fr;gap:26px;justify-items:center;text-align:center;padding:30px 24px}
   .guarantee > div:last-child{text-align:left}
   .kgrid{grid-template-columns:1fr}
   .topbar-inner{height:64px;padding:0 18px}
   .topbar img{height:28px}
-  .browser{transform:none}
-  .b-body{padding:20px 20px 0}
-  .hstat{padding:12px 16px}
+  /* no celular o painel entra inclinado e se endireita ao aparecer na tela */
+  .browser{transform:rotateX(10deg) scale(.99)}
+  .browser-wrap.in-view .browser{transform:rotateX(0deg) scale(1)}
+  .browser-wrap{margin-top:40px}
+  .b-body{padding:20px 18px 0}
+  .hstat{padding:12px 14px}
+  .two-col h2,.sec-left h2,.urgency h2{max-width:none}
+  .pullquote{padding:20px 18px}
+  .prose{margin-top:30px}
+  .glowline::before{inset:-30px 0}
 }
 @media (max-width:560px){
   .btn{width:100%;white-space:normal;text-align:center;justify-content:space-between}
   .topbar .lp-link{padding:10px 14px;font-size:.82rem}
   .topbar .lp-link .pre{display:none}
-  .qual-panel{padding:26px 22px}
-  .oc-row{font-size:.86rem}
-  .hstat .num{font-size:1.05rem}
-  .hstat .lbl{font-size:.68rem}
+  .qual-panel{padding:24px 18px}
+  .oc-row{font-size:.84rem;gap:10px}
+  .oc-total .val{font-size:1.7rem}
+  .oc-badge{right:14px}
+  .b-url{letter-spacing:.06em;padding:3px 12px}
+  .hstat .num{font-size:1rem}
+  .hstat .lbl{font-size:.66rem}
+  .stack-card{padding:18px 16px 12px}
+  .stack-card h3{font-size:1.02rem}
+  .total-band{padding:28px 18px;border-radius:20px}
+  .rowc{padding:14px 14px;gap:12px}
+  .rowc .ric{width:40px;height:40px}
+  .kcard{padding:20px 18px 12px}
+  .frag-chips .chip{font-size:.82rem;padding:9px 14px}
+  .urgency .final-box{padding:18px 16px;font-size:.94rem}
+  .g-badge{width:124px;height:124px}
+  .g-badge .d{font-size:2rem}
+  .final-list li{border-radius:18px}
+  .price-note{font-size:.82rem}
+  .container{padding:0 18px}
+}
+@media (max-width:380px){
+  .hero h1{font-size:1.65rem}
+  h2{font-size:1.45rem}
+  .btn{font-size:.9rem;padding:8px 8px 8px 18px;gap:9px}
+  .btn--lg{font-size:.92rem;padding:9px 9px 9px 20px}
+  .btn .arr-c{width:32px;height:32px}
+  .oc-row{font-size:.79rem}
+  .hstat{padding:10px 10px}
+  .hstat .num{font-size:.9rem}
+  .hstat .lbl{font-size:.6rem}
 }
 </style>
 </head>
@@ -883,6 +919,19 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+
+// Painel inclinado: endireita ao entrar na tela (efeito usado no mobile, onde não há hover)
+const bw = document.querySelector(".browser-wrap");
+if (bw) {
+  new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add("in-view"), 350);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.35 }).observe(bw);
+}
 </script>
 </body>
 </html>
