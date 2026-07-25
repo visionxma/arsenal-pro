@@ -1047,7 +1047,7 @@ const COL_DONE = "#070c15";
 let rotation = 0, spinning = false, pendingIdx = -1, currentOpId = null, spinGuard = null;
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const SPIN_S = REDUCED ? 1.2 : 8;
+let spinDur = REDUCED ? 1.2 : 8;   // duração do giro atual (sorteada a cada rodada)
 let idleRAF = null;
 function startIdle(){
   if (REDUCED || spinning || idleRAF) return;
@@ -1160,8 +1160,8 @@ const spinBtn = document.getElementById("spinBtn");
 const hubBtn  = document.getElementById("hubBtn");
 
 function randInt(max){
-  // faixa uniforme: descarta o resto que enviesaria o módulo
-  const limit = Math.floor(0xFFFFFFFF / max) * max;
+  // faixa uniforme: descarta o resto que enviesaria o módulo (2^32 valores possíveis)
+  const limit = Math.floor(4294967296 / max) * max;
   const a = new Uint32Array(1);
   do { crypto.getRandomValues(a); } while (a[0] >= limit);
   return a[0] % max;
@@ -1182,17 +1182,29 @@ async function spin(){
   // sorteia entre quem ainda não saiu; se todos já passaram, começa novo ciclo
   let pool = disponiveis();
   let novoCiclo = false;
-  if (pool.length === 0){ reiniciaRodada(); buildWheel(); renderPool(); pool = activeExperts(); novoCiclo = true; }
+  if (pool.length === 0){
+    const ultimo = sorteados[sorteados.length-1];
+    reiniciaRodada(); buildWheel(); renderPool();
+    pool = activeExperts();
+    // no ciclo novo, evita repetir logo quem fechou o anterior
+    if (pool.length > 1) pool = pool.filter(e => e.id !== ultimo);
+    novoCiclo = true;
+  }
   const escolhido = pool[randInt(pool.length)];
   const idx = list.findIndex(e => e.id === escolhido.id);
   pendingIdx = idx;
   if (novoCiclo) toast("Todos já passaram — novo ciclo iniciado.");
   document.body.classList.add("spinning");
-  SFX.spin(SPIN_S);
-  wheel.style.transition = `transform ${SPIN_S}s cubic-bezier(.12,.72,.03,1)`;
+  // voltas, duração e ponto de parada variam a cada giro: dois sorteios nunca
+  // têm o mesmo movimento, senão a animação parece roteirizada
+  const dur    = REDUCED ? 1.2 : 6.8 + Math.random()*2.9;      // 6,8s a 9,7s
+  const rounds = REDUCED ? 2   : 6 + randInt(6);               // 6 a 11 voltas
+  spinDur = dur;
+  SFX.spin(dur);
+  wheel.style.transition = `transform ${dur.toFixed(2)}s cubic-bezier(.12,.72,.03,1)`;
   void wheel.offsetWidth; // aplica a transição antes do novo transform
-  const N = list.length, SEG = 360/N, rounds = REDUCED ? 2 : 8;
-  const jitter = (Math.random()-0.5)*(SEG*0.6);
+  const N = list.length, SEG = 360/N;
+  const jitter = (Math.random()-0.5)*(SEG*0.8);                // para longe do centro do setor
   const curMod = ((rotation%360)+360)%360;
   const desMod = ((360 - idx*SEG)%360+360)%360;
   let delta = (desMod - curMod + 360)%360;
@@ -1200,7 +1212,7 @@ async function spin(){
   rotation += delta;
   wheel.style.transform = `rotate(${rotation}deg)`;
   clearTimeout(spinGuard);
-  spinGuard = setTimeout(acabouGiro, SPIN_S*1000 + 600);   // rede de segurança
+  spinGuard = setTimeout(acabouGiro, dur*1000 + 600);   // rede de segurança
 }
 spinBtn.addEventListener("click", spin);
 hubBtn.addEventListener("click", spin);
