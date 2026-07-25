@@ -292,6 +292,22 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
 }
 
 /* ---- Responsivo ---- */
+/* Desktop: hero completa visível em 100% de zoom */
+@media (min-width:1025px){
+  .hero{padding:34px 0 28px}
+  .hero-when{margin:0 0 8px}
+  .hero h1{font-size:clamp(2.4rem,4.2vw,3.6rem);line-height:1}
+  .hero-date{margin-top:10px;font-size:.88rem}
+  .hero-sub{margin:16px 0 18px;font-size:1rem}
+  .hero-list{gap:10px;margin-bottom:22px}
+  .hero-list li{font-size:.96rem}
+  .gcheck{width:24px;height:24px}
+  .gcheck svg{width:12px;height:12px}
+  .stats{margin-top:26px}
+  .stat{padding:16px 18px}
+  .stat .v{font-size:clamp(1.4rem,2.6vw,1.8rem)}
+  .hero-visual .fotos{width:min(440px,100%)}
+}
 @media (max-width:1024px){
   /* Layout de referência (pôster original):
      logo → A PARTIR DAS 18 HORAS → colagem → CORUJÃO DE TRADERS → 25 DE JULHO → CTA */
