@@ -22,9 +22,9 @@ RCE, LFI, XXE, SSRF e afins.
 ## Checklist manual — FAZER antes do evento
 
 ### Cloudflare (painel da zona safiriontradingbrasil.com)
-- [ ] **Security → Bots → Bot Fight Mode: ON** (plano free)
-- [ ] **Security → WAF → Rate limiting rules**: criar regra no login do admin
-      (path `admin.safiriontradingbrasil.com/roleta/admin/`, ~10 req/min por IP → Block)
+- [x] **Bot Fight Mode: ON** — feito
+- [x] **Rate limiting no login do admin: ATIVO** — regra "Login admin - rate limit",
+      10 req / 10s por IP → Bloquear (host admin. + path /arsenal-pro/roleta/admin)
 - [ ] **Security → Settings → Security Level: Medium/High** durante o evento
 - [ ] **SSL/TLS → Overview: Full (strict)**
 
