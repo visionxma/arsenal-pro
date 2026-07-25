@@ -88,9 +88,42 @@
   .status{ margin-top:8px; font-size:13.5px; color:var(--brand-2); font-weight:600; min-height:18px; }
   .status b{ color:#fff; }
 
+  /* Como funciona (passos) */
+  .steps{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+  .step{
+    display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px;
+    background:rgba(0,167,255,.07); border:1px solid rgba(0,167,255,.22);
+    font-size:12px; font-weight:600; color:#c8d1e6;
+  }
+  .step i{
+    font-style:normal; width:18px; height:18px; border-radius:50%; display:grid; place-items:center;
+    background:var(--btn); color:var(--btn-ink); font-size:10.5px; font-weight:800; flex:none;
+  }
+
+  /* Faixa de experts da rodada */
+  .round-strip{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px; max-width:480px; }
+  .r-av{
+    position:relative; width:46px; height:46px; border-radius:50%; flex:none;
+    border:2px solid rgba(0,167,255,.55); box-shadow:0 0 14px rgba(0,167,255,.25);
+    transition:opacity .3s, border-color .3s, transform .3s;
+  }
+  .r-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
+  .r-av.done{ opacity:.38; border-color:rgba(255,255,255,.18); box-shadow:none; }
+  .r-av.done::after{
+    content:"✓"; position:absolute; inset:0; display:grid; place-items:center; border-radius:50%;
+    background:rgba(5,7,13,.55); color:#2ec16b; font-weight:800; font-size:18px;
+  }
+  .r-av.current{ transform:scale(1.12); border-color:#2ec16b; box-shadow:0 0 18px rgba(46,193,107,.5); }
+
   /* ---------- WHEEL ---------- */
-  .wheel-wrap{ position:relative; width:min(88vw,66vh,440px); height:min(88vw,66vh,440px); margin:22px auto 6px;
+  .wheel-wrap{ position:relative; width:min(88vw,66vh,440px); height:min(88vw,66vh,440px); margin:26px auto 6px;
     display:flex; align-items:center; justify-content:center; }
+  .wheel-wrap::before{
+    content:""; position:absolute; inset:-18%; border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(0,167,255,.22) 0%, rgba(0,167,255,.07) 45%, transparent 68%);
+    animation:glowPulse 4s ease-in-out infinite;
+  }
+  @keyframes glowPulse{ 0%,100%{opacity:.65} 50%{opacity:1} }
   .rim{ position:absolute; inset:-4%; border-radius:50%;
     background:radial-gradient(circle at 50% 50%, transparent 62%, var(--ring) 63%, #0a0d16 84%, #05070d 100%);
     box-shadow:0 0 0 3px rgba(255,255,255,.05), 0 20px 50px rgba(0,0,0,.6); }
@@ -128,8 +161,13 @@
     margin-top:24px; position:relative; border:none; cursor:pointer;
     font-family:'Montserrat',sans-serif; font-weight:800;
     font-size:clamp(16px,4.4vw,20px); letter-spacing:.4px; text-transform:uppercase; color:var(--btn-ink);
-    padding:16px 46px; border-radius:12px; background:var(--btn);
+    padding:17px 52px; border-radius:999px; background:var(--btn);
     box-shadow:0 6px 16px rgba(0,0,0,.35), 0 0 26px rgba(0,167,255,.25); transition:transform .1s, filter .15s;
+    animation:ctaGlow 3s ease-in-out infinite;
+  }
+  @keyframes ctaGlow{
+    0%,100%{ box-shadow:0 6px 16px rgba(0,0,0,.35), 0 0 22px rgba(0,167,255,.28); }
+    50%{ box-shadow:0 6px 16px rgba(0,0,0,.35), 0 0 46px rgba(0,167,255,.5); }
   }
   .cta:hover{ filter:brightness(1.06); }
   .cta:active{ transform:translateY(1px); }
@@ -309,6 +347,11 @@
     <span class="event-tag"><span class="live-dot" aria-hidden="true"></span> Corujão de Traders</span>
     <h1 class="headline">Roleta dos <em>Experts</em></h1>
     <p class="subtitle">O sorteado assume a operação <b>ao vivo</b>. Quem já operou sai da roleta até todos os experts passarem.</p>
+    <div class="steps" aria-label="Como funciona">
+      <span class="step"><i>1</i> Roleta sorteia o expert</span>
+      <span class="step"><i>2</i> Ele opera por <b id="stepMin">&nbsp;30 min</b></span>
+      <span class="step"><i>3</i> Sorteia o próximo até todos passarem</span>
+    </div>
     <p class="status" id="statusLine"></p>
 
     <div class="wheel-wrap">
@@ -322,7 +365,8 @@
     </div>
 
     <button class="cta" id="spinBtn">Sortear Expert</button>
-    <p class="attempts">Tempo por expert: <b id="cfgTimeLabel">10 min</b></p>
+    <p class="attempts">Tempo por expert: <b id="cfgTimeLabel">30 min</b></p>
+    <div class="round-strip" id="roundStrip" aria-label="Experts da rodada"></div>
   </main>
 
   <div class="ticker"><div class="ticker-pill">
@@ -350,7 +394,7 @@
       </div>
       <div class="timer-sub" id="timerSub">TEMPO DE OPERAÇÃO EM ANDAMENTO</div>
     </div>
-    <button class="claim-btn" id="btnNext" disabled>Novo sorteio</button>
+    <button class="claim-btn" id="btnNext" disabled>Sortear próximo</button>
     <button class="retry" id="btnEnd">Encerrar agora</button>
   </div></div>
 
@@ -421,7 +465,7 @@
 "use strict";
 /* ================= Dados ================= */
 const LS_EXPERTS = "cj_experts_v1";
-const LS_CFG     = "cj_cfg_v1";
+const LS_CFG     = "cj_cfg_v2";
 const LS_ROUND   = "cj_round_v1";
 const LS_LIVE    = "cj_live_state_v1";
 const ADMIN_PASS = "corujao2026"; // TODO: troque a senha antes do evento
@@ -436,7 +480,7 @@ const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); ret
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
 let experts = load(LS_EXPERTS, DEFAULT_EXPERTS);
-let cfg     = load(LS_CFG, { minutes: 10 });
+let cfg     = load(LS_CFG, { minutes: 30 });
 let round   = load(LS_ROUND, { remaining: null, done: [] });
 
 function initials(name){ return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
@@ -472,7 +516,22 @@ function ensureRound(){
 const wheel = document.getElementById("wheel");
 const COL_LIVE = ["#0e5fa8","#0a2440","#071527"];
 const COL_DONE = "#080d16";
-let rotation = 0, spinning = false, pendingIdx = -1;
+let rotation = 0, spinning = false, pendingIdx = -1, currentOpId = null;
+
+/* Giro ocioso: a roleta fica girando devagar enquanto espera o sorteio */
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const SPIN_S = REDUCED ? 1.2 : 8;
+let idleRAF = null;
+function startIdle(){
+  if (REDUCED || spinning || idleRAF) return;
+  wheel.style.transition = "none";
+  (function step(){
+    rotation += 0.045;
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    idleRAF = requestAnimationFrame(step);
+  })();
+}
+function stopIdle(){ if (idleRAF){ cancelAnimationFrame(idleRAF); idleRAF = null; } }
 
 function buildWheel(){
   const list = activeExperts();
@@ -541,8 +600,11 @@ function spin(){
   const idx = list.findIndex(e => e.id === winner.id);
 
   spinning = true; spinBtn.disabled = true; pendingIdx = idx;
-  SFX.spin(6.2);
-  const N = list.length, SEG = 360/N, rounds = 6;
+  stopIdle();
+  SFX.spin(SPIN_S);
+  wheel.style.transition = `transform ${SPIN_S}s cubic-bezier(.12,.72,.03,1)`;
+  void wheel.offsetWidth; // aplica a transição antes do novo transform
+  const N = list.length, SEG = 360/N, rounds = REDUCED ? 2 : 8;
   const jitter = (Math.random()-0.5)*(SEG*0.6);
   const curMod = ((rotation%360)+360)%360;
   const desMod = ((360 - idx*SEG)%360+360)%360;
@@ -588,6 +650,7 @@ function setLive(state){
   try { new BroadcastChannel("cj-live").postMessage(state); } catch {}
 }
 function showWinner(e){
+  currentOpId = e.id;
   winnerPhoto.src = photoOf(e);
   winnerPhoto.alt = "Foto de " + e.name;
   winnerName.textContent = e.name;
@@ -597,6 +660,7 @@ function showWinner(e){
   overlay.classList.add("show");
   launchConfetti();
   SFX.win(false);
+  renderStatus();
   timerTotal = cfg.minutes*60;
   timerEndAt = Date.now() + timerTotal*1000;
   setLive({ status:"running", name:e.name, photo:photoOf(e), endsAt:timerEndAt, total:timerTotal });
@@ -609,22 +673,38 @@ function tick(){
   if (left <= 0){ timeUp(); return; }
   timerRAF = requestAnimationFrame(tick);
 }
+let nextT = null, nextLeft = 0;
 function timeUp(){
   cancelAnimationFrame(timerRAF);
   timerTxt.textContent = "00:00";
   timerBar.style.strokeDashoffset = CIRC;
   winCard.classList.add("timeup");
-  timerSub.textContent = "TEMPO ENCERRADO · PRONTO PARA O PRÓXIMO";
   btnNext.disabled = false;
   setLive({ status:"idle" });
   SFX.lose();
+  // ciclo automático: sorteia o próximo sozinho
+  nextLeft = 10;
+  timerSub.textContent = "TEMPO ENCERRADO · PRÓXIMO SORTEIO EM " + nextLeft + "s";
+  clearInterval(nextT);
+  nextT = setInterval(() => {
+    nextLeft--;
+    if (nextLeft <= 0){ goNext(true); return; }
+    timerSub.textContent = "TEMPO ENCERRADO · PRÓXIMO SORTEIO EM " + nextLeft + "s";
+  }, 1000);
+}
+function goNext(autoSpin){
+  clearInterval(nextT); nextT = null;
+  overlay.classList.remove("show");
+  currentOpId = null;
+  const novaRodada = round.remaining.length === 0 && activeExperts().length > 0;
+  ensureRound(); buildWheel(); renderStatus();
+  if (novaRodada) toast("Rodada completa! Todos os experts voltaram para a roleta.");
+  spinning = false; spinBtn.disabled = false;
+  startIdle();
+  if (autoSpin) setTimeout(spin, 700);
 }
 btnEnd.addEventListener("click", () => { timerEndAt = Date.now(); });
-btnNext.addEventListener("click", () => {
-  overlay.classList.remove("show");
-  ensureRound(); buildWheel(); renderStatus();
-  spinning = false; spinBtn.disabled = false;
-});
+btnNext.addEventListener("click", () => goNext(true));
 function launchConfetti(){
   confetti.innerHTML = "";
   const CC = ["#00A7FF","#4dc3ff","#ffffff","#0077cc"];
@@ -648,6 +728,20 @@ function renderStatus(){
   ensureRound();
   statusLine.innerHTML = `<b>${round.remaining.length}</b> na roleta · <b>${round.done.length}</b> já operaram nesta rodada`;
   cfgTimeLabel.textContent = cfg.minutes + " min";
+  document.getElementById("stepMin").textContent = " " + cfg.minutes + " min";
+  // faixa de avatares da rodada
+  const strip = document.getElementById("roundStrip");
+  strip.innerHTML = "";
+  activeExperts().forEach(e => {
+    const d = document.createElement("div");
+    d.className = "r-av" +
+      (e.id === currentOpId ? " current" : (round.done.includes(e.id) ? " done" : ""));
+    d.title = e.name;
+    const im = document.createElement("img");
+    im.src = photoOf(e); im.alt = e.name;
+    d.appendChild(im);
+    strip.appendChild(d);
+  });
 }
 function updateTicker(last){
   if (last){
@@ -906,5 +1000,6 @@ ensureRound();
 buildWheel();
 renderStatus();
 setLive({ status:"idle" });
+startIdle();
 </script>
 </body></html>
