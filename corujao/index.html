@@ -134,16 +134,32 @@ a{color:inherit;text-decoration:none}
 }
 .topbar a:hover img{filter:drop-shadow(0 0 14px rgba(0,167,255,.6))}
 .topbar .lp-link{
-  display:inline-flex;align-items:center;
+  position:relative;display:inline-flex;align-items:center;overflow:hidden;
   font-size:.9rem;font-weight:700;color:#fff;
   padding:11px 20px;border-radius:13px;
-  background:rgba(0,167,255,.12);border:1px solid rgba(0,167,255,.45);
-  box-shadow:0 0 22px rgba(0,167,255,.18), inset 0 1px 0 rgba(255,255,255,.1);
-  transition:background .3s,box-shadow .3s,transform .3s;
+  background:rgba(0,167,255,.14);border:1px solid rgba(0,167,255,.55);
+  transition:background .3s,transform .3s;
+  animation:lpGlow 2.4s ease-in-out infinite;
+}
+@keyframes lpGlow{
+  0%,100%{
+    box-shadow:0 0 18px rgba(0,167,255,.45), 0 0 34px rgba(0,167,255,.15), inset 0 1px 0 rgba(255,255,255,.12);
+    border-color:rgba(0,167,255,.55);
+    background:rgba(0,167,255,.14);
+  }
+  50%{
+    box-shadow:0 0 36px rgba(0,167,255,.9), 0 0 74px rgba(0,167,255,.45), inset 0 1px 0 rgba(255,255,255,.22);
+    border-color:rgba(77,195,255,1);
+    background:rgba(0,167,255,.26);
+  }
+}
+.topbar .lp-link::after{
+  content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.3),transparent);
+  transform:skewX(-20deg);animation:btn-shimmer 3s ease-in-out infinite;
 }
 .topbar .lp-link:hover{
-  background:rgba(0,167,255,.24);transform:translateY(-1px);
-  box-shadow:0 0 30px rgba(0,167,255,.35), inset 0 1px 0 rgba(255,255,255,.15);
+  background:rgba(0,167,255,.28);transform:translateY(-1px);
 }
 .topbar .lp-link .arr{margin-left:9px;flex:none;transition:transform .3s}
 .topbar .lp-link:hover .arr{transform:translateX(4px)}
@@ -297,6 +313,7 @@ footer p{font-size:.78rem;color:var(--muted-2);max-width:46rem;margin:0 auto}
   html{scroll-behavior:auto}
   [data-reveal]{opacity:1;transform:none;transition:none}
   .btn::after,.x-bar-marquee{animation:none}
+  .topbar .lp-link,.topbar .lp-link::after{animation:none}
 }
 
 /* ---- Responsivo ---- */
