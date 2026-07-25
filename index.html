@@ -23,9 +23,9 @@
   --surface:#111A2B;
   --line:rgba(214,237,248,.08);
   --line-strong:rgba(214,237,248,.16);
-  --text:#E9F0FA;
-  --muted:#A1B8C3;
-  --muted-2:#7C93A6;
+  --text:#EEF4FB;
+  --muted:#C3D3E0;
+  --muted-2:#A2B6C6;
   --accent:#2389E6;
   --accent-strong:#146AC7;
   --accent-soft:#69B8FF;
@@ -50,10 +50,10 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:var(--f-body);
-  font-size:16px;
+  font-size:17px;
   font-weight:500;
-  letter-spacing:-.02em;
-  line-height:1.6;
+  letter-spacing:-.01em;
+  line-height:1.62;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
@@ -72,13 +72,13 @@ a{color:inherit;text-decoration:none}
 .container{max-width:var(--container);margin:0 auto;padding:0 24px}
 
 h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.02em;line-height:1.2;color:#fff}
-h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}
-h3{font-size:1.15rem}
+h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+h3{font-size:1.24rem}
 p{color:var(--muted)}
-strong{color:var(--text)}
-.lead{font-size:clamp(1rem,1.4vw,1.12rem);color:var(--muted)}
-/* dois tons nos títulos (padrão da referência) */
-.dm{color:var(--muted-2)}
+strong{color:#fff}
+.lead{font-size:clamp(1.06rem,1.5vw,1.2rem);color:var(--muted)}
+/* dois tons nos títulos — o tom apagado agora é legível (padrão da referência) */
+.dm{color:#B9CBDA}
 .ac{color:var(--accent-soft)}
 
 /* ---------- Badge duplo (ícone + rótulo) ---------- */
@@ -89,15 +89,15 @@ strong{color:var(--text)}
   box-shadow:0 0 18px rgba(35,137,230,.25);
 }
 .eyebrow .el{
-  background:var(--bg-3);border:1px solid var(--line);border-radius:999px;
-  padding:8px 18px;font-size:.82rem;font-weight:600;color:var(--muted);
+  background:var(--bg-3);border:1px solid var(--line-strong);border-radius:999px;
+  padding:8px 18px;font-size:.9rem;font-weight:700;color:var(--text);
 }
 
 /* chip numerado 001 (padrão da referência) */
 .nchip{
   display:inline-flex;align-items:center;justify-content:center;
   border:1px solid var(--line-strong);border-radius:999px;padding:4px 14px;
-  font-family:var(--f-head);font-weight:600;font-size:.72rem;letter-spacing:.08em;color:var(--muted-2);
+  font-family:var(--f-head);font-weight:700;font-size:.78rem;letter-spacing:.08em;color:var(--muted);
 }
 
 /* ---------- Botões (pill + seta em círculo) ---------- */
@@ -130,8 +130,8 @@ strong{color:var(--text)}
 @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .float{animation:heroFloat 6s ease-in-out infinite}
 
-.price-note{margin-top:16px;font-size:.9rem;color:var(--muted-2)}
-.price-note s{color:#4A6178}
+.price-note{margin-top:16px;font-size:.98rem;color:var(--muted)}
+.price-note s{color:#5D7690}
 .price-note b{color:var(--accent-soft);font-weight:800}
 
 /* ---------- Hero centralizado (padrão da referência) ---------- */
@@ -174,25 +174,25 @@ strong{color:var(--text)}
 }
 .b-body{padding:26px 32px 0}
 .oc-title{
-  font-family:var(--f-head);font-size:.78rem;font-weight:600;letter-spacing:.16em;
+  font-family:var(--f-head);font-size:.84rem;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;color:var(--accent-soft);margin-bottom:14px;
 }
 .oc-rows{columns:2;column-gap:44px}
 .oc-row{
-  display:flex;justify-content:space-between;gap:14px;padding:8px 0;font-size:.92rem;
+  display:flex;justify-content:space-between;gap:14px;padding:9px 0;font-size:1rem;
   border-bottom:1px solid rgba(214,237,248,.05);
   break-inside:avoid;
 }
 .oc-row span{color:var(--accent-pale)}
-.oc-row s{color:#4A6178;font-family:var(--f-head);font-weight:500;flex:none}
+.oc-row s{color:#5D7690;font-family:var(--f-head);font-weight:500;flex:none}
 .oc-total{
   margin-top:18px;padding:16px 0 20px;border-top:1px solid var(--line);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
 }
-.oc-total .lbl{font-size:.85rem;color:var(--muted-2)}
-.oc-total .val{font-family:var(--f-head);font-size:2.1rem;font-weight:700;color:#fff;line-height:1}
-.oc-strike{font-size:.88rem;color:var(--muted-2)}
-.oc-strike s{color:#4A6178}
+.oc-total .lbl{font-size:.92rem;color:var(--muted)}
+.oc-total .val{font-family:var(--f-head);font-size:2.2rem;font-weight:700;color:#fff;line-height:1}
+.oc-strike{font-size:.94rem;color:var(--muted)}
+.oc-strike s{color:#5D7690}
 .oc-badge{
   position:absolute;top:-15px;right:26px;z-index:2;
   background:var(--accent);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.1em;
@@ -206,7 +206,7 @@ strong{color:var(--text)}
   display:block;font-family:var(--f-head);font-size:clamp(1.2rem,2.2vw,1.55rem);font-weight:600;
   color:#fff;line-height:1.15;white-space:nowrap;
 }
-.hstat .lbl{display:block;margin-top:2px;font-size:.78rem;font-weight:600;color:var(--muted-2)}
+.hstat .lbl{display:block;margin-top:3px;font-size:.84rem;font-weight:600;color:var(--muted)}
 
 /* ---------- Seções ---------- */
 .section{padding:72px 0}
@@ -272,7 +272,7 @@ strong{color:var(--text)}
   background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
   box-shadow:0 0 16px rgba(35,137,230,.2);
 }
-.kcard p{font-size:.92rem;color:var(--muted-2)}
+.kcard p{font-size:1rem;color:var(--muted)}
 .kfoot{
   display:flex;align-items:center;justify-content:space-between;
   margin-top:auto;padding-top:20px;
@@ -284,8 +284,8 @@ strong{color:var(--text)}
 .frag-chips{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
 .chip{
   display:inline-flex;align-items:center;gap:9px;padding:10px 19px;border-radius:999px;
-  background:rgba(226,85,106,.07);border:1px solid rgba(226,85,106,.25);
-  color:#F3A9B4;font-size:.9rem;font-weight:600;
+  background:rgba(226,85,106,.09);border:1px solid rgba(226,85,106,.32);
+  color:#F7BAC3;font-size:.98rem;font-weight:600;
 }
 /* chips entram um a um com "quique" quando a linha aparece */
 .frag-chips .chip{opacity:0;transform:scale(.6);transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1)}
@@ -297,7 +297,7 @@ strong{color:var(--text)}
 
 /* ---------- Prosa (contexto) ---------- */
 .prose{max-width:760px;margin:40px auto 0}
-.prose p{margin-bottom:14px;font-size:1rem}
+.prose p{margin-bottom:15px;font-size:1.08rem;color:var(--muted)}
 .pullquote{
   margin:24px 0;padding:24px 30px;border-radius:20px;
   background:var(--surface);border:1px solid var(--accent-line);
@@ -321,9 +321,9 @@ strong{color:var(--text)}
   background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
 }
 .rowc .rtx{flex:1;min-width:0}
-.rowc .rtag{display:block;font-family:var(--f-head);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
-.rowc h3{font-size:1.08rem;margin:2px 0 3px}
-.rowc p{font-size:.88rem;color:var(--muted-2)}
+.rowc .rtag{display:block;font-family:var(--f-head);font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft)}
+.rowc h3{font-size:1.16rem;margin:2px 0 3px}
+.rowc p{font-size:.98rem;color:var(--muted)}
 .rowc .chev{flex:none;color:var(--accent-soft);transition:transform .3s}
 .rowc:hover .chev{transform:translateX(4px)}
 
@@ -359,15 +359,15 @@ strong{color:var(--text)}
 .stack-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .stack-card .who{
   display:inline-flex;align-items:center;gap:8px;
-  font-size:.78rem;font-weight:700;color:var(--accent-soft);
+  font-size:.86rem;font-weight:700;color:var(--accent-soft);
   background:var(--accent-tint);border:1px solid var(--accent-line);
-  padding:4px 13px;border-radius:999px;
+  padding:5px 14px;border-radius:999px;
 }
-.stack-card h3{font-size:1.1rem;margin-bottom:7px}
-.stack-card p{font-size:.9rem;color:var(--muted-2)}
+.stack-card h3{font-size:1.2rem;margin-bottom:8px}
+.stack-card p{font-size:.98rem;color:var(--muted)}
 .stack-card .kfoot{padding-top:14px}
-.stack-card .val{font-family:var(--f-head);font-weight:600;font-size:1.05rem;color:#fff;white-space:nowrap}
-.stack-card .val small{display:block;font-family:var(--f-body);font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2)}
+.stack-card .val{font-family:var(--f-head);font-weight:700;font-size:1.14rem;color:#fff;white-space:nowrap}
+.stack-card .val small{display:block;font-family:var(--f-body);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 
 .total-band{
   margin:44px auto 0;max-width:880px;border-radius:24px;
@@ -396,7 +396,7 @@ strong{color:var(--text)}
 .qual-panel--yes{border-color:var(--accent-line);box-shadow:0 0 70px -30px rgba(35,137,230,.35)}
 .qual-panel h3{font-size:1.22rem;margin-bottom:18px}
 .qual-list{list-style:none;display:grid;gap:12px}
-.qual-list li{display:flex;gap:12px;align-items:flex-start;font-size:.95rem;color:var(--accent-pale)}
+.qual-list li{display:flex;gap:12px;align-items:flex-start;font-size:1.02rem;color:var(--accent-pale)}
 .qual-list .ico{flex:none;margin-top:3px}
 .qual-panel--no .qual-list li{color:var(--muted)}
 
@@ -409,7 +409,7 @@ strong{color:var(--text)}
 }
 .urgency .two-col{align-items:start}
 .urgency h2{max-width:16ch}
-.urgency p{font-size:.98rem;margin-bottom:13px}
+.urgency p{font-size:1.05rem;margin-bottom:14px;color:var(--muted)}
 .urgency .final-box{
   margin-top:34px;border-radius:18px;padding:22px 26px;
   background:var(--accent-tint);border:1px solid var(--accent-line);
@@ -494,7 +494,7 @@ strong{color:var(--text)}
 .g-note{
   margin-top:6px;padding:16px 22px;border-radius:14px;
   background:var(--accent-tint);border:1px solid var(--accent-line);
-  color:var(--accent-pale);font-weight:600;font-size:.94rem;
+  color:var(--accent-pale);font-weight:600;font-size:1.02rem;
 }
 
 /* ---------- CTA Final ---------- */
@@ -510,8 +510,8 @@ strong{color:var(--text)}
   list-style:none;display:grid;gap:9px;max-width:520px;margin:0 auto 30px;text-align:left;
 }
 .final-list li{
-  display:flex;gap:13px;align-items:center;font-size:.94rem;color:var(--accent-pale);
-  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 20px;
+  display:flex;gap:13px;align-items:center;font-size:1.02rem;color:var(--accent-pale);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:12px 22px;
 }
 .final-list .ico{flex:none}
 .final .hero-cta{margin-top:0}
@@ -598,37 +598,41 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 @media (max-width:560px){
   .btn{width:100%;white-space:normal;text-align:center;justify-content:space-between}
   .qual-panel{padding:24px 18px}
-  .oc-row{font-size:.84rem;gap:10px}
-  .oc-total .val{font-size:1.7rem}
+  .oc-row{font-size:.94rem;gap:10px}
+  .oc-total .val{font-size:1.8rem}
   .oc-badge{right:14px}
   .b-url{letter-spacing:.06em;padding:3px 12px}
-  .hstat .num{font-size:1rem}
-  .hstat .lbl{font-size:.66rem}
+  .hstat .num{font-size:1.05rem}
+  .hstat .lbl{font-size:.74rem}
   .stack-card{padding:18px 16px 12px}
-  .stack-card h3{font-size:1.02rem}
+  .stack-card h3{font-size:1.1rem}
+  .stack-card p{font-size:.96rem}
   .total-band{padding:28px 18px;border-radius:20px}
   .rowc{padding:14px 14px;gap:12px}
   .rowc .ric{width:40px;height:40px}
+  .rowc p{font-size:.96rem}
   .kcard{padding:20px 18px 12px}
-  .frag-chips .chip{font-size:.82rem;padding:9px 14px}
-  .urgency .final-box{padding:18px 16px;font-size:.94rem}
+  .kcard p{font-size:.98rem}
+  .frag-chips .chip{font-size:.9rem;padding:9px 14px}
+  .urgency .final-box{padding:18px 16px;font-size:1rem}
+  .qual-list li{font-size:.98rem}
   .g-badge{width:124px;height:124px}
   .g-badge .d{font-size:2rem}
   .magic-rings{width:124px;height:124px}
   .final-list li{border-radius:18px}
-  .price-note{font-size:.82rem}
+  .price-note{font-size:.92rem}
   .container{padding:0 18px}
 }
 @media (max-width:380px){
-  .hero h1{font-size:1.65rem}
-  h2{font-size:1.45rem}
-  .btn{font-size:.9rem;padding:8px 8px 8px 18px;gap:9px}
-  .btn--lg{font-size:.92rem;padding:9px 9px 9px 20px}
+  .hero h1{font-size:1.72rem}
+  h2{font-size:1.5rem}
+  .btn{font-size:.94rem;padding:8px 8px 8px 18px;gap:9px}
+  .btn--lg{font-size:.96rem;padding:9px 9px 9px 20px}
   .btn .arr-c{width:32px;height:32px}
-  .oc-row{font-size:.79rem}
+  .oc-row{font-size:.88rem}
   .hstat{padding:10px 10px}
-  .hstat .num{font-size:.9rem}
-  .hstat .lbl{font-size:.6rem}
+  .hstat .num{font-size:.96rem}
+  .hstat .lbl{font-size:.68rem}
 }
 </style>
 </head>
