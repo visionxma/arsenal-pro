@@ -157,7 +157,6 @@ strong{color:#fff}
   transition:transform 2.4s cubic-bezier(.22,1,.36,1);
   will-change:transform;
 }
-.browser:hover{transform:rotateX(0deg) scale(1)}
 .b-head{
   display:flex;align-items:center;gap:8px;
   padding:12px 18px;border-bottom:1px solid var(--line);
@@ -567,7 +566,6 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .guarantee > div:last-child{text-align:left}
   /* no celular o painel entra inclinado e se endireita ao aparecer na tela */
   .browser{transform:rotateX(10deg) scale(.99)}
-  .browser-wrap.in-view .browser{transform:rotateX(0deg) scale(1)}
   .browser-wrap{margin-top:40px}
   .b-body{padding:20px 18px 0}
   .hstat{padding:12px 14px}
@@ -1086,17 +1084,29 @@ document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
 })();
 
 
-// Painel inclinado: endireita ao entrar na tela (efeito usado no mobile, onde não há hover)
+// Painel 3D: endireita conforme o scroll (desktop e mobile, sem depender de hover)
 const bw = document.querySelector(".browser-wrap");
 if (bw) {
-  new IntersectionObserver((entries, obs) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add("in-view"), 350);
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.35 }).observe(bw);
+  const panel = bw.querySelector(".browser");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    panel.style.transform = "none";
+  } else {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = bw.getBoundingClientRect();
+      const vh = window.innerHeight;
+      /* 0 = painel entrando pela base da tela · 1 = topo do painel a 35% da tela (reto) */
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .65)));
+      const tilt = 14 * (1 - p);
+      panel.style.transform = "rotateX(" + tilt.toFixed(2) + "deg) scale(" + (0.985 + 0.015 * p).toFixed(4) + ")";
+    };
+    panel.style.transition = "transform .1s linear";
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll, { passive: true });
+    update();
+  }
 }
 </script>
 </body>
