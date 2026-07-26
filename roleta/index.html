@@ -950,7 +950,7 @@ const wheel = document.getElementById("wheel");
 const COL_A = ["#0e5fa8","#0a2440","#071527"];
 const COL_CURRENT = "#0f5c39";
 const COL_DONE = "#070c15";
-let rotation = 0, spinning = false, pendingIdx = -1, currentOpId = null, spinGuard = null;
+let rotation = 0, spinning = false, pendingIdx = -1, pendingId = null, currentOpId = null, spinGuard = null;
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const IDLE_SPEEDS = [0, 0.02, 0.045, 0.1];   // desligado · lento · normal · rápido
@@ -1111,6 +1111,9 @@ async function spin(){
   if (!escolhido) escolhido = pool[randInt(pool.length)];
   const idx = list.findIndex(e => e.id === escolhido.id);
   pendingIdx = idx;
+  pendingId = escolhido.id;   // guarda o ID do escolhido: se a lista mudar durante o
+                              // giro (sync de outro painel), o ganhador é achado pelo ID,
+                              // nunca por um índice que pode ter se desalinhado.
   if (novoCiclo) toast("Todos já passaram — novo ciclo iniciado.");
   document.body.classList.add("spinning");
   // voltas, duração e ponto de parada variam a cada giro: dois sorteios nunca
@@ -1152,14 +1155,17 @@ function acabouGiro(){
   if (!spinning || pendingIdx < 0) return;
   clearTimeout(spinGuard); spinGuard = null;
   const list = activeExperts();
-  const winner = list[pendingIdx];
-  pendingIdx = -1;
+  // Ganhador SEMPRE pelo ID guardado no início do giro (imune a mudanças na lista
+  // durante o giro por sincronização). Índice só como fallback se o expert sumiu.
+  const winner = list.find(e => e.id === pendingId) || list[pendingIdx];
+  pendingIdx = -1; pendingId = null;
   document.body.classList.remove("spinning");
   SFX.stop();                       // corta qualquer tique restante
-  if (!winner){ spinning = false; setIdleText(false); setCta("Sortear Expert", false); return; }
+  if (!winner){ spinning = false; if (pendingRebuild){ pendingRebuild = false; buildWheel(); renderPool(); } setIdleText(false); setCta("Sortear Expert", false); return; }
   currentOpId = winner.id;
   marcaSorteado(winner.id);        // sai do sorteio até o ciclo reiniciar
   buildWheel();
+  pendingRebuild = false;          // já reconstruímos com o estado final
   showWinner(winner);
 }
 wheel.addEventListener("transitionend", e => {
@@ -1567,6 +1573,14 @@ async function verifyAdmin(tok){
     return true;
   } catch { return false; }
 }
+/* Redesenha a roda/pool — MAS nunca durante um giro. Reconstruir a roda no meio
+   da animação reposiciona os setores e faz a seta parar no expert errado (às vezes
+   um já sorteado). Se está girando, adia até o giro terminar (acabouGiro chama isso). */
+let pendingRebuild = false;
+function safeRebuild(){
+  if (spinning){ pendingRebuild = true; return; }
+  buildWheel(); renderPool();
+}
 function applyAdminState(m){
   /* O PAINEL É A AUTORIDADE da lista de experts. Sempre que ele manda a lista,
      a roleta adota EXATAMENTE essa lista — inclusive quando alguém foi removido
@@ -1585,14 +1599,14 @@ function applyAdminState(m){
     );
     save(LS_CFG, cfg);
     MUTE.set(!cfg.sfx);
-    restartIdle();
+    if (!spinning) restartIdle();
   }
-  buildWheel(); renderPool();
+  safeRebuild();
 }
 function applyStateR(m){
   if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
   if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); renderHist(); }
-  buildWheel(); renderPool();
+  safeRebuild();
 }
 (function initSync(){
   if (!window.supabase) return;
