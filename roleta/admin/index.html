@@ -108,9 +108,15 @@
 
   .chips{ display:flex; gap:10px; flex-wrap:wrap; }
   .chip{ flex:1; min-width:120px; text-align:center; background:rgba(0,167,255,.07);
-    border:1px solid rgba(0,167,255,.2); border-radius:13px; padding:13px 8px 10px; }
-  .chip b{ display:block; font-family:'Montserrat',sans-serif; font-size:24px; line-height:1.1; }
+    border:1px solid rgba(0,167,255,.2); border-radius:13px; padding:13px 8px 10px;
+    cursor:pointer; font:inherit; color:inherit; transition:background .15s, border-color .15s, transform .1s; }
+  .chip:hover{ background:rgba(0,167,255,.13); }
+  .chip:active{ transform:scale(.98); }
+  .chip[aria-pressed="true"]{ background:rgba(0,167,255,.2); border-color:var(--brand); box-shadow:0 0 0 1px rgba(0,167,255,.3) inset; }
+  .chip:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+  .chip b{ display:block; font-family:'Montserrat',sans-serif; font-size:24px; line-height:1.1; color:#fff; }
   .chip span{ font-size:10.5px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.6px; font-weight:600; }
+  .exp-row.hiddenByStat{ display:none; }
 
   /* cartão AO VIVO */
   .live-card{
@@ -373,9 +379,9 @@
       </div>
 
       <div class="chips" aria-label="Resumo da rodada">
-        <div class="chip"><b id="stTotal">0</b><span>Experts ativos</span></div>
-        <div class="chip"><b id="stLeft">0</b><span>No sorteio</span></div>
-        <div class="chip"><b id="stDone">0</b><span>Já sorteados</span></div>
+        <button class="chip" type="button" data-filter="all" aria-pressed="true"><b id="stTotal">0</b><span>Experts ativos</span></button>
+        <button class="chip" type="button" data-filter="left" aria-pressed="false"><b id="stLeft">0</b><span>No sorteio</span></button>
+        <button class="chip" type="button" data-filter="done" aria-pressed="false"><b id="stDone">0</b><span>Já sorteados</span></button>
       </div>
 
       <div class="live-card" id="liveCard">
@@ -838,6 +844,14 @@ const swConfetti = document.getElementById("swConfetti");
 const swSound = document.getElementById("swSound");
 const fForce = document.getElementById("fForce");
 let editingId = null;
+let editBase = null;   // snapshot dos campos ao iniciar a edição (p/ detectar alteração)
+/* true se o formulário de edição foi mudado em relação ao que estava salvo. */
+function edicaoTemMudanca(){
+  if (!editingId || !editBase) return false;
+  return fName.value.trim() !== editBase.name ||
+         String(fMinutes.value || "") !== String(editBase.minutes || "") ||
+         (fPhoto.files && fPhoto.files.length > 0);
+}
 
 function renderChips(){
   document.getElementById("stTotal").textContent = activeExperts().length;
@@ -909,13 +923,18 @@ function render(){
     const bE = document.createElement("button");
     bE.className = "icon-btn"; bE.type="button"; bE.setAttribute("aria-label","Editar "+e.name);
     bE.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
-    bE.addEventListener("click", () => {
+    bE.addEventListener("click", async () => {
+      // se já está editando OUTRO expert com alterações não salvas, confirma antes de trocar
+      if (editingId && editingId !== e.id && edicaoTemMudanca()){
+        if (!(await confirmModal("Você tem uma edição não salva. Descartar e editar outro expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+      }
       editingId = e.id;
       formTitle.textContent = "Editar expert: " + e.name;
       btnSaveExpert.textContent = "Salvar";
       btnCancelEdit.style.display = "";
       fName.value = e.name; fPhoto.value = "";
       fMinutes.value = e.minutes || "";
+      editBase = { name: e.name, minutes: e.minutes || "" };   // baseline p/ detectar mudança
       fName.focus();
       document.getElementById("secExperts").scrollIntoView({ block:"start" });
     });
@@ -944,6 +963,7 @@ function render(){
     row.append(tm, sw, bT, bE, bD);
     expList.appendChild(row);
   });
+  if (typeof aplicarStatFilter === "function") aplicarStatFilter();   // reaplica o filtro dos chips
 }
 
 /* Remove duplicatas por id E por nome (mantém a 1ª ocorrência). Blindagem contra
@@ -1017,14 +1037,52 @@ btnSaveExpert.addEventListener("click", async () => {
   }
   persistExperts();
 });
+/* Enter em Nome ou Tempo aciona Adicionar/Salvar (fluxo mais rápido no teclado). */
+[fName, fMinutes].forEach(inp => inp.addEventListener("keydown", e => {
+  if (e.key === "Enter"){ e.preventDefault(); btnSaveExpert.click(); }
+}));
+
+/* Filtro rápido pelos chips de status: all / left (no sorteio) / done (já sorteados). */
+let statFilter = "all";
+function aplicarStatFilter(){
+  document.querySelectorAll(".chip[data-filter]").forEach(c =>
+    c.setAttribute("aria-pressed", String(c.dataset.filter === statFilter)));
+  document.querySelectorAll("#expList .exp-row").forEach(r => {
+    const done = r.classList.contains("done"), inativo = r.classList.contains("inactive");
+    let mostra = true;
+    if (statFilter === "done") mostra = done;
+    else if (statFilter === "left") mostra = !done && !inativo;   // no sorteio = ativo e não sorteado
+    r.classList.toggle("hiddenByStat", !mostra);
+  });
+}
+document.querySelectorAll(".chip[data-filter]").forEach(c => {
+  c.addEventListener("click", () => {
+    statFilter = (statFilter === c.dataset.filter) ? "all" : c.dataset.filter;   // clicar de novo limpa
+    aplicarStatFilter();
+  });
+});
+/* Atalho de teclado: "S" dispara Sortear agora (fora de campos de texto). */
+document.addEventListener("keydown", e => {
+  if (e.key !== "s" && e.key !== "S") return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const el = document.activeElement, tag = el ? el.tagName : "";
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;   // não atrapalha digitação
+  if (document.getElementById("loginOverlay").classList.contains("show")) return;
+  if (document.getElementById("cmodal").classList.contains("show")) return;
+  const b = document.getElementById("btnSpinNow");
+  if (b){ e.preventDefault(); b.click(); }
+});
 function cancelEdit(){
-  editingId = null;
+  editingId = null; editBase = null;
   formTitle.textContent = "Adicionar expert";
   btnSaveExpert.textContent = "Adicionar";
   btnCancelEdit.style.display = "none";
   fName.value=""; fPhoto.value=""; fMinutes.value="";
 }
-btnCancelEdit.addEventListener("click", cancelEdit);
+btnCancelEdit.addEventListener("click", async () => {
+  if (edicaoTemMudanca() && !(await confirmModal("Descartar as alterações desta edição?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+  cancelEdit();
+});
 
 /* ================= Configurações (auto-save) ================= */
 function numCfg(input, key, min, max, label, nullable){
