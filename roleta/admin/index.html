@@ -181,6 +181,13 @@
     font-weight:700; font-size:13px; color:#75829f; user-select:none; }
   .exp-row img{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex:none; }
   .exp-row .nm{ flex:1; font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .exp-row .drawn{ flex:none; display:inline-flex; align-items:center; gap:5px;
+    font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:#2ec16b; background:rgba(46,193,107,.12); border:1px solid rgba(46,193,107,.45);
+    padding:3px 9px; border-radius:999px; white-space:nowrap; }
+  .exp-row .drawn svg{ width:11px; height:11px; }
+  .exp-row.done{ background:rgba(46,193,107,.07); border-color:rgba(46,193,107,.28); }
+  .exp-row.done .nm{ color:#9fb0c4; }
   .exp-row .tmin{ flex:none; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px;
     color:var(--brand-2); background:rgba(0,167,255,.10); border:1px solid var(--pill-border); }
   .exp-row .tmin.std{ color:#75829f; background:rgba(255,255,255,.04); border-color:var(--line); }
@@ -718,11 +725,17 @@ function render(){
   fForce.value = cur;
   expList.innerHTML = "";
   experts.forEach((e, i) => {
+    const drawn = jaSorteado(e);
     const row = document.createElement("div");
-    row.className = "exp-row" + (e.active ? "" : " inactive");
+    row.className = "exp-row" + (e.active ? "" : " inactive") + (drawn ? " done" : "");
     const ix = document.createElement("span"); ix.className = "idx"; ix.textContent = (i + 1);
     const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
     const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
+    const dr = drawn ? document.createElement("span") : null;
+    if (dr){
+      dr.className = "drawn";
+      dr.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>Sorteado';
+    }
     const tm = document.createElement("span");
     tm.className = "tmin" + (e.minutes ? "" : " std");
     tm.textContent = minutesFor(e) + " min";
@@ -775,7 +788,9 @@ function render(){
       persistExperts();
       toast("Expert removido.");
     });
-    row.append(ix, im, nm, tm, sw, bT, bE, bD);
+    row.append(ix, im, nm);
+    if (dr) row.append(dr);
+    row.append(tm, sw, bT, bE, bD);
     expList.appendChild(row);
   });
 }
