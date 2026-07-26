@@ -822,7 +822,10 @@ function dedupeExperts(list){
   return out;
 }
 
-let experts   = dedupeExperts(load(LS_EXPERTS, DEFAULT_EXPERTS));
+/* A roleta NUNCA gera a lista padrão sozinha. Se o storage estiver vazio, sobe
+   vazia e o Painel Admin (autoridade) preenche via sync — assim um reload da
+   roleta jamais "ressuscita" experts que o painel removeu. */
+let experts   = dedupeExperts(load(LS_EXPERTS, []));
 /* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
    durante a live. Mantê-la fazia remoções "voltarem" ao recarregar, porque cada
    página recompletava a lista com os experts padrão. Agora a lista salva é a
@@ -1494,7 +1497,7 @@ document.addEventListener("keydown", e => {
 /* ================= Sincronização com o Painel Admin ================= */
 window.addEventListener("storage", ev => {
   if (ev.key === LS_EXPERTS){
-    experts = dedupeExperts(load(LS_EXPERTS, DEFAULT_EXPERTS));
+    experts = dedupeExperts(load(LS_EXPERTS, []));
     const ids = experts.map(e => e.id);
     sorteados = sorteados.filter(id => ids.includes(id));
     buildWheel(); renderPool();
