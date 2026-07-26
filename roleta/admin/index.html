@@ -277,6 +277,14 @@
     font-family:'Poppins',sans-serif; }
   .gate-field input:focus{ border-color:var(--brand); }
   .gate-field input.err{ border-color:#ff5252; animation:shake .35s; }
+  /* campo de senha com botão de olho (mostrar/ocultar) */
+  .pass-wrap{ position:relative; }
+  .pass-wrap input{ padding-right:46px; }
+  .pass-eye{ position:absolute; top:50%; right:6px; transform:translateY(-50%);
+    width:34px; height:34px; display:grid; place-items:center; padding:0; cursor:pointer;
+    background:transparent; border:none; border-radius:8px; color:#8b97b5; transition:color .15s, background .15s; }
+  .pass-eye:hover{ color:#cdd6ea; background:rgba(255,255,255,.06); }
+  .pass-eye:focus-visible{ outline:2px solid var(--brand); outline-offset:1px; color:#cdd6ea; }
   @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
   .gate-btn{ width:100%; margin-top:18px; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:800;
     font-size:15px; letter-spacing:.3px; text-transform:uppercase; color:var(--btn-ink); padding:14px; border-radius:10px;
@@ -531,7 +539,13 @@
       <div class="gate-field"><label for="loginEmail">E-mail</label>
         <input id="loginEmail" type="email" placeholder="voce@email.com" autocomplete="username"></div>
       <div class="gate-field"><label for="loginPass">Senha</label>
-        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+        <div class="pass-wrap">
+          <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pass-eye" id="togglePass" aria-label="Mostrar senha" aria-pressed="false">
+            <svg class="eye-on" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-off" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9m3.3-1.7A10.5 10.5 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </button>
+        </div></div>
       <p class="gate-err">E-mail ou senha incorretos.</p>
       <button type="submit" class="gate-btn">Entrar no painel</button>
     </form>
@@ -1216,6 +1230,21 @@ const loginOverlay = document.getElementById("loginOverlay");
 const loginCard = document.getElementById("loginCard");
 const loginEmail = document.getElementById("loginEmail");
 const loginPass = document.getElementById("loginPass");
+/* Botão de olho: mostra/oculta a senha no login. */
+(function(){
+  const btn = document.getElementById("togglePass");
+  if (!btn) return;
+  const on = btn.querySelector(".eye-on"), off = btn.querySelector(".eye-off");
+  btn.addEventListener("click", () => {
+    const mostrar = loginPass.type === "password";
+    loginPass.type = mostrar ? "text" : "password";
+    on.style.display  = mostrar ? "none" : "";
+    off.style.display = mostrar ? "" : "none";
+    btn.setAttribute("aria-pressed", String(mostrar));
+    btn.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+    loginPass.focus();
+  });
+})();
 function unlock(){
   document.body.classList.remove("locked");
   loginOverlay.classList.remove("show");
