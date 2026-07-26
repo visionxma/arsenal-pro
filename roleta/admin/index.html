@@ -601,7 +601,11 @@ function syncSend(o){
   if (!syncCh || !syncOn) return false;
   try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY, t: authTok }, o) }); return true; } catch { return false; }
 }
-function sendState(){ syncSend({ type:"state", experts, cfg }); }
+/* rev = carimbo de tempo da última edição da lista. Serve para resolver conflito
+   entre painéis: a lista mais recente vence. Persiste para sobreviver a reload. */
+let expertsRev = parseInt(localStorage.getItem("cj_experts_rev") || "0", 10) || 0;
+function bumpRev(){ expertsRev = Date.now(); try { localStorage.setItem("cj_experts_rev", String(expertsRev)); } catch {} }
+function sendState(){ syncSend({ type:"state", experts, cfg, rev: expertsRev }); }
 function sendStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
 const connected = () => Date.now() - lastPongPrim < 6000;
 const stbAlive  = () => Date.now() - lastPongStb < 6000;
@@ -650,6 +654,22 @@ function updateConn(){
       case "live":
         live = m; renderLive();
         break;
+      case "state": {
+        /* OUTRO painel admin mudou a lista. Canal usa self:false, então 'state'
+           vem SEMPRE de outro painel. Adotamos a lista dele SE for mais recente
+           (rev maior) — assim a última ação de qualquer painel vence e nenhum
+           desfaz o outro. Empate/ausência de rev: adota mesmo assim (compat). */
+        const incomingRev = typeof m.rev === "number" ? m.rev : 0;
+        if (incomingRev >= expertsRev && Array.isArray(m.experts)){
+          experts = dedupeExperts(m.experts); save(LS_EXPERTS, experts);
+          expertsRev = incomingRev; try { localStorage.setItem("cj_experts_rev", String(expertsRev)); } catch {}
+          const ids = experts.map(e => e.id);
+          sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
+          if (m.cfg){ cfg = Object.assign({}, CFG_DEF, m.cfg); save(LS_CFG, cfg); }
+          render();
+        }
+        break;
+      }
       case "state-r":
         if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
         if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); }
@@ -843,6 +863,7 @@ function dedupeExperts(list){
 }
 function persistExperts(){
   experts = dedupeExperts(experts);
+  bumpRev();                       // esta edição local passa a ser a versão mais recente
   save(LS_EXPERTS, experts);
   const ids = experts.map(e => e.id);
   sorteados = sorteados.filter(id => ids.includes(id));
