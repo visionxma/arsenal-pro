@@ -776,6 +776,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
+/* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
+/* A cada 60s consulta version.json. Se mudou, recarrega — MAS nunca durante um
+   sorteio (spinning) ou operação (timerRAF): espera terminar para não piscar na live.
+   Usa só fetch + location.reload (padrão em Chrome/Safari/Firefox, Mac e Windows). */
+(function(){
+  var MY_VER = null;
+  var check = function(){
+    fetch("version.json?cb=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d || !d.v) return;
+        if (MY_VER === null){ MY_VER = d.v; return; }         // 1ª leitura: guarda a versão atual
+        if (d.v !== MY_VER){
+          if (!window.__roletaBusy) location.reload();         // só recarrega com a roleta ociosa
+        }
+      })
+      .catch(function(){});                                    // rede falhou: ignora, tenta de novo depois
+  };
+  setInterval(check, 60000);
+  check();
+})();
 /* ================= Dados ================= */
 const LS_EXPERTS = "cj_experts_v6";
 const LS_CFG     = "cj_cfg_v2";
@@ -1160,6 +1181,10 @@ const CIRC = 2*Math.PI*70;
 timerBar.style.strokeDasharray = CIRC;
 
 let timerRAF = null, timerEndAt = 0, timerTotal = 0;
+/* Estado "ocupado" para o auto-refresh: true enquanto a roda gira ou um expert
+   opera. O verificador de versão (topo do script) só recarrega quando isto é false,
+   evitando reload no meio de um sorteio/operação. Lido via getter, sempre atual. */
+Object.defineProperty(window, "__roletaBusy", { get(){ return !!spinning || !!timerRAF; } });
 const fmt = s => { s = Math.max(0, Math.ceil(s));
   return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
 

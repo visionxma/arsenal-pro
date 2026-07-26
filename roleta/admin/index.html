@@ -481,6 +481,24 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
+/* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
+/* version.json fica em ../version.json (mesma pasta da roleta). Verifica a cada 60s
+   e recarrega o painel ao detectar versão nova. Usa só fetch + location.reload. */
+(function(){
+  var MY_VER = null;
+  var check = function(){
+    fetch("../version.json?cb=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d || !d.v) return;
+        if (MY_VER === null){ MY_VER = d.v; return; }
+        if (d.v !== MY_VER) location.reload();
+      })
+      .catch(function(){});
+  };
+  setInterval(check, 60000);
+  check();
+})();
 /* ================= Dados (mesmas chaves da roleta) ================= */
 const LS_EXPERTS = "cj_experts_v6";
 const LS_CFG     = "cj_cfg_v2";
