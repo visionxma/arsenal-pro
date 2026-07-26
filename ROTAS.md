@@ -12,6 +12,18 @@ DNS novo: `AAAA admin → 100::` com proxy (nuvem laranja). Nenhum registro exis
 
 A comunicação painel ↔ roleta usa **Supabase Realtime** (chave anon no código) e funciona
 de qualquer dispositivo/navegador — não depende mais de mesma origem.
+
+> ⚠️ **INVARIANTE — NÃO REMOVER (sincronização de experts):** apagar/editar/adicionar
+> um expert em **qualquer** Painel Admin deve refletir **em todos os painéis abertos e
+> na roleta**, e o expert removido **não pode voltar** ao recarregar nenhuma tela.
+> Isso depende de: (1) o painel tratar `case "state"` de outro painel adotando a lista
+> pelo maior `rev` (last-write-wins, `bumpRev` em cada edição); (2) canal com
+> `broadcast:{self:false}`; (3) a roleta **nunca** regenerar `DEFAULT_EXPERTS` — usa
+> `load(LS_EXPERTS, [])`, e o painel só semeia os 16 na 1ª abertura (flag
+> `cj_experts_init_v1`); (4) `dedupeExperts` (por id **e** nome) nos dois. Ao mexer,
+> testar com **2 painéis + 1 roleta** conectados: remover em um reflete nos outros e
+> não volta ao recarregar. A tela da roleta atualiza sozinha (auto-refresh via
+> `roleta/version.json`, só quando ociosa — nunca no meio de um sorteio).
 Todas as páginas são estáticas (`index.html` por pasta) e **todos os links internos são
 relativos** — o site funciona igual na raiz de um domínio, em um subdiretório ou no
 GitHub Pages, sem nenhuma configuração de servidor.
@@ -29,9 +41,10 @@ GitHub Pages, sem nenhuma configuração de servidor.
 | `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento); CTA vai para o Google Meet do evento |
 | `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
 
-As LPs por expert são cópias idênticas da landing; a única diferença é a const
-`CHECKOUT_URL` (link do produto de cada expert na PerfectPay). O logo do rodapé
-usa `../assets/logo.svg` por estarem um nível abaixo da raiz.
+As LPs por expert são cópias da landing; as diferenças são a const `CHECKOUT_URL`
+(link do produto de cada expert na PerfectPay), o selo "Indicado por" no hero
+(foto em `../assets/experts/…`, um nível abaixo da raiz) e o `<title>`/`og:title`
+com o nome do expert. As páginas não têm rodapé (removido junto com a marca visível).
 
 ## Rotas restritas (operador)
 
