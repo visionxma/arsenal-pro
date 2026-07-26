@@ -245,6 +245,17 @@
   .exp-search{ width:100%; margin:2px 0 12px; padding:11px 14px; border-radius:10px; font-size:14px; color:#fff;
     background:rgba(255,255,255,.04); border:1px solid var(--pill-border); }
   .exp-search:focus{ border-color:var(--brand); outline:none; }
+  /* filtro compacto (mesmos status dos chips do topo), logo abaixo da busca */
+  .chips-mini{ display:flex; gap:8px; flex-wrap:wrap; margin:-6px 0 12px; }
+  .chip-mini{ display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px;
+    background:rgba(0,167,255,.07); border:1px solid rgba(0,167,255,.2); cursor:pointer; font:inherit;
+    color:var(--muted-2); font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.4px;
+    transition:background .15s, border-color .15s, color .15s, transform .1s; }
+  .chip-mini:hover{ background:rgba(0,167,255,.13); }
+  .chip-mini:active{ transform:scale(.97); }
+  .chip-mini[aria-pressed="true"]{ background:rgba(0,167,255,.2); border-color:var(--brand); color:#fff; }
+  .chip-mini:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+  .chip-mini b{ font-family:'Montserrat',sans-serif; font-size:13px; color:#fff; }
   .exp-row.hiddenByFilter{ display:none; }
   .exp-empty{ padding:16px; text-align:center; font-size:13px; color:var(--muted-2); }
   /* modal de confirmação (substitui o confirm nativo) */
@@ -485,6 +496,11 @@
             <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
           </div>
           <input type="text" id="expSearch" class="exp-search" placeholder="🔍 Buscar expert pelo nome…" autocomplete="off" />
+          <div class="chips-mini" aria-label="Filtrar lista por status">
+            <button class="chip-mini" type="button" data-filter="all" aria-pressed="true"><b id="stTotalMini">0</b><span>Experts ativos</span></button>
+            <button class="chip-mini" type="button" data-filter="left" aria-pressed="false"><b id="stLeftMini">0</b><span>No sorteio</span></button>
+            <button class="chip-mini" type="button" data-filter="done" aria-pressed="false"><b id="stDoneMini">0</b><span>Já sorteados</span></button>
+          </div>
           <div class="exp-list" id="expList"></div>
           <p class="sub">Interruptor tira o expert da roleta sem removê-lo · ✓ marca/desmarca quem já foi sorteado · lápis edita · lixeira remove.</p>
         </div>
@@ -854,9 +870,14 @@ function edicaoTemMudanca(){
 }
 
 function renderChips(){
-  document.getElementById("stTotal").textContent = activeExperts().length;
-  document.getElementById("stLeft").textContent = disponiveis().length;
-  document.getElementById("stDone").textContent = activeExperts().length - disponiveis().length;
+  const total = activeExperts().length, left = disponiveis().length, done = total - left;
+  document.getElementById("stTotal").textContent = total;
+  document.getElementById("stLeft").textContent = left;
+  document.getElementById("stDone").textContent = done;
+  /* espelho compacto abaixo da busca */
+  document.getElementById("stTotalMini").textContent = total;
+  document.getElementById("stLeftMini").textContent = left;
+  document.getElementById("stDoneMini").textContent = done;
 }
 
 function render(){
@@ -1044,8 +1065,9 @@ btnSaveExpert.addEventListener("click", async () => {
 
 /* Filtro rápido pelos chips de status: all / left (no sorteio) / done (já sorteados). */
 let statFilter = "all";
+const CHIPS_FILTRO = ".chip[data-filter], .chip-mini[data-filter]";   // chips do topo + espelho da busca
 function aplicarStatFilter(){
-  document.querySelectorAll(".chip[data-filter]").forEach(c =>
+  document.querySelectorAll(CHIPS_FILTRO).forEach(c =>
     c.setAttribute("aria-pressed", String(c.dataset.filter === statFilter)));
   document.querySelectorAll("#expList .exp-row").forEach(r => {
     const done = r.classList.contains("done"), inativo = r.classList.contains("inactive");
@@ -1055,7 +1077,7 @@ function aplicarStatFilter(){
     r.classList.toggle("hiddenByStat", !mostra);
   });
 }
-document.querySelectorAll(".chip[data-filter]").forEach(c => {
+document.querySelectorAll(CHIPS_FILTRO).forEach(c => {
   c.addEventListener("click", () => {
     statFilter = (statFilter === c.dataset.filter) ? "all" : c.dataset.filter;   // clicar de novo limpa
     aplicarStatFilter();
