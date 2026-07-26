@@ -73,17 +73,20 @@
   .sb-foot{ padding:14px 12px 18px; border-top:1px solid var(--line); display:grid; gap:6px; }
   .sb-foot .sb-item .ni{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.12); color:#aeb9d6; }
   /* alça com seta no meio da borda */
+  /* seta minimalista: botão redondo discreto, meio-fora da borda da sidebar */
   .sb-handle{
-    position:absolute; top:50%; right:-17px; transform:translateY(-50%); z-index:51;
-    width:34px; height:76px; border:1px solid rgba(0,167,255,.42);
-    border-radius:0 13px 13px 0; border-left:none; cursor:pointer; padding:0;
-    background:linear-gradient(180deg,#10203a,#0a1424); color:var(--brand-2);
+    position:absolute; top:26px; right:-13px; z-index:51;
+    width:26px; height:26px; border-radius:50%; cursor:pointer; padding:0;
+    border:1px solid var(--pill-border);
+    background:var(--panel); color:var(--muted-2);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:8px 0 22px rgba(0,0,0,.35), 0 0 18px rgba(0,167,255,.18);
-    transition:background .2s, box-shadow .2s;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);
+    opacity:.55; transition:opacity .2s, color .2s, border-color .2s, background .2s;
   }
-  .sb-handle:hover{ background:linear-gradient(180deg,#15294a,#0d1a30); box-shadow:8px 0 24px rgba(0,0,0,.4), 0 0 26px rgba(0,167,255,.32); }
-  .sb-handle svg{ width:18px; height:18px; transition:transform .35s; }
+  .sidebar:hover .sb-handle{ opacity:1; }
+  .sb-handle:hover{ color:var(--brand-2); border-color:var(--brand); background:rgba(0,167,255,.1); }
+  .sb-handle:focus-visible{ opacity:1; outline:2px solid var(--brand); outline-offset:2px; }
+  .sb-handle svg{ width:14px; height:14px; transition:transform .35s; }
   /* colapsada: só ícones */
   body.sb-min .sidebar{ width:var(--sbw-min); }
   body.sb-min .sb-title, body.sb-min .conn span, body.sb-min .sb-item .lbl{ display:none; }
@@ -1147,12 +1150,36 @@ document.getElementById("sbHandle").addEventListener("click", () => {
 document.getElementById("sbBg").addEventListener("click", () => document.body.classList.remove("sb-open"));
 document.querySelectorAll(".sb-item[data-goto]").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".sb-item[data-goto]").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.goto).scrollIntoView({ block:"start" });
+    setActiveNav(btn.dataset.goto);
+    document.getElementById(btn.dataset.goto).scrollIntoView({ block:"start", behavior:"smooth" });
     if (MOBILE()) document.body.classList.remove("sb-open");
   });
 });
+/* Marca no menu qual seção está ativa. */
+function setActiveNav(id){
+  document.querySelectorAll(".sb-item[data-goto]").forEach(b =>
+    b.classList.toggle("active", b.dataset.goto === id));
+}
+/* Scroll-spy: destaca o item cuja seção está mais próxima do topo da viewport.
+   Robusto para seções curtas (usa a posição de cada seção, não interseção). */
+(function(){
+  const itens = [...document.querySelectorAll(".sb-item[data-goto]")];
+  const secoes = itens.map(b => document.getElementById(b.dataset.goto)).filter(Boolean);
+  if (secoes.length < 2) return;
+  let atual = null, tick = false;
+  const marcar = () => {
+    tick = false;
+    const linha = window.scrollY + window.innerHeight * 0.22;   // "linha de leitura" a 22% do topo
+    let ativa = secoes[0];
+    for (const s of secoes){ if (s.offsetTop <= linha) ativa = s; else break; }
+    // se rolou até o fim da página, ativa a última seção
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) ativa = secoes[secoes.length-1];
+    if (ativa.id !== atual){ atual = ativa.id; setActiveNav(atual); }
+  };
+  addEventListener("scroll", () => { if (!tick){ tick = true; requestAnimationFrame(marcar); } }, { passive:true });
+  addEventListener("resize", () => { if (!tick){ tick = true; requestAnimationFrame(marcar); } }, { passive:true });
+  marcar();
+})();
 
 /* ================= Login ================= */
 const loginOverlay = document.getElementById("loginOverlay");
