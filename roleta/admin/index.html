@@ -518,7 +518,23 @@ const DEFAULT_EXPERTS = [
 const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? f; } catch { return f; } };
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
-let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
+/* O painel é a AUTORIDADE da lista. Semeia os 16 padrão só na PRIMEIRÍSSIMA
+   abertura (flag). Depois disso, a lista salva é a verdade: se o operador
+   removeu alguém, um reload NUNCA regenera os 16 por cima da lista editada. */
+let experts;
+(function(){
+  const INIT = "cj_experts_init_v1";
+  const raw = localStorage.getItem(LS_EXPERTS);
+  if (raw != null){
+    experts = load(LS_EXPERTS, []);                 // já existe lista salva → usa ela, seja qual for o tamanho
+  } else if (!localStorage.getItem(INIT)){
+    experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));  // 1ª vez de todas → semeia os 16
+    save(LS_EXPERTS, experts);
+    try { localStorage.setItem(INIT, "1"); } catch {}
+  } else {
+    experts = [];                                   // já inicializou antes e storage foi limpo → NÃO recria os 16
+  }
+})();
 /* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
    durante a live. Mantê-la fazia remoções "voltarem" ao recarregar. A lista salva
    é a fonte única da verdade — remover no painel é definitivo.) */
@@ -1022,7 +1038,7 @@ document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
 /* ================= Sincronização vinda da roleta ================= */
 window.addEventListener("storage", ev => {
   if (ev.key === LS_RODADA){ sorteados = load(LS_RODADA, []); render(); }
-  else if (ev.key === LS_EXPERTS){ experts = load(LS_EXPERTS, DEFAULT_EXPERTS); render(); }
+  else if (ev.key === LS_EXPERTS){ experts = dedupeExperts(load(LS_EXPERTS, [])); render(); }
   else if (ev.key === LS_CFG){ cfg = Object.assign({}, CFG_DEF, load(LS_CFG, {})); render(); }
   else if (ev.key === LS_HIST){ hist = load(LS_HIST, []); }
   else if (ev.key === LS_LIVE){ live = load(LS_LIVE, { status:"idle" }); renderLive(); }
