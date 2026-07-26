@@ -809,7 +809,20 @@ const DEFAULT_EXPERTS = [
 const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? f; } catch { return f; } };
 const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
 
-let experts   = load(LS_EXPERTS, DEFAULT_EXPERTS);
+/* Remove duplicatas por id E por nome (mantém a 1ª). Garante que a roda NUNCA
+   mostre nome/imagem repetidos, mesmo que algo chegue duplicado por qualquer via. */
+function dedupeExperts(list){
+  const norm = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const vistosId = new Set(), vistosNome = new Set(), out = [];
+  for (const e of (Array.isArray(list) ? list : [])){
+    const nn = norm(e.name);
+    if (vistosId.has(e.id) || vistosNome.has(nn)) continue;
+    vistosId.add(e.id); vistosNome.add(nn); out.push(e);
+  }
+  return out;
+}
+
+let experts   = dedupeExperts(load(LS_EXPERTS, DEFAULT_EXPERTS));
 /* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
    durante a live. Mantê-la fazia remoções "voltarem" ao recarregar, porque cada
    página recompletava a lista com os experts padrão. Agora a lista salva é a
@@ -1481,7 +1494,7 @@ document.addEventListener("keydown", e => {
 /* ================= Sincronização com o Painel Admin ================= */
 window.addEventListener("storage", ev => {
   if (ev.key === LS_EXPERTS){
-    experts = load(LS_EXPERTS, DEFAULT_EXPERTS);
+    experts = dedupeExperts(load(LS_EXPERTS, DEFAULT_EXPERTS));
     const ids = experts.map(e => e.id);
     sorteados = sorteados.filter(id => ids.includes(id));
     buildWheel(); renderPool();
@@ -1531,7 +1544,7 @@ function applyAdminState(m){
      a roleta adota EXATAMENTE essa lista — inclusive quando alguém foi removido
      (a lista chega menor). Só ignoramos o caso degenerado de lista ausente. */
   if (Array.isArray(m.experts)){
-    experts = m.experts; save(LS_EXPERTS, experts);
+    experts = dedupeExperts(m.experts); save(LS_EXPERTS, experts);
     const ids = experts.map(e => e.id);
     sorteados = sorteados.filter(id => ids.includes(id));
     save(LS_RODADA, sorteados);

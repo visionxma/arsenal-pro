@@ -777,7 +777,20 @@ function render(){
   });
 }
 
+/* Remove duplicatas por id E por nome (mantém a 1ª ocorrência). Blindagem contra
+   qualquer duplicata — nunca deve chegar à roleta um nome/id repetido. */
+function dedupeExperts(list){
+  const norm = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const vistosId = new Set(), vistosNome = new Set(), out = [];
+  for (const e of list){
+    const nid = e.id, nn = norm(e.name);
+    if (vistosId.has(nid) || vistosNome.has(nn)) continue;
+    vistosId.add(nid); vistosNome.add(nn); out.push(e);
+  }
+  return out;
+}
 function persistExperts(){
+  experts = dedupeExperts(experts);
   save(LS_EXPERTS, experts);
   const ids = experts.map(e => e.id);
   sorteados = sorteados.filter(id => ids.includes(id));
@@ -808,6 +821,10 @@ function resizePhoto(file){
 btnSaveExpert.addEventListener("click", async () => {
   const name = fName.value.trim();
   if (!name){ toast("Informe o nome do expert."); return; }
+  /* Bloqueia nome repetido (ignorando maiúsculas/acentos comuns e o próprio, se editando) */
+  const norm = s => s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const jaExiste = experts.some(e => norm(e.name) === norm(name) && e.id !== editingId);
+  if (jaExiste){ toast("Já existe um expert com esse nome na roleta."); fName.focus(); return; }
   let minutes = null;
   if (fMinutes.value.trim() !== ""){
     const m = parseInt(fMinutes.value, 10);
