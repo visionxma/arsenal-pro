@@ -202,6 +202,33 @@
     padding:12px 20px; border-radius:11px; font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
     transition:opacity .3s, transform .3s; box-shadow:0 18px 44px rgba(0,0,0,.5); }
   .toast.show{ opacity:1; transform:translateX(-50%); }
+  /* botão Desfazer dentro do toast */
+  .toast .undo{ margin-left:14px; padding:5px 13px; border-radius:8px; border:1px solid var(--brand);
+    background:rgba(0,167,255,.15); color:#bfe6ff; font-weight:800; font-size:12.5px; cursor:pointer;
+    text-transform:uppercase; letter-spacing:.04em; }
+  .toast .undo:hover{ background:rgba(0,167,255,.28); }
+  /* busca na lista de experts */
+  .exp-search{ width:100%; margin:2px 0 12px; padding:11px 14px; border-radius:10px; font-size:14px; color:#fff;
+    background:rgba(255,255,255,.04); border:1px solid var(--pill-border); }
+  .exp-search:focus{ border-color:var(--brand); outline:none; }
+  .exp-row.hiddenByFilter{ display:none; }
+  .exp-empty{ padding:16px; text-align:center; font-size:13px; color:var(--muted-2); }
+  /* modal de confirmação (substitui o confirm nativo) */
+  .cmodal{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,7,14,.66); backdrop-filter:blur(4px); }
+  .cmodal.show{ display:flex; animation:cmFade .18s ease; }
+  @keyframes cmFade{ from{opacity:0} to{opacity:1} }
+  .cmodal-card{ width:100%; max-width:400px; border-radius:16px; padding:24px; text-align:center;
+    background:var(--panel); border:1px solid var(--pill-border); box-shadow:0 24px 60px rgba(0,0,0,.55); }
+  .cmodal-card h3{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:17px; margin-bottom:8px; color:#fff; }
+  .cmodal-card p{ font-size:13.5px; color:var(--muted-2); line-height:1.5; margin-bottom:20px; }
+  .cmodal-row{ display:flex; gap:10px; }
+  .cmodal-row button{ flex:1; padding:12px; border-radius:10px; font-weight:800; font-size:13.5px; cursor:pointer; border:1px solid transparent; }
+  .cm-cancel{ background:rgba(255,255,255,.06); border-color:var(--pill-border); color:#cdd6ea; }
+  .cm-cancel:hover{ background:rgba(255,255,255,.12); }
+  .cm-ok{ background:var(--brand); color:#04121f; }
+  .cm-ok:hover{ filter:brightness(1.08); }
+  .cm-ok.danger{ background:#e2556a; color:#fff; }
 
   /* ================= LOGIN ================= */
   body.locked .sidebar, body.locked .main{ filter:blur(6px); pointer-events:none; user-select:none; }
@@ -410,6 +437,7 @@
             <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
             <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
           </div>
+          <input type="text" id="expSearch" class="exp-search" placeholder="🔍 Buscar expert pelo nome…" autocomplete="off" />
           <div class="exp-list" id="expList"></div>
           <p class="sub">Interruptor tira o expert da roleta sem removê-lo · ✓ marca/desmarca quem já foi sorteado · lápis edita · lixeira remove.</p>
         </div>
@@ -477,6 +505,18 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
+
+  <!-- Modal de confirmação (substitui o confirm nativo) -->
+  <div class="cmodal" id="cmodal" role="dialog" aria-modal="true">
+    <div class="cmodal-card">
+      <h3 id="cmTitle">Confirmar</h3>
+      <p id="cmMsg"></p>
+      <div class="cmodal-row">
+        <button class="cm-cancel" id="cmCancel" type="button">Cancelar</button>
+        <button class="cm-ok" id="cmOk" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
@@ -835,12 +875,22 @@ function render(){
     const bD = document.createElement("button");
     bD.className = "icon-btn del"; bD.type="button"; bD.setAttribute("aria-label","Remover "+e.name);
     bD.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-    bD.addEventListener("click", () => {
-      if (!confirm("Remover "+e.name+" da roleta?")) return;
+    bD.addEventListener("click", async () => {
+      const ok = await confirmModal('Remover "'+e.name+'" da roleta?', { title:"Remover expert", okText:"Remover", danger:true });
+      if (!ok) return;
+      const removido = e;                                   // guarda para o Desfazer
+      const posicao = experts.findIndex(x => x.id === e.id);
+      const eraSorteado = sorteados.includes(e.id);
       experts = experts.filter(x => x.id !== e.id);
       if (editingId === e.id) cancelEdit();
       persistExperts();
-      toast("Expert removido.");
+      toastUndo(removido.name + " removido.", () => {
+        // recoloca na mesma posição, com foto e tempo, e restaura o sorteado se era
+        experts.splice(Math.min(posicao, experts.length), 0, removido);
+        if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
+        persistExperts();
+        toast(removido.name + " restaurado.");
+      });
     });
     row.append(ix, im, nm);
     if (dr) row.append(dr);
@@ -1044,11 +1094,11 @@ document.getElementById("fImport").addEventListener("change", ev => {
   ev.target.value = "";
   if (!file) return;
   const fr = new FileReader();
-  fr.onload = () => {
+  fr.onload = async () => {
     try {
       const data = JSON.parse(fr.result);
       if (!data || data.kind !== "cj_roleta_backup" || !Array.isArray(data.experts)) throw new Error("formato");
-      if (!confirm("Importar backup? Isso substitui experts, configurações, rodada e histórico.")) return;
+      if (!(await confirmModal("Isso substitui experts, configurações, rodada e histórico pelos do arquivo.", { title:"Importar backup", okText:"Importar" }))) return;
       experts = data.experts;
       cfg = Object.assign({}, CFG_DEF, data.cfg || {});
       sorteados = Array.isArray(data.sorteados) ? data.sorteados : [];
@@ -1063,8 +1113,8 @@ document.getElementById("fImport").addEventListener("change", ev => {
   };
   fr.readAsText(file);
 });
-document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
-  if (!confirm("Restaurar tudo ao padrão? Isso apaga experts personalizados, fotos e configurações.")) return;
+document.getElementById("btnRestoreDefaults").addEventListener("click", async () => {
+  if (!(await confirmModal("Isso apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.", { title:"Restaurar padrão", okText:"Restaurar", danger:true }))) return;
   experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
   cfg = Object.assign({}, CFG_DEF);
   sorteados = []; hist = [];
@@ -1154,6 +1204,65 @@ function toast(msg){
   clearTimeout(toastT);
   toastT = setTimeout(() => t.classList.remove("show"), 2600);
 }
+/* Toast com botão "Desfazer" (para remoção acidental de expert). */
+function toastUndo(msg, onUndo, ms){
+  const t = document.getElementById("toast");
+  t.textContent = msg + " ";
+  const b = document.createElement("button");
+  b.className = "undo"; b.type = "button"; b.textContent = "Desfazer";
+  b.addEventListener("click", () => { clearTimeout(toastT); t.classList.remove("show"); onUndo(); });
+  t.appendChild(b);
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), ms || 6000);
+}
+
+/* Modal de confirmação no estilo do painel — Promise<boolean>. Substitui confirm(). */
+function confirmModal(msg, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    const m = document.getElementById("cmodal");
+    document.getElementById("cmTitle").textContent = opts.title || "Confirmar";
+    document.getElementById("cmMsg").textContent = msg;
+    const ok = document.getElementById("cmOk"), cancel = document.getElementById("cmCancel");
+    ok.textContent = opts.okText || "Confirmar";
+    ok.classList.toggle("danger", !!opts.danger);
+    m.classList.add("show");
+    const close = (val) => {
+      m.classList.remove("show");
+      ok.removeEventListener("click", onOk); cancel.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+      resolve(val);
+    };
+    const onOk = () => close(true), onCancel = () => close(false);
+    const onKey = e => { if (e.key === "Escape") close(false); if (e.key === "Enter") close(true); };
+    ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+/* Busca: filtra visualmente as linhas da lista de experts (não toca em dados). */
+(function(){
+  const inp = document.getElementById("expSearch");
+  if (!inp) return;
+  const norm = s => (s||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  inp.addEventListener("input", () => {
+    const q = norm(inp.value);
+    const rows = [...document.querySelectorAll("#expList .exp-row")];
+    let visiveis = 0;
+    rows.forEach(r => {
+      const nome = norm(r.querySelector(".nm") ? r.querySelector(".nm").textContent : "");
+      const hit = !q || nome.includes(q);
+      r.classList.toggle("hiddenByFilter", !hit);
+      if (hit) visiveis++;
+    });
+    let vazio = document.getElementById("expEmpty");
+    if (!visiveis && q){
+      if (!vazio){ vazio = document.createElement("div"); vazio.id = "expEmpty"; vazio.className = "exp-empty"; document.getElementById("expList").appendChild(vazio); }
+      vazio.textContent = 'Nenhum expert encontrado para "' + inp.value.trim() + '".';
+    } else if (vazio){ vazio.remove(); }
+  });
+})();
 
 render(); renderLive();
 </script>
