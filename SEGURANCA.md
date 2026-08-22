@@ -24,7 +24,12 @@ RCE, LFI, XXE, SSRF e afins.
 ### Cloudflare (painel da zona safiriontradingbrasil.com)
 - [x] **Bot Fight Mode: ON** — feito
 - [x] **Rate limiting no login do admin: ATIVO** — regra "Login admin - rate limit",
-      10 req / 10s por IP → Bloquear (host admin. + path /arsenal-pro/roleta/admin)
+      30 req / 10s por IP → Bloquear (host admin. + path /arsenal-pro/roleta/admin).
+      Era 10/10s, mas a expressão conta TODA requisição do host admin. (página, logo,
+      polls do version.json de cada aba) — com 2-3 abas + recarregadas o operador
+      bania o próprio IP (Error 1015, 22/08/2026). O login real é autenticado no
+      Supabase (outro host, com rate limit próprio), então afrouxar aqui não reduz
+      a proteção de senha.
 - [ ] **Security → Settings → Security Level: Medium/High** durante o evento
 - [ ] **SSL/TLS → Overview: Full (strict)**
 
