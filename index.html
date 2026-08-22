@@ -5,1124 +5,637 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arsenal Pro | Night Challenge</title>
 <meta name="description" content="O arsenal completo dos maiores traders que operam ao vivo: estratégias reais, indicadores exclusivos e IA integrada na Safirion. Disponível apenas durante o Night Challenge." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oxanium:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070C19'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389E6'/%3E%3C/svg%3E" />
 <style>
-/* ============================================================
-   ARSENAL PRO · Layout e design system replicados do KIRVUSPAY
-   Cores: dark navy #060B18 · azul elétrico #2389E6 (Safirion)
-   Títulos: Oxanium 600 dois tons · Corpo: Manrope 500
-   Copy oficial — nenhum texto além dela
-   ============================================================ */
+/* ============ FONTES (Mazzard — mesma família da Safirion) ============ */
+@font-face{font-family:'Mazzard';src:url('assets/fonts/mazzard-light.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:'Mazzard';src:url('assets/fonts/mazzard-regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Mazzard';src:url('assets/fonts/mazzard-medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Mazzard';src:url('assets/fonts/mazzard-semibold.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+
+/* ============ TOKENS (extraídos da safirion.com) ============ */
 :root{
-  --bg:#060B18;
-  --bg-2:#080E1C;
-  --bg-3:#0C1424;
-  --surface:#111A2B;
-  --line:rgba(214,237,248,.08);
-  --line-strong:rgba(214,237,248,.16);
-  --text:#EEF4FB;
-  --muted:#CFDDE9;
-  --muted-2:#AFC2D2;
-  --accent:#2389E6;
-  --accent-strong:#146AC7;
-  --accent-soft:#69B8FF;
-  --accent-pale:#D6EDF8;
-  --accent-tint:rgba(35,137,230,.12);
-  --accent-line:rgba(35,137,230,.38);
-  --danger:#E2556A;
-  --shadow-card:0 30px 70px -30px rgba(2,8,20,.9);
-  --glow-accent:0 0 30px rgba(35,137,230,.35);
-  --grad-card:linear-gradient(180deg,#121B2E 0%,#0D1526 100%);
-  --container:1200px;
-  --f-head:'Oxanium',system-ui,sans-serif;
-  --f-body:'Manrope',system-ui,sans-serif;
+  --bg:#03060f;            /* fundo profundo */
+  --bg-2:#060b18;          /* fundo seção */
+  --bg-card:#0a1120;       /* cartão */
+  --azul:#2389e6;          /* acento primário */
+  --azul-claro:#4ba3f0;
+  --azul-glow:#7cc0ff;
+  --roxo:#9e9eff;
+  --verde:#34d399;
+  --vermelho:#f87171;
+  --txt:#ffffff;
+  --txt-2:#a1b8c3;         /* corpo */
+  --txt-3:#8fa5b1;
+  --txt-4:#6f818f;
+  --borda:rgba(255,255,255,.1);
+  --borda-azul:rgba(35,137,230,.5);
+  --chip-bg:rgba(35,137,230,.1);
+  --r:12px;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,monospace;
+  --sans:'Mazzard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --glow-cta:0 .6px 3px -0.4px rgba(35,137,230,.21),0 1.8px 9px -0.8px rgba(35,137,230,.24),0 4.8px 24px -1.1px rgba(35,137,230,.29),0 15px 75px -1.5px rgba(35,137,230,.48),0 .6px 3.2px -1.3px rgba(124,192,255,.96),0 1.9px 9.7px -2.5px rgba(124,192,255,.88),0 5.1px 25.5px -3.8px rgba(124,192,255,.68);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:5rem}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:#060B18}
-::-webkit-scrollbar-thumb{background:#2389E6;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#146AC7}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--f-body);
-  font-size:17px;
-  font-weight:500;
-  letter-spacing:-.01em;
-  line-height:1.62;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-/* textura pontilhada sutil sobre o fundo escuro */
-body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:radial-gradient(rgba(214,237,248,.035) 1px,transparent 1px);
-  background-size:22px 22px;
-}
-body > *{position:relative;z-index:1}
-main{overflow-x:clip}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-weight:400;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:rgba(35,137,230,.4)}
+img{max-width:100%}
+em{font-style:italic;color:var(--txt)}
+strong{font-weight:600;color:var(--txt)}
+a{color:inherit}
 
-.container{max-width:var(--container);margin:0 auto;padding:0 24px}
+/* ============ UTILITÁRIOS ============ */
+.wrap{max-width:1200px;width:100%;min-width:0;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+.marquee{max-width:100%;contain:inline-size}
+.sec{position:relative;padding:110px 0;overflow:hidden}
+.kicker{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px}
+.kicker .dot-chip{width:38px;height:38px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--borda-azul);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(35,137,230,.35)}
+.kicker .dot-chip svg{width:16px;height:16px;stroke:var(--azul-claro)}
+.kicker .pill{padding:8px 16px;border-radius:100px;border:1px solid var(--borda);background:rgba(255,255,255,.04);font-size:13px;color:var(--txt-2);letter-spacing:.02em}
+h1,h2,h3{font-weight:600;line-height:1.12;letter-spacing:-.015em}
+h2{font-size:clamp(30px,4.6vw,52px);margin-bottom:22px}
+h3{font-size:20px;line-height:1.3}
+.lead{color:var(--txt-2);font-size:clamp(16px,1.35vw,18.5px);max-width:760px}
+.lead + .lead{margin-top:18px}
+.num-chip{font-family:var(--mono);font-size:12px;color:var(--azul-claro);background:var(--chip-bg);border:1px solid rgba(35,137,230,.3);border-radius:100px;padding:4px 12px;letter-spacing:.08em}
+.grad-blue{background:linear-gradient(100deg,#fff 10%,var(--azul-glow) 55%,var(--azul) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-h1,h2,h3{font-family:var(--f-head);font-weight:600;letter-spacing:-.02em;line-height:1.2;color:#fff;text-wrap:balance}
-h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
-h3{font-size:1.24rem}
-p{color:var(--muted);text-wrap:pretty}
-strong{color:#fff;font-weight:800}
-/* ênfase azul nas frases de poder da copy */
-em{font-style:normal;color:var(--accent-soft);font-weight:700}
-.lead{font-size:clamp(1.06rem,1.5vw,1.2rem);line-height:1.66;color:var(--muted)}
-/* preços e estatísticas alinham dígito a dígito */
-.oc-row s,.oc-total .val,.oc-strike,.hstat .num,.stack-card .val,.total-band .now,.total-band .strike,.price-note{font-variant-numeric:lining-nums tabular-nums}
-/* dois tons nos títulos: base quase branca + palavras-chave em azul da marca */
-.dm{color:#DCE7F2}
-.ac{color:var(--accent-soft)}
+/* revelação no scroll */
+.rev{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1)}
+.rev.on{opacity:1;transform:none}
+.rev-d1{transition-delay:.08s}.rev-d2{transition-delay:.16s}.rev-d3{transition-delay:.24s}.rev-d4{transition-delay:.32s}.rev-d5{transition-delay:.4s}
 
-/* ---------- Badge duplo (ícone + rótulo) ---------- */
-.eyebrow{display:inline-flex;align-items:center;gap:10px}
-.eyebrow .ei{
-  flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
-  background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
-  box-shadow:0 0 18px rgba(35,137,230,.25);
-}
-.eyebrow .el{
-  background:var(--bg-3);border:1px solid var(--line-strong);border-radius:999px;
-  padding:8px 18px;font-size:.9rem;font-weight:700;color:var(--text);
-}
+/* headline que "acende" palavra por palavra no scroll (efeito safirion) */
+.fill-words .w{color:rgba(255,255,255,.16);transition:color .35s ease}
+.fill-words .w.lit{color:#fff}
+.fill-words .w.lit.destaque{color:var(--azul-claro)}
 
-/* chip numerado 001 (padrão da referência) */
-.nchip{
-  display:inline-flex;align-items:center;justify-content:center;
-  border:1px solid var(--line-strong);border-radius:999px;padding:4px 14px;
-  font-family:var(--f-head);font-weight:700;font-size:.78rem;letter-spacing:.08em;color:var(--muted);
-  font-variant-numeric:tabular-nums;
-  transition:border-color .3s,color .3s;
-}
-.kcard:hover .nchip,.stack-card:hover .nchip{border-color:var(--accent-line);color:var(--accent-soft)}
+/* ============ FUNDOS: estrelas, auroras, mapa ============ */
+.stars,.stars2{position:absolute;inset:0;pointer-events:none;z-index:0}
+.stars span,.stars2 span{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:twinkle 4s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.85}}
+.aurora{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;will-change:transform}
+.aurora.a{width:52vw;height:52vw;left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(35,137,230,.32),transparent 65%);animation:kvauroraA 34s ease-in-out infinite}
+.aurora.b{width:44vw;height:44vw;right:-14vw;top:6vw;background:radial-gradient(circle,rgba(158,158,255,.2),transparent 65%);animation:kvauroraB 42s ease-in-out infinite}
+.aurora.c{width:40vw;height:40vw;left:24vw;bottom:-18vw;background:radial-gradient(circle,rgba(35,137,230,.18),transparent 65%);animation:kvauroraC 38s ease-in-out infinite}
+@keyframes kvauroraA{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(14%,6%,0) scale(1.18)}66%{transform:translate3d(-8%,-4%,0) scale(.92)}}
+@keyframes kvauroraB{0%,100%{transform:translate3d(0,0,0) scale(1.05)}40%{transform:translate3d(-18%,8%,0) scale(.88)}70%{transform:translate3d(10%,-6%,0) scale(1.22)}}
+@keyframes kvauroraC{0%,100%{transform:translate3d(0,0,0) scale(.95)}30%{transform:translate3d(-12%,-8%,0) scale(1.15)}65%{transform:translate3d(6%,10%,0) scale(1.02)}}
+.mapa{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(1500px,120vw);opacity:.28;pointer-events:none;z-index:0;animation:kvmapdrift 26s ease-in-out infinite}
+@keyframes kvmapdrift{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50.6%,-49.6%) scale(1.045)}}
 
-/* ---------- Botões (pill + seta em círculo) ---------- */
-.btn{
-  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:13px;
-  font-family:var(--f-body);font-weight:700;font-size:1rem;letter-spacing:-.01em;
-  padding:9px 9px 9px 26px;border-radius:999px;border:0;
-  background:var(--accent);color:#fff;cursor:pointer;
-  box-shadow:var(--glow-accent);
-  transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, background-color .3s ease;
-  white-space:nowrap;
-}
-.btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 0 50px rgba(35,137,230,.55)}
-.btn:active{transform:translateY(0) scale(.98)}
-.btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:3px}
-.btn .arr-c{
-  flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
-  background:#060B18;color:var(--accent-soft);
-  transition:transform .35s cubic-bezier(.16,1,.3,1);
-}
-.btn:hover .arr-c{transform:rotate(45deg)}
-.btn--lg{font-size:1.04rem;padding:10px 10px 10px 30px}
-.btn--lg .arr-c{width:40px;height:40px}
+/* ============ HERO (experiência black-hole estilo Reflect, em azul Safirion) ============ */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;padding:96px 0 40px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#0a1730 0%,var(--bg-2) 45%,var(--bg) 100%)}
+.hero::after{content:'';position:absolute;inset:auto 0 0 0;height:180px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:4;pointer-events:none}
+.hero-conteudo{text-align:center;display:flex;flex-direction:column;align-items:center;position:relative;z-index:3}
+.hero-conteudo .sub{margin-left:auto;margin-right:auto}
 
-@keyframes ctaPulse{
-  0%,100%{box-shadow:0 0 24px rgba(35,137,230,.32)}
-  50%{box-shadow:0 0 48px rgba(35,137,230,.58),0 0 80px rgba(35,137,230,.2)}
-}
-.cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
-@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.float{animation:heroFloat 6s ease-in-out infinite}
+/* --- buraco negro --- */
+.bh{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:1440px;height:1300px;pointer-events:none;z-index:1;-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 61%,transparent 100%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 61%,transparent 100%)}
+.bh-vortex{position:absolute;left:50%;top:50%;width:1440px;height:810px;transform:translate(-50%,-50%);object-fit:cover;filter:hue-rotate(-46deg) saturate(1.15);-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 55%,transparent 82%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 55%,transparent 82%)}
+/* anel de estrelas orbitando */
+.bh-stars{position:absolute;left:50%;top:50%;width:700px;height:700px;transform:translateZ(0) translate(-50%,-50%);animation:bhStarsGira 70s linear infinite;-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,rgba(217,217,217,0) 100%);mask-image:radial-gradient(50% 50% at 50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,rgba(217,217,217,0) 100%)}
+.bh-stars i{position:absolute;width:2px;height:2px;border-radius:5px;background:rgba(255,255,255,0);animation:bhTwinkle linear infinite}
+.bh-stars i:nth-child(3n){opacity:.5}
+@keyframes bhStarsGira{0%{transform:translateZ(0) translate(-50%,-50%) rotate(0)}100%{transform:translateZ(0) translate(-50%,-50%) rotate(-360deg)}}
+@keyframes bhTwinkle{0%{background:rgba(255,255,255,0);transform:translateZ(0) translate(0) scale(1)}10%{background:#fff}100%{background:#fff;transform:translateZ(0) var(--drift) scale(.5)}}
+/* círculos concêntricos com pontos (só o arco de cima aparece, como na Reflect) */
+.bh-circulos{position:absolute;left:50%;top:50%;width:808px;height:808px;transform:translateZ(0) translate(-50%,-50%);z-index:2}
+.bh-circulos>div{position:absolute;left:50%;top:50%;transform:translateZ(0) translate(-50%,-50%);width:100%;height:100%;-webkit-mask-image:linear-gradient(180deg,rgba(124,192,255,.6) 9.4%,rgba(124,192,255,0) 29.8%);mask-image:linear-gradient(180deg,rgba(124,192,255,.6) 9.4%,rgba(124,192,255,0) 29.8%)}
+.bh-circulos>div:nth-child(2){width:608px;height:608px;opacity:.6}
+.bh-circulos>div:nth-child(3){width:416px;height:416px}
+.bh-circulos>div:nth-child(3) .bh-circ{animation:none}
+.bh-circ{position:relative;width:100%;height:100%;border-radius:50%;animation:bhCircGira 100s linear infinite}
+.bh-circ::before{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid rgba(75,163,240,.32);background:rgba(75,163,240,.04)}
+@keyframes bhCircGira{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.bh-dot{position:absolute;width:8px;height:8px}
+.bh-dot::before{content:'';display:block;width:6px;height:6px;border-radius:50%;border:1px solid rgba(124,192,255,.45);background:rgba(75,163,240,.15);backdrop-filter:blur(10px)}
+.bh-dot:nth-child(1){left:-4px;top:50%;transform:translateY(-50%)}
+.bh-dot:nth-child(2){left:14.2%;top:14.2%}
+.bh-dot:nth-child(3){left:14.2%;bottom:14.2%}
+.bh-dot:nth-child(4){left:50%;top:-4px;transform:translateX(-50%)}
+.bh-dot:nth-child(5){left:50%;bottom:-4px;transform:translateX(-50%)}
+.bh-dot:nth-child(6){right:14.2%;top:14.2%}
+.bh-dot:nth-child(7){right:14.2%;bottom:14.2%}
+.bh-dot:nth-child(8){right:-4px;top:50%;transform:translateY(-50%)}
+/* zona do painel: emerge da luz do horizonte */
+.painel-zona{position:relative;z-index:3;margin-top:64px;display:flex;justify-content:center}
+/* black hole do CTA final (reflect repete o efeito no fechamento) */
+.bh-final{top:auto;bottom:-430px;height:900px}
+.bh-final .bh-vortex{top:50%}
+.bh-final .bh-stars{top:38%}
+.bh-final .bh-circulos{top:38%}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:center}
+.badge-noite{display:inline-flex;align-items:center;gap:9px;padding:8px 18px;border-radius:100px;border:1px solid var(--borda-azul);background:var(--chip-bg);font-size:13.5px;color:var(--azul-glow);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-bottom:26px}
+.badge-noite .viva{width:8px;height:8px;border-radius:50%;background:var(--azul-claro);animation:kv-pulsa 1.8s ease-out infinite}
+@keyframes kv-pulsa{0%{box-shadow:0 0 0 0 rgba(35,137,230,.5)}70%{box-shadow:0 0 0 9px rgba(35,137,230,0)}100%{box-shadow:0 0 0 0 rgba(35,137,230,0)}}
+.hero h1{font-size:clamp(40px,5.6vw,72px);margin-bottom:24px}
+.hero h1 .grad-blue{display:inline}
+.hero .sub{color:var(--txt-2);font-size:clamp(16.5px,1.4vw,19px);max-width:560px;margin-bottom:34px}
+.cta{display:inline-flex;align-items:center;gap:12px;padding:17px 30px;border-radius:100px;background:linear-gradient(180deg,var(--azul-claro),var(--azul));color:#fff;font-family:var(--sans);font-weight:600;font-size:17px;text-decoration:none;border:none;cursor:pointer;box-shadow:var(--glow-cta);transition:transform .25s ease,box-shadow .25s ease;position:relative}
+.cta:hover{transform:translateY(-2px) scale(1.02);box-shadow:var(--glow-cta),0 18px 60px -8px rgba(35,137,230,.55)}
+.cta .seta{width:30px;height:30px;border-radius:50%;background:rgba(3,6,15,.85);display:flex;align-items:center;justify-content:center;flex:none}
+.cta .seta svg{width:13px;height:13px;stroke:#fff}
+.ancora{margin-top:22px;font-size:14.5px;color:var(--txt-3);text-shadow:0 1px 14px rgba(3,6,15,.9),0 0 4px rgba(3,6,15,.8)}
+.micro{text-shadow:0 1px 14px rgba(3,6,15,.9),0 0 4px rgba(3,6,15,.8)}
+.ancora .riscado{text-decoration:line-through;color:var(--txt-4)}
+.ancora .forte{color:#fff;font-weight:600}
+.micro{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--txt-4);letter-spacing:.04em}
 
-.price-note{margin-top:16px;font-size:.98rem;color:var(--muted)}
-.price-note s{color:#7A90A8}
-.price-note b{color:var(--accent-soft);font-weight:800}
+/* painel flutuante 3D (estilo painel safirion) */
+.painel-wrap{perspective:1200px;position:relative;z-index:3;width:100%;max-width:680px}
+.painel{background:linear-gradient(160deg,rgba(16,26,48,.92),rgba(7,12,25,.96));border:1px solid var(--borda);border-radius:16px;box-shadow:0 -14px 60px -18px rgba(124,192,255,.5),0 18px 44px rgba(0,0,0,.55),0 0 0 1px rgba(35,137,230,.15),0 0 90px -18px rgba(35,137,230,.45);overflow:hidden;animation:kvfloat 9s ease-in-out infinite;will-change:transform;backdrop-filter:blur(6px)}
+@keyframes kvfloat{0%,100%{transform:rotateX(3deg) translateY(0)}50%{transform:rotateX(-2deg) translateY(-12px)}}
+.painel-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--borda);background:rgba(255,255,255,.03)}
+.painel-top .tt{font-family:var(--mono);letter-spacing:.18em;font-size:12px;color:var(--azul-glow)}
+.painel-top .st{font-size:12px;color:var(--txt-4)}
+.painel-lista{padding:8px 20px 6px}
+.painel-item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:7.5px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:13px}
+.painel-item:last-child{border-bottom:none}
+.painel-item .nm{color:var(--txt-2)}
+.painel-item .pv{font-family:var(--mono);font-size:12px;color:var(--txt-4);white-space:nowrap}
+.painel-foot{padding:16px 20px;border-top:1px solid var(--borda);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,rgba(35,137,230,.12),rgba(35,137,230,.03))}
+.painel-foot .lbl{font-size:12.5px;color:var(--txt-3)}
+.painel-foot .lbl .riscado{text-decoration:line-through}
+.painel-foot .hoje{font-weight:600;font-size:21px}
+.painel-foot .hoje small{display:block;font-weight:400;font-family:var(--mono);font-size:10.5px;color:var(--azul-glow);letter-spacing:.1em;text-transform:uppercase}
 
-/* ---------- Hero centralizado (padrão da referência) ---------- */
-.hero{
-  position:relative;padding:80px 0 88px;text-align:center;
-  background:
-    radial-gradient(900px 420px at 50% -12%,rgba(35,137,230,.16),transparent 60%),
-    var(--bg);
-  overflow:hidden;
-}
-.hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);font-weight:700;line-height:1.08;letter-spacing:-.028em;max-width:16ch;margin:0 auto 20px}
-.hero .lead{max-width:44rem;margin:0 auto}
-.hero-cta{margin-top:30px;display:flex;justify-content:center}
+/* marquee de ativos */
+.marquee{position:relative;z-index:2;margin-top:64px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee-trilho{display:flex;gap:14px;width:max-content;animation:kvmarq 36s linear infinite}
+@keyframes kvmarq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ativo{display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:100px;border:1px solid var(--borda);background:rgba(255,255,255,.03);font-size:13px;color:var(--txt-2);white-space:nowrap}
+.ativo img{width:20px;height:20px}
+.ativo .var{font-family:var(--mono);font-size:11.5px}
+.ativo .up{color:var(--verde)}.ativo .down{color:var(--vermelho)}
 
-/* Painel-janela inclinado em 3D (mockup do painel da referência) */
-.browser-wrap{perspective:1600px;max-width:1000px;margin:56px auto 0}
-.browser{
-  position:relative;text-align:left;
-  border-radius:20px;border:1px solid var(--accent-line);
-  background:var(--surface);
-  box-shadow:var(--shadow-card), 0 0 90px -25px rgba(35,137,230,.45);
-  transform:rotateX(14deg) scale(.985);transform-origin:50% 0;
-  transition:transform 2.4s cubic-bezier(.22,1,.36,1);
-  will-change:transform;
-}
-.b-head{
-  display:flex;align-items:center;gap:8px;
-  padding:12px 18px;border-bottom:1px solid var(--line);
-  background:var(--bg-3);border-radius:20px 20px 0 0;
-}
-.b-head .d{width:11px;height:11px;border-radius:50%;flex:none}
-.b-head .d1{background:#ff5f57}
-.b-head .d2{background:#febc2e}
-.b-head .d3{background:#28c840}
-.b-head .b-url{
-  margin:0 auto;background:var(--bg-2);border:1px solid var(--line);
-  padding:3px 22px;border-radius:8px;
-  font-family:var(--f-head);font-size:.74rem;letter-spacing:.1em;color:var(--muted-2);
-}
-.b-body{padding:26px 32px 0}
-.oc-title{
-  font-family:var(--f-head);font-size:.84rem;font-weight:700;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--accent-soft);margin-bottom:14px;
-}
-.oc-rows{columns:2;column-gap:44px}
-.oc-row{
-  display:flex;justify-content:space-between;gap:14px;padding:9px 0;font-size:1rem;
-  border-bottom:1px solid rgba(214,237,248,.05);
-  break-inside:avoid;
-}
-/* linhas da oferta entram em cascata quando o painel aparece */
-.browser-wrap[data-reveal] .oc-row{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s cubic-bezier(.22,1,.36,1);transition-delay:var(--rd,0s)}
-.browser-wrap[data-reveal].in .oc-row{opacity:1;transform:none}
-.browser-wrap.in .oc-row:nth-child(1){--rd:.2s}
-.browser-wrap.in .oc-row:nth-child(2){--rd:.26s}
-.browser-wrap.in .oc-row:nth-child(3){--rd:.32s}
-.browser-wrap.in .oc-row:nth-child(4){--rd:.38s}
-.browser-wrap.in .oc-row:nth-child(5){--rd:.44s}
-.browser-wrap.in .oc-row:nth-child(6){--rd:.5s}
-.browser-wrap.in .oc-row:nth-child(7){--rd:.56s}
-.browser-wrap.in .oc-row:nth-child(8){--rd:.62s}
-.browser-wrap.in .oc-row:nth-child(9){--rd:.68s}
-.browser-wrap.in .oc-row:nth-child(10){--rd:.74s}
-.browser-wrap.in .oc-row:nth-child(11){--rd:.8s}
-.oc-row span{color:var(--accent-pale)}
-.oc-row s{color:#7A90A8;font-family:var(--f-head);font-weight:500;flex:none}
-.oc-total{
-  margin-top:18px;padding:16px 0 20px;border-top:1px solid var(--line);
-  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
-}
-.oc-total .lbl{font-size:.92rem;color:var(--muted)}
-.oc-total .val{font-family:var(--f-head);font-size:2.2rem;font-weight:700;color:#fff;line-height:1}
-.oc-strike{font-size:.94rem;color:var(--muted)}
-.oc-strike s{color:#7A90A8}
-.oc-badge{
-  position:absolute;top:-15px;right:26px;z-index:2;
-  background:var(--accent);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.1em;
-  text-transform:uppercase;padding:8px 15px;border-radius:999px;
-  box-shadow:var(--glow-accent);
-}
-.b-stats{display:flex;border-top:1px solid var(--line)}
-.hstat{flex:1;padding:16px 26px;text-align:left}
-.hstat + .hstat{border-left:1px solid var(--line)}
-.hstat .num{
-  display:block;font-family:var(--f-head);font-size:clamp(1.2rem,2.2vw,1.55rem);font-weight:600;
-  color:#fff;line-height:1.15;white-space:nowrap;
-}
-.hstat .lbl{display:block;margin-top:3px;font-size:.84rem;font-weight:600;color:var(--muted)}
+/* ============ FAIXA DE STATS ============ */
+.stats{border-top:1px solid var(--borda);border-bottom:1px solid var(--borda);background:rgba(255,255,255,.02)}
+.stats .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-top:34px;padding-bottom:34px}
+.stat{text-align:center}
+.stat .v{font-size:clamp(26px,3vw,38px);font-weight:600}
+.stat .l{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-4);margin-top:4px}
 
-/* ---------- Seções ---------- */
-.section{padding:72px 0}
-.section--tint{background:var(--bg-2)}
-/* cabeçalho em duas colunas (padrão "Suporte" da referência) */
-.two-col{display:grid;grid-template-columns:1.05fr .95fr;gap:24px 64px;align-items:center}
-.two-col h2{max-width:20ch}
-.glowline{position:relative}
-.glowline::before{
-  content:"";position:absolute;inset:-40px -60px;pointer-events:none;
-  background:radial-gradient(60% 100% at 50% 50%,rgba(35,137,230,.1),transparent 70%);
-}
-.sec-left{margin-bottom:36px}
-.sec-left .eyebrow{margin-bottom:18px}
-.sec-left h2{max-width:24ch}
-.sec-left p{max-width:44rem;margin-top:12px}
+/* ============ SEÇÃO NARRATIVA ============ */
+.espalhado{display:flex;gap:16px;flex-wrap:wrap;margin:34px 0}
+.peca{padding:14px 22px;border-radius:var(--r);border:1px solid var(--borda);background:var(--bg-card);color:var(--txt-2);font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.peca:nth-child(1){transform:rotate(-2deg)}
+.peca:nth-child(2){transform:rotate(1.4deg)}
+.peca:nth-child(3){transform:rotate(-1deg)}
 
-/* ---------- Efeito de card (spotlight + realce) — 10% de acento ---------- */
-/* Brilho que segue o mouse/toque; --mx/--my são atualizados via JS.
-   No mobile, .lit acende o card ao entrar na tela (sem hover). */
-.fx{position:relative;isolation:isolate}
-.fx::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;pointer-events:none;
-  opacity:0;transition:opacity .4s ease;
-  background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(35,137,230,.16),transparent 60%);
-}
-.fx:hover::before,.fx.lit::before{opacity:1}
-.fx > *{position:relative;z-index:1}
-@media (hover:hover){
-  .fx:hover{border-color:var(--accent-line)!important}
-}
+/* ============ CARDS GENÉRICOS ============ */
+.card{position:relative;background:linear-gradient(165deg,rgba(20,31,54,.75),rgba(8,13,26,.9));border:1px solid var(--borda);border-radius:var(--r);padding:26px;transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease}
+.card:hover{transform:translateY(-4px);border-color:var(--borda-azul);box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 40px -12px rgba(35,137,230,.4)}
+/* borda gradiente cônica no hover (toque estilo Linear) */
+.card::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:conic-gradient(from 210deg,transparent 0%,rgba(124,192,255,.55) 12%,transparent 32%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s ease;pointer-events:none}
+.card:hover::before{opacity:1}
+.icone-chip{width:46px;height:46px;border-radius:12px;background:var(--chip-bg);border:1px solid rgba(35,137,230,.35);display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 0 22px rgba(35,137,230,.28)}
+.icone-chip svg{width:20px;height:20px;stroke:var(--azul-claro)}
 
-/* ---------- Cards numerados (dores) — 2 colunas no desktop, empilham ao rolar ---------- */
-/* No desktop: coluna esquerda (título) fica fixa enquanto os cards passam à direita,
-   ocupando toda a largura e eliminando o vazio das laterais. */
-.pain-section{display:grid;grid-template-columns:minmax(300px,.82fr) 1.18fr;gap:30px 56px;align-items:start}
-.pain-section .sec-left{
-  position:sticky;top:120px;margin-bottom:0;align-self:start;
-}
-.pain-section .sec-left h2{max-width:14ch}
-.pain-section .sec-left .lead-note{margin-top:16px;max-width:34ch;font-size:.98rem;color:var(--muted)}
-.pain-list{display:grid;gap:26px}
-.pain-list .kcard{
-  position:sticky;
-  box-shadow:0 -10px 40px -24px rgba(2,8,20,.9);
-}
-.pain-list .kcard:nth-child(1){top:120px}
-.pain-list .kcard:nth-child(2){top:128px}
-.pain-list .kcard:nth-child(3){top:136px}
-.pain-list .kcard:nth-child(4){top:144px}
-.pain-list .kcard:nth-child(5){top:152px}
-/* na pilha o card não "levanta" no hover (evita tremor no sticky) */
-.pain-list .kcard:hover,.pain-list .kcard.lit{transform:none}
-.kcard{
-  display:flex;flex-direction:column;
-  background:var(--grad-card);border:1px solid var(--line);border-radius:18px;
-  padding:26px 24px 16px;
-  transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;
-}
-.kcard:hover,.kcard.lit{transform:translateY(-5px);border-color:var(--accent-line);box-shadow:0 0 55px -20px rgba(35,137,230,.35)}
-.kcard .ibox{
-  width:46px;height:46px;border-radius:13px;display:grid;place-items:center;margin-bottom:18px;
-  background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
-  box-shadow:0 0 16px rgba(35,137,230,.2);
-}
-.kcard p{font-size:1rem;color:var(--muted)}
-.kfoot{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:auto;padding-top:20px;
-}
-.kfoot svg{color:var(--accent-soft);transition:transform .3s}
-.kcard:hover .kfoot svg{transform:translateX(5px)}
-.frag-wrap{max-width:860px;margin:44px auto 0;text-align:center}
-.frag-wrap h3{font-size:clamp(1.25rem,2.4vw,1.7rem);line-height:1.3}
-.frag-chips{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
-.chip{
-  display:inline-flex;align-items:center;gap:9px;padding:10px 19px;border-radius:999px;
-  background:rgba(226,85,106,.09);border:1px solid rgba(226,85,106,.32);
-  color:#F7BAC3;font-size:.98rem;font-weight:600;
-}
-/* chips entram um a um quando a linha aparece */
-.frag-chips .chip{opacity:0;transform:scale(.82) translateY(6px);transition:opacity .5s ease,transform .55s cubic-bezier(.22,1,.36,1)}
-.frag-chips .chip:nth-child(2){transition-delay:.12s}
-.frag-chips .chip:nth-child(3){transition-delay:.24s}
-.frag-chips.in .chip{opacity:1;transform:none}
-.frag-wrap .resolve{font-size:1.08rem;color:var(--text);font-weight:700;margin-top:6px}
-.frag-wrap .resolve em{font-style:normal;color:var(--accent-soft)}
+/* dores 001–005 */
+.dores{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:46px}
+.dor{display:flex;flex-direction:column;gap:16px}
+.dor p{color:var(--txt-2);font-size:15.5px}
+.dor .num{align-self:flex-start}
+.dor-resumo{grid-column:1/-1;background:linear-gradient(120deg,rgba(35,137,230,.14),rgba(8,13,26,.9));border-color:var(--borda-azul)}
+.dor-resumo h3{font-size:clamp(20px,2.2vw,26px);margin-bottom:12px}
+.dor-resumo p{color:var(--txt-2)}
 
-/* ---------- Prosa (contexto) ---------- */
-.prose{max-width:66ch;margin:40px auto 0}
-.prose p{margin-bottom:15px;font-size:1.08rem;color:var(--muted)}
-.pullquote{
-  margin:24px 0;padding:24px 30px;border-radius:20px;
-  background:var(--surface);border:1px solid var(--accent-line);
-  box-shadow:0 0 60px -20px rgba(35,137,230,.3);
-  font-family:var(--f-head);font-size:clamp(1.2rem,2.2vw,1.5rem);font-weight:600;color:#fff;
-  text-align:center;line-height:1.35;
-}
-.pullquote em{font-style:normal;color:var(--accent-soft)}
+/* dimensões */
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.dim .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--azul-glow);margin-bottom:10px}
+.dim h3{margin-bottom:10px;font-size:22px}
+.dim p{font-size:14.5px;color:var(--txt-2)}
 
-/* ---------- Rows com chevron (padrão cripto da referência) ---------- */
-.rowc-stack{display:grid;gap:12px}
-.rowc{
-  display:flex;align-items:center;gap:16px;
-  background:var(--grad-card);border:1px solid var(--line);border-radius:16px;
-  padding:16px 20px;
-  transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s;
-}
-.rowc:hover,.rowc.lit{transform:translateX(5px);border-color:var(--accent-line);box-shadow:0 0 45px -18px rgba(35,137,230,.3)}
-.rowc .ric{
-  flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
-  background:var(--bg-3);border:1px solid var(--accent-line);color:var(--accent-soft);
-}
-.rowc .rtx{flex:1;min-width:0}
-.rowc .rtag{display:block;font-family:var(--f-head);font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft)}
-.rowc h3{font-size:1.16rem;margin:2px 0 3px}
-.rowc p{font-size:.98rem;color:var(--muted)}
-.rowc .chev{flex:none;color:var(--accent-soft);transition:transform .3s}
-.rowc:hover .chev{transform:translateX(4px)}
+/* ============ ENTREGÁVEIS ============ */
+.entregas{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.entrega{display:flex;flex-direction:column}
+.entrega .topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.entrega .trader{font-family:var(--mono);font-size:12px;color:var(--azul-glow);letter-spacing:.08em}
+.entrega h3{font-size:18.5px;margin-bottom:10px}
+.entrega p{font-size:14px;color:var(--txt-3);flex:1}
+.entrega .valor{margin-top:18px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
+.entrega .valor .l{font-size:12px;color:var(--txt-4)}
+.entrega .valor .v{font-family:var(--mono);font-size:15px;font-weight:600;color:#fff}
 
-/* ---------- Value stack: 2 colunas no desktop, cards empilham ao rolar ---------- */
-/* Desktop: intro fica fixa à esquerda enquanto os cards passam à direita,
-   ocupando toda a largura e aproveitando as laterais. */
-.split{display:grid;grid-template-columns:minmax(300px,.82fr) 1.18fr;gap:30px 56px;align-items:start;max-width:var(--container)}
-.split-intro{position:sticky;top:120px;align-self:start;text-align:left}
-.split-intro .eyebrow{margin-bottom:18px}
-.split-intro h2{max-width:16ch}
-.split-intro p{margin:14px 0 0;max-width:36ch}
-/* cada card gruda no topo com um leve degrau, formando a pilha */
-.stack-list{display:grid;gap:26px}
-.stack-card{
-  position:sticky;
-  background:var(--grad-card);border:1px solid var(--line);border-radius:18px;
-  padding:24px 28px 18px;
-  box-shadow:0 -10px 40px -24px rgba(2,8,20,.9);
-  transition:border-color .3s,box-shadow .3s;
-}
-.stack-card:nth-child(1){top:96px}
-.stack-card:nth-child(2){top:104px}
-.stack-card:nth-child(3){top:112px}
-.stack-card:nth-child(4){top:120px}
-.stack-card:nth-child(5){top:128px}
-.stack-card:nth-child(6){top:136px}
-.stack-card:nth-child(7){top:144px}
-.stack-card:nth-child(8){top:152px}
-.stack-card:nth-child(9){top:160px}
-.stack-card:nth-child(10){top:168px}
-.stack-card:nth-child(11){top:176px}
-.stack-card:hover,.stack-card.lit{border-color:var(--accent-line);box-shadow:0 0 55px -22px rgba(35,137,230,.35)}
-.stack-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.stack-card .who{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:.86rem;font-weight:700;color:var(--accent-soft);
-  background:var(--accent-tint);border:1px solid var(--accent-line);
-  padding:5px 14px;border-radius:999px;
-}
-.stack-card h3{font-size:1.2rem;margin-bottom:8px}
-.stack-card p{font-size:.98rem;color:var(--muted)}
-.stack-card .kfoot{padding-top:14px}
-.stack-card .val{font-family:var(--f-head);font-weight:700;font-size:1.14rem;color:#fff;white-space:nowrap}
-.stack-card .val small{display:block;font-family:var(--f-body);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* value stack */
+.stack{margin-top:54px;text-align:center;background:linear-gradient(180deg,rgba(35,137,230,.16),rgba(8,13,26,.92));border:1px solid var(--borda-azul);border-radius:20px;padding:52px 30px;position:relative;overflow:hidden}
+.stack::after{content:'';position:absolute;left:50%;top:-40%;width:70%;height:80%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(124,192,255,.22),transparent 70%);pointer-events:none}
+.stack .riscado-g{font-size:clamp(26px,3.4vw,40px);color:var(--txt-4);text-decoration:line-through;font-weight:500}
+.stack .precao{font-size:clamp(48px,7vw,84px);font-weight:600;line-height:1.05;margin:8px 0 6px}
+.stack .apenas{font-family:var(--mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--azul-glow)}
+.stack .cta{margin-top:30px}
 
-.total-band{
-  margin:44px auto 0;max-width:880px;border-radius:24px;
-  background:var(--bg-3);border:1px solid var(--accent-line);
-  box-shadow:0 0 90px -30px rgba(35,137,230,.4), var(--shadow-card);
-  padding:36px 40px;text-align:center;position:relative;overflow:hidden;
-}
-.total-band::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(560px 240px at 50% -20%,rgba(105,184,255,.14),transparent 65%);
-}
-.total-band .strike{font-size:1rem;color:var(--muted)}
-.total-band .strike s{color:#7A90A8}
-.total-band .now{
-  font-family:var(--f-head);font-size:clamp(2.2rem,5vw,3.2rem);font-weight:700;
-  color:#fff;margin:8px 0 0;line-height:1.1;
-}
-.total-band .now small{display:block;font-family:var(--f-body);font-size:1rem;font-weight:600;color:var(--accent-soft);margin-top:6px}
+/* ============ PARA VOCÊ / NÃO É ============ */
+.pra-quem{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:44px}
+.lista-check{list-style:none;display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.lista-check li{display:flex;gap:13px;font-size:15px;color:var(--txt-2);align-items:flex-start}
+.lista-check .ic{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.lista-check .sim{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4)}
+.lista-check .sim svg{width:11px;height:11px;stroke:var(--verde)}
+.lista-check .nao{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4)}
+.lista-check .nao svg{width:11px;height:11px;stroke:var(--vermelho)}
+.pra-quem h3{font-size:clamp(20px,2vw,24px)}
 
-/* ---------- Qualificação ---------- */
-.qual-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:16px;align-items:start}
-.qual-panel{
-  border-radius:20px;border:1px solid var(--line);padding:28px 28px;
-  background:var(--grad-card);
-}
-.qual-panel--yes{border-color:var(--accent-line);box-shadow:0 0 70px -30px rgba(35,137,230,.35)}
-.qual-panel h3{font-size:1.22rem;margin-bottom:18px}
-.qual-list{list-style:none;display:grid;gap:12px}
-.qual-list li{display:flex;gap:12px;align-items:flex-start;font-size:1.02rem;color:var(--accent-pale)}
-.qual-list .ico{flex:none;margin-top:3px}
-.qual-panel--no .qual-list li{color:var(--muted)}
+/* ============ ESCASSEZ / GARANTIA / FINAL ============ */
+.escassez p,.garantia p{margin-top:18px}
+.selo7{display:inline-flex;align-items:center;gap:12px;margin-bottom:24px;padding:10px 20px;border-radius:100px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.08);color:var(--verde);font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase}
+.final{text-align:center}
+.final h2{font-size:clamp(36px,5.4vw,64px)}
+.final .lead{margin:0 auto}
+.final .lista-check{max-width:520px;margin:30px auto 0;text-align:left}
+.final .cta{margin-top:38px}
+.leva-titulo{margin-top:34px;font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-4)}
 
-/* ---------- Urgência (duas colunas) ---------- */
-.urgency{
-  background:
-    radial-gradient(800px 400px at 50% 120%,rgba(35,137,230,.16),transparent 65%),
-    var(--bg-3);
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-}
-.urgency .two-col{align-items:start}
-.urgency h2{max-width:16ch}
-.urgency p{font-size:1.05rem;margin-bottom:14px;color:var(--muted)}
-.urgency .final-box{
-  margin-top:34px;border-radius:18px;padding:22px 26px;
-  background:var(--accent-tint);border:1px solid var(--accent-line);
-  font-size:1rem;color:#fff;font-weight:600;text-align:center;
-}
-.urgency .final-box b{color:var(--accent-soft)}
+.rodape-min{padding:40px 0 50px;border-top:1px solid var(--borda);text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--txt-4);letter-spacing:.08em}
 
-/* ---------- Garantia ---------- */
-.guarantee{
-  display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center;
-  max-width:1000px;margin:0 auto;
-  background:var(--grad-card);border:1px solid var(--line);border-radius:26px;
-  padding:38px 42px;box-shadow:var(--shadow-card);
+/* ============ RESPONSIVO ============ */
+@media (max-width:1020px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .bh-circulos{display:none}
+  .bh,.bh-vortex{width:1028px}
+  .entregas{grid-template-columns:repeat(2,1fr)}
+  .dims{grid-template-columns:1fr}
 }
-.g-badge-wrap{position:relative;width:150px;height:150px;flex:none;display:grid;place-items:center}
-.g-badge{
-  width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;
-  position:relative;z-index:1;
-  background:radial-gradient(circle at 32% 24%,#5FB2FF 0%,var(--accent) 48%,var(--accent-strong) 100%);
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 24px 60px -18px rgba(35,137,230,.6), inset 0 1px 0 rgba(255,255,255,.35);
-  flex:none;
-  animation:badgePulse 2.8s ease-in-out infinite;
+@media (max-width:680px){
+  .sec{padding:78px 0}
+  .hero{padding-top:70px}
+  .bh,.bh-vortex{width:760px}
+  .bh-vortex{height:560px}
+  .bh-stars{width:460px;height:460px}
+  .painel{animation:none;transform:none}
+  .painel-zona{margin-top:40px}
+  .dores{grid-template-columns:1fr}
+  .entregas{grid-template-columns:1fr}
+  .pra-quem{grid-template-columns:1fr}
+  .stats .wrap{grid-template-columns:1fr;gap:20px}
+  .cta{width:100%;justify-content:center;font-size:16px;padding:16px 22px}
+  .aurora{filter:blur(60px)}
 }
-@keyframes badgePulse{
-  0%,100%{transform:scale(1);box-shadow:0 24px 60px -18px rgba(35,137,230,.55), inset 0 1px 0 rgba(255,255,255,.35)}
-  50%{transform:scale(1.045);box-shadow:0 24px 74px -12px rgba(35,137,230,.85), 0 0 46px rgba(105,184,255,.35), inset 0 1px 0 rgba(255,255,255,.45)}
-}
-.g-badge::before{content:"";position:absolute;inset:10px;border-radius:50%;border:1px dashed rgba(255,255,255,.45);animation:ringSpin 16s linear infinite}
-@keyframes ringSpin{to{transform:rotate(360deg)}}
-/* ondas que se expandem a partir do selo (efeito sonar) */
-.g-ripple{
-  position:absolute;inset:-1px;border-radius:50%;pointer-events:none;
-  border:1.5px solid rgba(105,184,255,.55);
-  animation:gRipple 2.8s ease-out infinite;
-}
-.g-ripple--2{animation-delay:1.4s}
-@keyframes gRipple{
-  0%{transform:scale(1);opacity:.65}
-  70%,100%{transform:scale(1.42);opacity:0}
-}
-.g-badge .d{font-family:var(--f-head);font-size:2.4rem;font-weight:700;line-height:1;color:#fff;text-shadow:0 2px 10px rgba(2,8,20,.3)}
-.g-badge .t{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.92);font-weight:800;margin-top:3px}
-
-/* ---------- Magic Rings: anéis concêntricos que emanam do selo (CSS puro) ---------- */
-/* Inspirado no efeito MagicRings (React Bits): vários anéis expandem para fora,
-   interpolando do azul-marca ao ciano, com fade-in/out contínuo. */
-.magic-rings{
-  position:absolute;left:50%;top:50%;width:150px;height:150px;
-  transform:translate(-50%,-50%);pointer-events:none;z-index:0;
-  filter:blur(.4px);
-}
-.magic-rings .mr{
-  position:absolute;inset:0;margin:auto;width:100%;height:100%;border-radius:50%;
-  border:2px solid var(--accent-soft);
-  opacity:0;transform:scale(.55);
-  animation:mrExpand 3.45s cubic-bezier(.22,.61,.36,1) infinite;
-  will-change:transform,opacity;
-}
-/* 6 anéis, cada um com atraso e cor progressiva (azul → ciano claro) */
-.magic-rings .mr:nth-child(1){animation-delay:0s;    border-color:#2389E6}
-.magic-rings .mr:nth-child(2){animation-delay:.57s;  border-color:#3A9BEE}
-.magic-rings .mr:nth-child(3){animation-delay:1.15s; border-color:#52ACF3}
-.magic-rings .mr:nth-child(4){animation-delay:1.72s; border-color:#69B8FF}
-.magic-rings .mr:nth-child(5){animation-delay:2.3s;  border-color:#8FCBFF}
-.magic-rings .mr:nth-child(6){animation-delay:2.87s; border-color:#B6DEFF}
-@keyframes mrExpand{
-  0%  {opacity:0;   transform:scale(.55)}
-  18% {opacity:.9}
-  70% {opacity:.28}
-  100%{opacity:0;   transform:scale(2.15)}
-}
-/* halo de brilho pulsante por trás dos anéis */
-.magic-rings::after{
-  content:"";position:absolute;inset:-14%;border-radius:50%;
-  background:radial-gradient(circle,rgba(35,137,230,.30),rgba(35,137,230,0) 62%);
-  animation:mrGlow 3.45s ease-in-out infinite;
-}
-@keyframes mrGlow{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.08)}}
-.guarantee h2{margin-bottom:14px}
-.guarantee p{margin-bottom:12px;color:var(--muted)}
-.g-note{
-  margin-top:6px;padding:16px 22px;border-radius:14px;
-  background:rgba(35,137,230,.16);border:1px solid var(--accent-line);
-  color:#fff;font-weight:700;font-size:1.06rem;
-}
-
-/* ---------- CTA Final ---------- */
-.final{
-  position:relative;overflow:hidden;text-align:center;
-  background:
-    radial-gradient(900px 500px at 50% -20%,rgba(35,137,230,.18),transparent 60%),
-    var(--bg);
-}
-.final h2{font-size:clamp(2rem,4.4vw,3rem);margin-bottom:16px}
-.final .lead{max-width:40rem;margin:0 auto 28px}
-.final-list{
-  list-style:none;display:grid;gap:9px;max-width:520px;margin:0 auto 30px;text-align:left;
-}
-.final-list li{
-  display:flex;gap:13px;align-items:center;font-size:1.02rem;color:var(--accent-pale);
-  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:12px 22px;
-}
-.final-list .ico{flex:none}
-.final .hero-cta{margin-top:0}
-
-/* ---------- Barra de progresso de leitura ---------- */
-.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:40;pointer-events:none}
-.progress i{
-  display:block;height:100%;width:100%;
-  background:linear-gradient(90deg,var(--accent),var(--accent-soft));
-  transform:scaleX(0);transform-origin:0 50%;
-  box-shadow:0 0 8px rgba(35,137,230,.6);
-}
-
-/* ---------- Footer ---------- */
-footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-2)}
-.foot{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
-.foot img{height:24px;opacity:.85}
-.foot p{font-size:.76rem;color:var(--muted-2);max-width:52rem}
-
-/* ---------- Reveal on scroll (com variantes de direção) ---------- */
-[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}
-[data-reveal="left"]{transform:translateX(-40px)}
-[data-reveal="right"]{transform:translateX(40px)}
-[data-reveal="zoom"]{transform:scale(.9)}
-[data-reveal="flip"]{transform:perspective(900px) rotateX(12deg);transform-origin:50% 100%}
-[data-reveal].in{opacity:1;transform:none}
-
-@media (prefers-reduced-motion: reduce){
-  html{scroll-behavior:auto}
-  [data-reveal]{opacity:1;transform:none;transition:none}
-  .frag-chips .chip{opacity:1;transform:none;transition:none}
-  .browser-wrap[data-reveal] .oc-row{opacity:1;transform:none;transition:none}
-  .btn,.kcard,.rowc,.browser{transition:none}
-  .cta-pulse,.float{animation:none}
-  .g-badge,.g-badge::before{animation:none}
-  .g-ripple{animation:none;opacity:0}
-  .magic-rings,.magic-rings .mr,.magic-rings::after{animation:none}
-  .magic-rings .mr{opacity:.22;transform:scale(1.3)}
-}
-
-/* ---------- Responsivo ---------- */
-@media (max-width:1024px){
-  .two-col{grid-template-columns:1fr;gap:14px}
-  .qual-grid{grid-template-columns:1fr}
-  .oc-rows{columns:1}
-  /* dores: volta a uma coluna, título deixa de ser sticky */
-  .pain-section{grid-template-columns:1fr;gap:22px}
-  .pain-section .sec-left{position:static;top:auto;margin-bottom:8px}
-  .pain-section .sec-left h2,.pain-section .sec-left .lead-note{max-width:none}
-  .pain-list{max-width:760px;margin:0 auto;width:100%}
-  /* value stack: volta a uma coluna centralizada, intro deixa de ser sticky */
-  .split{grid-template-columns:1fr;gap:22px;max-width:760px}
-  .split-intro{position:static;top:auto;text-align:center;margin-bottom:12px}
-  .split-intro h2{max-width:20ch;margin:0 auto}
-  .split-intro p{margin:14px auto 0;max-width:34rem}
-}
-@media (max-width:768px){
-  .section{padding:48px 0}
-  .hero{padding:44px 0 56px}
-  .hero h1{font-size:clamp(1.8rem,8vw,2.6rem)}
-  .hero-cta .btn{width:100%;justify-content:space-between}
-  .guarantee{grid-template-columns:1fr;gap:26px;justify-items:center;text-align:center;padding:30px 24px}
-  .guarantee > div:last-child{text-align:left}
-  /* no celular o painel entra inclinado e se endireita ao aparecer na tela */
-  .browser{transform:rotateX(10deg) scale(.99)}
-  .browser-wrap{margin-top:40px}
-  .b-body{padding:20px 18px 0}
-  .hstat{padding:12px 14px}
-  .two-col h2,.sec-left h2,.urgency h2{max-width:none}
-  .pullquote{padding:20px 18px}
-  .prose{margin-top:30px}
-  .glowline::before{inset:-30px 0}
-  /* empilhamento no mobile: degrau menor */
-  .pain-list{gap:18px}
-  .pain-list .kcard:nth-child(1){top:78px}
-  .pain-list .kcard:nth-child(2){top:84px}
-  .pain-list .kcard:nth-child(3){top:90px}
-  .pain-list .kcard:nth-child(4){top:96px}
-  .pain-list .kcard:nth-child(5){top:102px}
-  .stack-list{gap:18px}
-  .stack-card:nth-child(1){top:78px}
-  .stack-card:nth-child(2){top:84px}
-  .stack-card:nth-child(3){top:90px}
-  .stack-card:nth-child(4){top:96px}
-  .stack-card:nth-child(5){top:102px}
-  .stack-card:nth-child(6){top:108px}
-  .stack-card:nth-child(7){top:114px}
-  .stack-card:nth-child(8){top:120px}
-  .stack-card:nth-child(9){top:126px}
-  .stack-card:nth-child(10){top:132px}
-  .stack-card:nth-child(11){top:138px}
-}
-@media (max-width:560px){
-  .btn{width:100%;white-space:normal;text-align:center;justify-content:space-between}
-  .qual-panel{padding:24px 18px}
-  .oc-row{font-size:.94rem;gap:10px}
-  .oc-total .val{font-size:1.8rem}
-  .oc-badge{right:14px}
-  .b-url{letter-spacing:.06em;padding:3px 12px}
-  .hstat .num{font-size:1.05rem}
-  .hstat .lbl{font-size:.74rem}
-  .stack-card{padding:18px 16px 12px}
-  .stack-card h3{font-size:1.1rem}
-  .stack-card p{font-size:.96rem}
-  .total-band{padding:28px 18px;border-radius:20px}
-  .rowc{padding:14px 14px;gap:12px}
-  .rowc .ric{width:40px;height:40px}
-  .rowc p{font-size:.96rem}
-  .kcard{padding:20px 18px 12px}
-  .kcard p{font-size:.98rem}
-  .frag-chips .chip{font-size:.9rem;padding:9px 14px}
-  .urgency .final-box{padding:18px 16px;font-size:1rem}
-  .qual-list li{font-size:.98rem}
-  .g-badge{width:124px;height:124px}
-  .g-badge .d{font-size:2rem}
-  .magic-rings{width:124px;height:124px}
-  .final-list li{border-radius:18px}
-  .price-note{font-size:.92rem}
-  .container{padding:0 18px}
-}
-@media (max-width:380px){
-  .hero h1{font-size:1.72rem}
-  h2{font-size:1.5rem}
-  .btn{font-size:.94rem;padding:8px 8px 8px 18px;gap:9px}
-  .btn--lg{font-size:.96rem;padding:9px 9px 9px 20px}
-  .btn .arr-c{width:32px;height:32px}
-  .oc-row{font-size:.88rem}
-  .hstat{padding:10px 10px}
-  .hstat .num{font-size:.96rem}
-  .hstat .lbl{font-size:.68rem}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .rev{opacity:1;transform:none}
 }
 </style>
 </head>
 <body>
 
-<div class="progress" aria-hidden="true"><i id="scrollProgress"></i></div>
-
-<!-- 01 · HERO -->
+<!-- ============================== HERO ============================== -->
 <header class="hero">
-  <div class="container">
-    <h1 data-reveal style="--d:.08s">Você Não Precisa<br /><span class="ac">de Mais Um Curso</span></h1>
-    <p class="lead" data-reveal style="--d:.16s">
-      Os maiores traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar —
-      <strong>estratégias reais, indicadores exclusivos e IA integrada</strong>. Você para de adivinhar e começa a operar como profissional <em>a partir de hoje</em>.
-    </p>
-    <div class="hero-cta" data-reveal style="--d:.24s">
-      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
-        Quero o Arsenal Pro — R$ 997
-        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span>
-      </a>
-    </div>
-    <p class="price-note" data-reveal style="--d:.3s">
-      Valor total: <s>R$ 10.000</s> em entregáveis<br />
-      Arsenal Pro — apenas essa noite: <b>R$ 997</b><br />
-      Acesso imediato · Disponível apenas durante o Night Challenge
-    </p>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="aurora a" style="opacity:.4" aria-hidden="true"></div>
+  <div class="aurora b" style="opacity:.4" aria-hidden="true"></div>
 
-    <!-- Painel-janela inclinado com a oferta (mockup do painel, como na referência) -->
-    <div class="browser-wrap" data-reveal style="--d:.34s">
-      <div class="browser">
-        <span class="oc-badge float">Só essa noite</span>
-        <div class="b-head" aria-hidden="true">
-          <span class="d d1"></span><span class="d d2"></span><span class="d d3"></span>
-          <span class="b-url">ARSENAL PRO</span>
-        </div>
-        <div class="b-body">
-          <p class="oc-title">Tudo que está incluso</p>
-          <div class="oc-rows">
-            <div class="oc-row"><span>Método PHIZ 5K</span><s>R$ 997</s></div>
-            <div class="oc-row"><span>Mestre do Price Action</span><s>R$ 497</s></div>
-            <div class="oc-row"><span>Ultra Sniper + Aula Especializada</span><s>R$ 297</s></div>
-            <div class="oc-row"><span>Mentoria do Zero ao Avançado</span><s>R$ 497</s></div>
-            <div class="oc-row"><span>Kit Zero Loss + Price Action Pro</span><s>R$ 497</s></div>
-            <div class="oc-row"><span>Método VPA</span><s>R$ 297</s></div>
-            <div class="oc-row"><span>Estratégia 6 Anos + Indicador</span><s>R$ 397</s></div>
-            <div class="oc-row"><span>MACD Sniper</span><s>R$ 197</s></div>
-            <div class="oc-row"><span>Olho de Deus (IA na Safirion)</span><s>R$ 997</s></div>
-            <div class="oc-row"><span>Indicador LEAD + Fluxo Ultra</span><s>R$ 497</s></div>
-            <div class="oc-row"><span>Retração ST + Treinamento</span><s>R$ 497</s></div>
+  <!-- buraco negro (experiência reflect.app, tingida de azul Safirion) -->
+  <div class="bh" aria-hidden="true">
+    <video class="bh-vortex" src="assets/vortex.webm" muted loop playsinline autoplay preload="auto"></video>
+    <div class="bh-stars" id="bhStars"></div>
+    <div class="bh-circulos">
+      <div><div class="bh-circ"><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i></div></div>
+      <div><div class="bh-circ"><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i></div></div>
+      <div><div class="bh-circ"><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i><i class="bh-dot"></i></div></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="hero-conteudo">
+      <span class="badge-noite"><span class="viva"></span>Só essa noite</span>
+      <h1>Você Não Precisa de <span class="grad-blue">Mais Um Curso</span></h1>
+      <p class="sub">Os maiores traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar — <strong>estratégias reais, indicadores exclusivos e IA integrada</strong>. Você para de adivinhar e começa a operar como profissional <em>a partir de hoje</em>.</p>
+      <a class="cta" data-checkout href="#">Quero o Arsenal Pro — R$ 997
+        <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+      </a>
+      <p class="ancora">Valor total: <span class="riscado">R$ 10.000</span> em entregáveis<br/>Arsenal Pro — apenas essa noite: <span class="forte">R$ 997</span></p>
+      <p class="micro">ACESSO IMEDIATO · DISPONÍVEL APENAS DURANTE O NIGHT CHALLENGE</p>
+    </div>
+    <div class="painel-zona">
+      <div class="painel-wrap">
+        <div class="painel">
+          <div class="painel-top"><span class="tt">ARSENAL PRO</span><span class="st">Tudo que está incluso</span></div>
+          <div class="painel-lista">
+            <div class="painel-item"><span class="nm">Método PHIZ 5K</span><span class="pv">R$ 997</span></div>
+            <div class="painel-item"><span class="nm">Mestre do Price Action</span><span class="pv">R$ 497</span></div>
+            <div class="painel-item"><span class="nm">Ultra Sniper + Aula Especializada</span><span class="pv">R$ 297</span></div>
+            <div class="painel-item"><span class="nm">Mentoria do Zero ao Avançado</span><span class="pv">R$ 497</span></div>
+            <div class="painel-item"><span class="nm">Kit Zero Loss + Price Action Pro</span><span class="pv">R$ 497</span></div>
+            <div class="painel-item"><span class="nm">Método VPA</span><span class="pv">R$ 297</span></div>
+            <div class="painel-item"><span class="nm">Estratégia 6 Anos + Indicador</span><span class="pv">R$ 397</span></div>
+            <div class="painel-item"><span class="nm">MACD Sniper</span><span class="pv">R$ 197</span></div>
+            <div class="painel-item"><span class="nm">Olho de Deus (IA na Safirion)</span><span class="pv">R$ 997</span></div>
+            <div class="painel-item"><span class="nm">Indicador LEAD + Fluxo Ultra</span><span class="pv">R$ 497</span></div>
+            <div class="painel-item"><span class="nm">Retração ST + Treinamento</span><span class="pv">R$ 497</span></div>
           </div>
-          <div class="oc-total">
-            <div>
-              <span class="lbl">Hoje, tudo por</span>
-              <div class="val">R$ 997</div>
-            </div>
-            <div class="oc-strike">Valor total: <s>R$ 10.000</s></div>
+          <div class="painel-foot">
+            <span class="lbl">Valor total: <span class="riscado">R$ 10.000</span></span>
+            <span class="hoje"><small>Hoje, tudo por</small>R$ 997</span>
           </div>
         </div>
-        <div class="b-stats">
-          <div class="hstat"><span class="num">11</span><span class="lbl">Traders ao vivo</span></div>
-          <div class="hstat"><span class="num">R$ 10.000</span><span class="lbl">Em entregáveis</span></div>
-          <div class="hstat"><span class="num">7 dias</span><span class="lbl">De garantia</span></div>
-        </div>
+      </div>
+    </div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-trilho" id="marqueeTrilho">
+        <span class="ativo"><img src="assets/mercado/bitcoin.svg" alt=""/>BTC/USD <span class="var up">▲ +2,41%</span></span>
+        <span class="ativo"><img src="assets/mercado/ethereum.svg" alt=""/>ETH/USD <span class="var up">▲ +1,87%</span></span>
+        <span class="ativo"><img src="assets/mercado/ouro.svg" alt=""/>OURO <span class="var down">▼ −0,32%</span></span>
+        <span class="ativo"><img src="assets/mercado/nvidia.svg" alt=""/>NVIDIA <span class="var up">▲ +3,12%</span></span>
+        <span class="ativo"><img src="assets/mercado/solana.svg" alt=""/>SOL/USD <span class="var up">▲ +4,05%</span></span>
+        <span class="ativo"><img src="assets/mercado/petroleo.svg" alt=""/>PETRÓLEO <span class="var down">▼ −1,10%</span></span>
+        <span class="ativo"><img src="assets/mercado/tesla.svg" alt=""/>TESLA <span class="var up">▲ +1,54%</span></span>
+        <span class="ativo"><img src="assets/mercado/apple.svg" alt=""/>APPLE <span class="var up">▲ +0,89%</span></span>
+        <span class="ativo"><img src="assets/mercado/indice.svg" alt=""/>S&amp;P 500 <span class="var up">▲ +0,64%</span></span>
+        <span class="ativo"><img src="assets/mercado/xrp.svg" alt=""/>XRP/USD <span class="var down">▼ −0,73%</span></span>
+        <span class="ativo"><img src="assets/mercado/netflix.svg" alt=""/>NETFLIX <span class="var up">▲ +1,22%</span></span>
+        <span class="ativo"><img src="assets/mercado/meta.svg" alt=""/>META <span class="var up">▲ +0,97%</span></span>
       </div>
     </div>
   </div>
 </header>
 
-<main>
-
-<!-- 02 · CONTEXTO — POR QUE ISSO EXISTE -->
-<section class="section">
-  <div class="container">
-    <div class="two-col glowline" data-reveal>
-      <h2><span class="dm">Por Que os Maiores</span> Traders Decidiram <span class="dm">Juntar</span> Tudo <span class="dm">Dentro do</span> <span class="ac">Arsenal Pro</span></h2>
-      <p>Cada um deles chegou onde chegou com anos de dedicação, erros caros e um sistema construído na prática — <strong>não na teoria</strong>. E cada um sabe, melhor do que ninguém, <em>o que separa quem opera com consistência</em> de quem fica testando estratégia por estratégia sem nunca sair do lugar.</p>
-    </div>
-    <div class="prose">
-      <p data-reveal>O problema é que esse arsenal, normalmente, fica espalhado.</p>
-      <div class="frag-chips" data-reveal>
-        <span class="chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Uma estratégia aqui</span>
-        <span class="chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Um indicador ali</span>
-        <span class="chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Uma aula sobre gestão de risco acolá.</span>
-      </div>
-      <p data-reveal>Mas <strong>nunca tudo junto, funcionando ao mesmo tempo</strong>, construído por quem realmente vive disso.</p>
-      <div class="pullquote" data-reveal="zoom">O Safirion Corujão de Traders foi o <em>momento certo</em> para mudar isso.</div>
-      <p data-reveal>Os maiores traders, uma única noite, um produto que não existia antes — e que só faz sentido nesse formato, nessa ocasião. <strong>O Arsenal Pro é o resultado disso.</strong></p>
-    </div>
+<!-- ============================== STATS ============================== -->
+<section class="stats">
+  <div class="wrap">
+    <div class="stat rev"><div class="v grad-blue">11</div><div class="l">Traders ao vivo</div></div>
+    <div class="stat rev rev-d1"><div class="v grad-blue">R$ 10.000</div><div class="l">Em entregáveis</div></div>
+    <div class="stat rev rev-d2"><div class="v grad-blue">7 dias</div><div class="l">De garantia</div></div>
   </div>
 </section>
 
-<!-- 03 · AGITAÇÃO — O PROBLEMA REAL -->
-<section class="section section--tint">
-  <div class="container">
-    <div class="pain-section">
-    <div class="sec-left" data-reveal>
-      <span class="eyebrow">
-        <span class="ei" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><circle cx="12" cy="16" r=".6" fill="currentColor"/></svg></span>
-        <span class="el">O problema real</span>
-      </span>
-      <h2><span class="dm">Você Já Passou por</span> <span class="ac">Alguma Dessas Situações?</span></h2>
+<!-- ============================== POR QUE ============================== -->
+<section class="sec" style="background:var(--bg-2)">
+  <div class="aurora c" aria-hidden="true"></div>
+  <div class="wrap">
+    <h2 class="fill-words" id="fillHead">Por Que os Maiores Traders Decidiram Juntar <span data-destaque>Tudo</span> Dentro do <span data-destaque>Arsenal Pro</span></h2>
+    <p class="lead rev">Cada um deles chegou onde chegou com anos de dedicação, erros caros e um sistema construído na prática — <strong>não na teoria</strong>. E cada um sabe, melhor do que ninguém, <em>o que separa quem opera com consistência</em> de quem fica testando estratégia por estratégia sem nunca sair do lugar.</p>
+    <p class="lead rev">O problema é que esse arsenal, normalmente, fica espalhado.</p>
+    <div class="espalhado">
+      <div class="peca rev">Uma estratégia aqui</div>
+      <div class="peca rev rev-d1">Um indicador ali</div>
+      <div class="peca rev rev-d2">Uma aula sobre gestão de risco acolá</div>
     </div>
-    <div class="pain-list">
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="21 11 21 17 15 17"/></svg></div>
-        <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p>
-        <div class="kfoot"><span class="nchip">001</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg></div>
-        <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p>
-        <div class="kfoot"><span class="nchip">002</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 8 8 8"/></svg></div>
-        <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p>
-        <div class="kfoot"><span class="nchip">003</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
-        <p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p>
-        <div class="kfoot"><span class="nchip">004</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h4"/><path d="M12 3v9"/><polyline points="8 8 12 12 16 8"/></svg></div>
-        <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p>
-        <div class="kfoot"><span class="nchip">005</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </div>
-    </div>
-    </div><!-- /pain-section -->
-
-    <div class="frag-wrap" data-reveal>
-      <h3>O problema não é você. E não é falta de conhecimento — você já sabe mais do que imagina.</h3>
-      <p style="max-width:44rem;margin:16px auto 0;font-size:1.02rem">O problema é que você está operando com <strong>pedaços de um sistema que nunca foi montado por completo</strong>.</p>
-      <p class="resolve" style="margin-top:20px">É exatamente isso que o <em>Arsenal Pro</em> resolve.</p>
-    </div>
+    <p class="lead rev">Mas <strong>nunca tudo junto, funcionando ao mesmo tempo</strong>, construído por quem realmente vive disso.</p>
+    <p class="lead rev">O Safirion Corujão de Traders foi o <em>momento certo</em> para mudar isso.</p>
+    <p class="lead rev">Os maiores traders, uma única noite, um produto que não existia antes — e que só faz sentido nesse formato, nessa ocasião. <strong>O Arsenal Pro é o resultado disso.</strong></p>
   </div>
 </section>
 
-<!-- 04 · VIRADA — APRESENTAÇÃO DO ARSENAL PRO -->
-<section class="section">
-  <div class="container">
-    <div class="two-col" style="align-items:center">
-      <div data-reveal>
-        <span class="eyebrow" style="margin-bottom:18px">
-          <span class="ei" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg></span>
-          <span class="el">Apresentação do Arsenal Pro</span>
-        </span>
-        <h2 style="font-size:clamp(2rem,4.2vw,3rem)"><span class="dm">Arsenal</span> <span class="ac">Pro</span>.</h2>
-        <p class="lead" style="margin-top:14px;max-width:30rem">O Arsenal Pro reúne o que 11 traders levaram anos para construir: <strong>suas melhores estratégias, seus indicadores exclusivos e uma IA integrada diretamente na Safirion</strong> — tudo entregue em uma única noite, <em>por uma fração do valor real</em>.</p>
-        <p style="margin-top:12px;max-width:30rem"><strong>Não é uma coleção de conteúdo jogado em uma pasta.</strong></p>
-        <p style="margin-top:8px;max-width:30rem">É um sistema com <em>três dimensões</em>:</p>
-      </div>
-      <div class="rowc-stack">
-        <div class="rowc fx" data-reveal="right">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
-          <div class="rtx">
-            <span class="rtag">Dimensão 1</span>
-            <h3>Estratégia</h3>
-            <p>Múltiplas metodologias validadas em anos de operação real. Você tem um sistema funcionando em qualquer condição de mercado.</p>
-          </div>
-          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
-        </div>
-        <div class="rowc fx" data-reveal="right" style="--d:.12s">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span>
-          <div class="rtx">
-            <span class="rtag">Dimensão 2</span>
-            <h3>Ferramenta</h3>
-            <p>Indicadores exclusivos que identificam os momentos certos de entrada, com padrões de confluência e filtros para evitar armadilhas.</p>
-          </div>
-          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
-        </div>
-        <div class="rowc fx" data-reveal="right" style="--d:.24s">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/><line x1="2" y1="9" x2="5" y2="9"/><line x1="2" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="22" y2="9"/><line x1="19" y1="15" x2="22" y2="15"/><circle cx="12" cy="12" r="2.4"/></svg></span>
-          <div class="rtx">
-            <span class="rtag">Dimensão 3</span>
-            <h3>IA</h3>
-            <p>O Olho de Deus — integrado diretamente à Safirion. Tecnologia que analisa o gráfico e potencializa cada decisão em tempo real.</p>
-          </div>
-          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
-        </div>
+<!-- ============================== DORES ============================== -->
+<section class="sec">
+  <div class="wrap">
+    <div class="kicker rev">
+      <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></span>
+      <span class="pill">O problema real</span>
+    </div>
+    <h2 class="rev">Você Já Passou por Alguma Dessas Situações?</h2>
+    <div class="dores">
+      <div class="card dor rev"><span class="num-chip num">001</span><p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p></div>
+      <div class="card dor rev rev-d1"><span class="num-chip num">002</span><p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p></div>
+      <div class="card dor rev rev-d2"><span class="num-chip num">003</span><p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p></div>
+      <div class="card dor rev rev-d3"><span class="num-chip num">004</span><p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p></div>
+      <div class="card dor rev rev-d4"><span class="num-chip num">005</span><p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p></div>
+      <div class="card dor-resumo rev">
+        <h3>O problema não é você. E não é falta de conhecimento — você já sabe mais do que imagina.</h3>
+        <p>O problema é que você está operando com <strong>pedaços de um sistema que nunca foi montado por completo</strong>.</p>
+        <p style="margin-top:10px">É exatamente isso que o <em>Arsenal Pro</em> resolve.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 05 · VALUE STACK — O QUE VOCÊ RECEBE -->
-<section class="section section--tint" id="oferta">
-  <div class="container split">
-    <div class="split-intro" data-reveal>
-      <span class="eyebrow">
-        <span class="ei" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></span>
-        <span class="el">O que você recebe</span>
-      </span>
-      <h2><span class="dm">O Que Está</span> Dentro <span class="dm">do</span> <span class="ac">Arsenal Pro</span></h2>
-      <p>Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam <em>o sistema mais completo disponível nessa noite</em>.</p>
+<!-- ============================== 3 DIMENSÕES ============================== -->
+<section class="sec" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="kicker rev">
+      <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+      <span class="pill">Apresentação do Arsenal Pro</span>
     </div>
-
-    <div class="stack-list">
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Taylon</span><span class="nchip">01</span></div>
-        <h3>Método PHIZ 5K</h3>
-        <p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Patrick</span><span class="nchip">02</span></div>
-        <h3>Mestre do Price Action</h3>
-        <p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Miriele</span><span class="nchip">03</span></div>
-        <h3>Ultra Sniper + Aula Especializada</h3>
-        <p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Julin</span><span class="nchip">04</span></div>
-        <h3>Mentoria Completa — Do Zero ao Avançado</h3>
-        <p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Thon Carvalho</span><span class="nchip">05</span></div>
-        <h3>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</h3>
-        <p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Ed Trader</span><span class="nchip">06</span></div>
-        <h3>Método VPA — Leitura de Velas e Controle Emocional</h3>
-        <p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Vitor Lela</span><span class="nchip">07</span></div>
-        <h3>Estratégia Validada em 6 Anos + Indicador Exclusivo</h3>
-        <p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 397</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Eduardo Bastos</span><span class="nchip">08</span></div>
-        <h3>MACD Sniper</h3>
-        <p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 197</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Tio Vitão</span><span class="nchip">09</span></div>
-        <h3>Olho de Deus — IA Integrada com a Safirion</h3>
-        <p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Molina</span><span class="nchip">10</span></div>
-        <h3>Indicador LEAD + Aula Fluxo Ultra</h3>
-        <p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Suzana</span><span class="nchip">11</span></div>
-        <h3>Retração ST + Treinamento Completo</h3>
-        <p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p>
-        <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
-      </article>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="total-band" data-reveal="zoom">
-      <p class="strike">Value Stack Total: <s>R$ 10.000</s></p>
-      <p class="now">R$ 997 <small>Arsenal Pro — apenas essa noite</small></p>
+    <p class="lead rev">O Arsenal Pro reúne o que 11 traders levaram anos para construir: <strong>suas melhores estratégias, seus indicadores exclusivos e uma IA integrada diretamente na Safirion</strong> — tudo entregue em uma única noite, <em>por uma fração do valor real</em>.</p>
+    <p class="lead rev"><strong>Não é uma coleção de conteúdo jogado em uma pasta.</strong></p>
+    <p class="lead rev">É um sistema com <em>três dimensões</em>:</p>
+    <div class="dims">
+      <div class="card dim rev">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg></span>
+        <div class="tag">Dimensão 1</div>
+        <h3>Estratégia</h3>
+        <p>Múltiplas metodologias validadas em anos de operação real. Você tem um sistema funcionando em qualquer condição de mercado.</p>
+      </div>
+      <div class="card dim rev rev-d1">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 00-6.4 6.4L3 18v3h3l5.3-5.3a4.5 4.5 0 006.4-6.4l-3 3-2-2 3-3z"/></svg></span>
+        <div class="tag">Dimensão 2</div>
+        <h3>Ferramenta</h3>
+        <p>Indicadores exclusivos que identificam os momentos certos de entrada, com padrões de confluência e filtros para evitar armadilhas.</p>
+      </div>
+      <div class="card dim rev rev-d2">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 017 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 017-7zM9 21h6"/></svg></span>
+        <div class="tag">Dimensão 3</div>
+        <h3>IA</h3>
+        <p>O Olho de Deus — integrado diretamente à Safirion. Tecnologia que analisa o gráfico e potencializa cada decisão em tempo real.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 06 · QUALIFICAÇÃO — PARA QUEM É E PARA QUEM NÃO É -->
-<section class="section">
-  <div class="container">
-    <div class="qual-grid">
-      <div class="qual-panel qual-panel--yes fx" data-reveal="left">
+<!-- ============================== ENTREGÁVEIS ============================== -->
+<section class="sec">
+  <div class="aurora b" style="top:20%" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="kicker rev">
+      <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg></span>
+      <span class="pill">O que você recebe</span>
+    </div>
+    <h2 class="rev">O Que Está Dentro do Arsenal Pro</h2>
+    <p class="lead rev">Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam <em>o sistema mais completo disponível nessa noite</em>.</p>
+    <div class="entregas">
+      <div class="card entrega rev"><div class="topo"><span class="trader">— Taylon</span><span class="num-chip">01</span></div><h3>Método PHIZ 5K</h3><p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></div></div>
+      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Patrick</span><span class="num-chip">02</span></div><h3>Mestre do Price Action</h3><p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Miriele</span><span class="num-chip">03</span></div><h3>Ultra Sniper + Aula Especializada</h3><p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></div></div>
+      <div class="card entrega rev"><div class="topo"><span class="trader">— Julin</span><span class="num-chip">04</span></div><h3>Mentoria Completa — Do Zero ao Avançado</h3><p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Thon Carvalho</span><span class="num-chip">05</span></div><h3>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</h3><p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Ed Trader</span><span class="num-chip">06</span></div><h3>Método VPA — Leitura de Velas e Controle Emocional</h3><p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></div></div>
+      <div class="card entrega rev"><div class="topo"><span class="trader">— Vitor Lela</span><span class="num-chip">07</span></div><h3>Estratégia Validada em 6 Anos + Indicador Exclusivo</h3><p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 397</span></div></div>
+      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Eduardo Bastos</span><span class="num-chip">08</span></div><h3>MACD Sniper</h3><p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 197</span></div></div>
+      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Tio Vitão</span><span class="num-chip">09</span></div><h3>Olho de Deus — IA Integrada com a Safirion</h3><p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></div></div>
+      <div class="card entrega rev"><div class="topo"><span class="trader">— Molina</span><span class="num-chip">10</span></div><h3>Indicador LEAD + Aula Fluxo Ultra</h3><p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Suzana</span><span class="num-chip">11</span></div><h3>Retração ST + Treinamento Completo</h3><p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+    </div>
+
+    <div class="stack rev">
+      <div style="position:relative;z-index:1">
+        <div class="apenas">Value Stack — Total</div>
+        <div class="riscado-g">R$ 10.000</div>
+        <div class="precao grad-blue">R$ 997</div>
+        <div class="apenas">Arsenal Pro — apenas essa noite</div>
+        <a class="cta" data-checkout href="#">Quero o Arsenal Pro — R$ 997
+          <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== PARA QUEM ============================== -->
+<section class="sec" style="background:var(--bg-2)">
+  <div class="wrap">
+    <div class="pra-quem">
+      <div class="card rev">
         <h3>O Arsenal Pro É Para Você Se...</h3>
-        <ul class="qual-list">
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</li>
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você já opera mas não tem consistência — boa semana, semana ruim — e quer entender o que está faltando no seu operacional.</li>
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você tem estratégia mas não tem ferramenta — opera no achismo, sem indicadores confiáveis para embasar as entradas.</li>
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você já tem indicadores mas não tem estratégia — os sinais aparecem e você não sabe exatamente como agir com eles.</li>
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você quer parar de depender de uma única metodologia e construir um operacional sólido e diversificado.</li>
-          <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</li>
+        <ul class="lista-check">
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</li>
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já opera mas não tem consistência — boa semana, semana ruim — e quer entender o que está faltando no seu operacional.</li>
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você tem estratégia mas não tem ferramenta — opera no achismo, sem indicadores confiáveis para embasar as entradas.</li>
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já tem indicadores mas não tem estratégia — os sinais aparecem e você não sabe exatamente como agir com eles.</li>
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você quer parar de depender de uma única metodologia e construir um operacional sólido e diversificado.</li>
+          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</li>
         </ul>
       </div>
-      <div class="qual-panel qual-panel--no fx" data-reveal="right" style="--d:.12s">
+      <div class="card rev rev-d1" style="border-color:rgba(248,113,113,.25)">
         <h3>O Arsenal Pro Não É Para Você Se...</h3>
-        <ul class="qual-list">
-          <li><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E2556A" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</li>
-          <li><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E2556A" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Você acredita que vai lucrar no mercado sem estudar o que vai receber e sem aplicar o que aprender.</li>
-          <li><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E2556A" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Você está procurando um atalho que funcione sem nenhum esforço da sua parte.</li>
+        <ul class="lista-check">
+          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</li>
+          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você acredita que vai lucrar no mercado sem estudar o que vai receber e sem aplicar o que aprender.</li>
+          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você está procurando um atalho que funcione sem nenhum esforço da sua parte.</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 07 · URGÊNCIA — POR QUE APENAS ESSA NOITE -->
-<section class="section urgency">
-  <div class="container">
-    <div class="two-col">
-      <h2 data-reveal><span class="dm">Esse Produto</span> <span class="ac">Não Vai Existir</span> <span class="dm">Depois Dessa</span> Noite.</h2>
-      <div>
-        <p data-reveal>Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, <strong>o produto dessa noite</strong>.</p>
-        <p data-reveal>Para reunir os maiores traders com sistemas diferentes, indicadores exclusivos e uma IA integrada em um único produto — foi preciso criar algo que não existia antes. Cada trader contribuiu com o seu melhor por uma razão específica: o Safirion Corujão de Traders.</p>
-        <p data-reveal>Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, <em>não se repete</em>.</p>
-      </div>
-    </div>
-    <div class="final-box" data-reveal="zoom">
-      <b>R$ 10.000 em entregáveis</b> reunidos em um único produto por <b>R$ 997</b> — disponível apenas durante o Corujão. Quando o evento terminar, essa oferta fecha.
-    </div>
+<!-- ============================== ESCASSEZ ============================== -->
+<section class="sec escassez">
+  <div class="wrap">
+    <h2 class="rev">Esse Produto <span class="grad-blue">Não Vai Existir</span> Depois Dessa Noite.</h2>
+    <p class="lead rev">Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, <strong>o produto dessa noite</strong>.</p>
+    <p class="lead rev">Para reunir os maiores traders com sistemas diferentes, indicadores exclusivos e uma IA integrada em um único produto — foi preciso criar algo que não existia antes. Cada trader contribuiu com o seu melhor por uma razão específica: o Safirion Corujão de Traders.</p>
+    <p class="lead rev">Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, <em>não se repete</em>.</p>
+    <p class="lead rev"><strong>R$ 10.000 em entregáveis</strong> reunidos em um único produto por <strong>R$ 997</strong> — disponível apenas durante o Corujão. Quando o evento terminar, essa oferta fecha.</p>
   </div>
 </section>
 
-<!-- 09 · GARANTIA — RISCO ZERO -->
-<section class="section">
-  <div class="container">
-    <div class="guarantee" data-reveal="flip">
-      <div class="g-badge-wrap" aria-hidden="true">
-        <div class="magic-rings">
-          <span class="mr"></span><span class="mr"></span><span class="mr"></span>
-          <span class="mr"></span><span class="mr"></span><span class="mr"></span>
-        </div>
-        <div class="g-badge">
-          <span class="g-ripple"></span>
-          <span class="g-ripple g-ripple--2"></span>
-          <div>
-            <div class="d">7</div>
-            <div class="t">dias<br/>sem risco</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h2><span class="dm">Você Tem</span> <span class="ac">7 Dias</span> <span class="dm">Para Testar.</span> Sem Risco.</h2>
-        <p>Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o <em>reembolso em até 7 dias</em>. <strong>Sem perguntas. Sem burocracia.</strong></p>
-        <p>Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar — <em>devolvemos 100% do seu investimento</em>.</p>
-        <div class="g-note">A única coisa que não devolvemos é o conhecimento que você já vai ter absorvido.</div>
-      </div>
-    </div>
+<!-- ============================== GARANTIA ============================== -->
+<section class="sec garantia" style="background:var(--bg-2)">
+  <div class="wrap">
+    <span class="selo7 rev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>7 dias · sem risco</span>
+    <h2 class="rev">Você Tem <span class="grad-blue">7 Dias</span> Para Testar. Sem Risco.</h2>
+    <p class="lead rev">Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o <em>reembolso em até 7 dias</em>. <strong>Sem perguntas. Sem burocracia.</strong></p>
+    <p class="lead rev">Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar — <em>devolvemos 100% do seu investimento</em>.</p>
+    <p class="lead rev">A única coisa que não devolvemos é o conhecimento que você já vai ter absorvido.</p>
   </div>
 </section>
 
-<!-- 10 · CTA FINAL — FECHAMENTO -->
-<section class="section final section--tint">
-  <div class="container">
-    <h2 data-reveal><span class="dm">Você Decide</span> <span class="ac">Agora.</span></h2>
-    <p class="lead" data-reveal>Do outro lado do botão está o arsenal completo dos maiores traders da Safirion — <strong>estratégias, indicadores e IA</strong> — em um único sistema. Não mais um pedaço. <em>Tudo junto, funcionando ao mesmo tempo.</em></p>
-    <p data-reveal style="margin-bottom:20px;font-weight:700;color:#fff">O que você leva hoje:</p>
-    <ul class="final-list">
-      <li data-reveal="left"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Os maiores traders que operam ao vivo, em um único lugar</li>
-      <li data-reveal="right" style="--d:.06s"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> 4 indicadores exclusivos + IA integrada na Safirion</li>
-      <li data-reveal="left" style="--d:.12s"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Educação completa do zero ao avançado</li>
-      <li data-reveal="right" style="--d:.18s"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Acompanhamento ao vivo e grupo VIP</li>
-      <li data-reveal="left" style="--d:.24s"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> 7 dias de garantia incondicional</li>
+<!-- ============================== FINAL ============================== -->
+<section class="sec final" style="padding-bottom:170px">
+  <div class="stars2" aria-hidden="true"></div>
+  <div class="bh bh-final" aria-hidden="true">
+    <video class="bh-vortex" src="assets/vortex.webm" muted loop playsinline autoplay preload="none"></video>
+    <div class="bh-stars"></div>
+  </div>
+  <div class="wrap">
+    <h2 class="rev">Você Decide <span class="grad-blue">Agora.</span></h2>
+    <p class="lead rev" style="max-width:640px">Do outro lado do botão está o arsenal completo dos maiores traders da Safirion — <strong>estratégias, indicadores e IA</strong> — em um único sistema. Não mais um pedaço. <em>Tudo junto, funcionando ao mesmo tempo.</em></p>
+    <p class="leva-titulo rev">O que você leva hoje:</p>
+    <ul class="lista-check rev">
+      <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Os maiores traders que operam ao vivo, em um único lugar</li>
+      <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>4 indicadores exclusivos + IA integrada na Safirion</li>
+      <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Educação completa do zero ao avançado</li>
+      <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Acompanhamento ao vivo e grupo VIP</li>
+      <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>7 dias de garantia incondicional</li>
     </ul>
-    <div class="hero-cta" data-reveal>
-      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
-        Quero o Arsenal Pro — R$ 997
-        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span>
-      </a>
-    </div>
-    <p class="price-note" data-reveal>
-      Valor total: <s>R$ 10.000</s> em entregáveis<br />
-      Arsenal Pro — apenas no Corujão: <b>R$ 997</b>
-    </p>
+    <a class="cta rev" data-checkout href="#">Quero o Arsenal Pro — R$ 997
+      <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    </a>
+    <p class="ancora rev">Valor total: <span class="riscado">R$ 10.000</span> em entregáveis<br/>Arsenal Pro — apenas no Corujão: <span class="forte">R$ 997</span></p>
   </div>
 </section>
 
-</main>
-
+<footer class="rodape-min">ARSENAL PRO · NIGHT CHALLENGE</footer>
 
 <script>
-// ============================================
-// CONFIGURAÇÃO: troque o link abaixo
-// ============================================
+/* ============ CHECKOUT ============ */
 const CHECKOUT_URL = "#";      // TODO: link de checkout do Arsenal Pro
-
 document.querySelectorAll("[data-checkout]").forEach(a => a.href = CHECKOUT_URL);
 
-// Reveal on scroll (respeita prefers-reduced-motion via CSS)
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-  });
-}, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
-document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
-
-// ---- Efeito de card: spotlight que segue o ponteiro/toque ----
+/* ============ ESTRELAS (starfield estilo Resend) ============ */
 (function(){
-  const cards = document.querySelectorAll('.fx');
-  const move = (el, x, y) => {
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--mx', ((x - r.left) / r.width * 100) + '%');
-    el.style.setProperty('--my', ((y - r.top) / r.height * 100) + '%');
-  };
-  cards.forEach(el => {
-    el.addEventListener('pointermove', e => move(el, e.clientX, e.clientY), { passive:true });
-    el.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(el, t.clientX, t.clientY); }, { passive:true });
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.stars,.stars2').forEach(campo=>{
+    const n = innerWidth < 680 ? 40 : 90;
+    for(let i=0;i<n;i++){
+      const s=document.createElement('span');
+      s.style.left=(Math.random()*100)+'%';
+      s.style.top=(Math.random()*100)+'%';
+      const sz=Math.random()<.85?1.5:2.5;
+      s.style.width=s.style.height=sz+'px';
+      s.style.opacity=(.15+Math.random()*.5).toFixed(2);
+      if(!reduz){
+        s.style.animationDelay=(Math.random()*4).toFixed(2)+'s';
+        s.style.animationDuration=(3+Math.random()*4).toFixed(2)+'s';
+      }
+      campo.appendChild(s);
+    }
   });
-  // No mobile (sem hover), acende o card ao entrar na tela e apaga ao sair
-  if (!window.matchMedia('(hover:hover)').matches){
-    const io2 = new IntersectionObserver(es => es.forEach(e => {
-      e.target.classList.toggle('lit', e.isIntersecting && e.intersectionRatio > 0.55);
-    }), { threshold:[0,0.55,1] });
-    cards.forEach(el => io2.observe(el));
-  }
 })();
 
+/* ============ ESTRELAS ORBITAIS DOS BURACOS NEGROS (efeito reflect.app) ============ */
+(function(){
+  const reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduz){ document.querySelectorAll('.bh-vortex').forEach(v=>{v.removeAttribute('autoplay');v.pause();}); return; }
+  document.querySelectorAll('.bh-stars').forEach(campo=>{
+    const n=innerWidth<680?70:150;
+    let html='';
+    for(let i=0;i<n;i++){
+      const x=(Math.random()*100).toFixed(2), y=(Math.random()*100).toFixed(2);
+      const dx=Math.round((Math.random()-.5)*24), dy=Math.round((Math.random()-.5)*24);
+      const dur=(2+Math.random()*5).toFixed(2), del=(-Math.random()*7).toFixed(2);
+      html+=`<i style="left:${x}%;top:${y}%;--drift:translate(${dx}px,${dy}px);animation-duration:${dur}s;animation-delay:${del}s"></i>`;
+    }
+    campo.innerHTML=html;
+  });
+  // o Chrome pausa vídeo fora da viewport — toca só quando o trecho aparece
+  document.querySelectorAll('.bh-vortex').forEach(v=>{
+    new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting && v.paused) v.play().catch(()=>{}); });
+    },{threshold:.05}).observe(v);
+  });
+})();
 
-// Painel 3D: endireita conforme o scroll (desktop e mobile, sem depender de hover)
-const bw = document.querySelector(".browser-wrap");
-if (bw) {
-  const panel = bw.querySelector(".browser");
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    panel.style.transform = "none";
-  } else {
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const r = bw.getBoundingClientRect();
-      const vh = window.innerHeight;
-      /* 0 = painel entrando pela base da tela · 1 = topo do painel a 35% da tela (reto) */
-      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .65)));
-      const tilt = 14 * (1 - p);
-      panel.style.transform = "rotateX(" + tilt.toFixed(2) + "deg) scale(" + (0.985 + 0.015 * p).toFixed(4) + ")";
-    };
-    panel.style.transition = "transform .1s linear";
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-    addEventListener("scroll", onScroll, { passive: true });
-    addEventListener("resize", onScroll, { passive: true });
-    update();
-  }
-}
+/* ============ MARQUEE: duplica o trilho para loop infinito ============ */
+(function(){
+  const t=document.getElementById('marqueeTrilho');
+  if(t) t.innerHTML += t.innerHTML;
+})();
 
-// Barra de progresso de leitura no topo
-const prog = document.getElementById("scrollProgress");
-if (prog) {
-  const paint = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    prog.style.transform = "scaleX(" + (max > 0 ? (window.scrollY / max).toFixed(4) : 0) + ")";
+/* ============ REVELAÇÃO NO SCROLL ============ */
+(function(){
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target);} });
+  },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+})();
+
+/* ============ HEADLINE QUE ACENDE PALAVRA POR PALAVRA (efeito safirion) ============ */
+(function(){
+  const h=document.getElementById('fillHead');
+  if(!h) return;
+  // envolve cada palavra num span, preservando os destaques
+  const partes=[];
+  h.childNodes.forEach(nd=>{
+    if(nd.nodeType===3){
+      nd.textContent.split(/\s+/).filter(Boolean).forEach(w=>partes.push({w,d:false}));
+    } else if(nd.nodeType===1){
+      nd.textContent.split(/\s+/).filter(Boolean).forEach(w=>partes.push({w,d:true}));
+    }
+  });
+  h.innerHTML=partes.map(p=>`<span class="w${p.d?' destaque':''}">${p.w}</span>`).join(' ');
+  const ws=[...h.querySelectorAll('.w')];
+  const atualiza=()=>{
+    const r=h.getBoundingClientRect();
+    const prog=Math.min(1,Math.max(0,(innerHeight*.82-r.top)/(innerHeight*.55)));
+    const acesos=Math.round(prog*ws.length);
+    ws.forEach((s,i)=>s.classList.toggle('lit',i<acesos));
   };
-  addEventListener("scroll", paint, { passive: true });
-  addEventListener("resize", paint, { passive: true });
-  paint();
-}
+  addEventListener('scroll',atualiza,{passive:true});
+  atualiza();
+})();
 </script>
 </body>
 </html>
