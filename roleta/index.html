@@ -1320,6 +1320,12 @@ function tick(){
   if (left <= 0){ timeUp(); return; }
   timerRAF = requestAnimationFrame(tick);
 }
+/* Guarda-costas do cronometro: requestAnimationFrame nao roda com a aba em
+   segundo plano, entao uma operacao podia passar do tempo sem nunca encerrar.
+   setInterval e desacelerado nessa situacao, mas continua disparando. */
+setInterval(() => {
+  if (timerRAF && timerEndAt && Date.now() >= timerEndAt) timeUp();
+}, 1000);
 function timeUp(){
   if (timerRAF){ cancelAnimationFrame(timerRAF); timerRAF = null; }
   timerTxt.textContent = "00:00";
@@ -1348,7 +1354,7 @@ function timeUp(){
     }, 1000);
   }
 }
-btnEnd.addEventListener("click", () => { if (timerRAF) timerEndAt = Date.now(); });
+btnEnd.addEventListener("click", () => { if (timerRAF){ timerEndAt = Date.now(); timeUp(); } });
 
 function launchConfetti(){
   if (REDUCED || !cfg.confetti) return;
@@ -1723,7 +1729,12 @@ function applyStateR(m){
       case "endOp":
         if (!isPrimary) break;
         if (!timerRAF){ syncSend({ type:"ack", cmd:"endOp", ok:false, reason:"Nenhuma operação em andamento." }); break; }
-        timerEndAt = Date.now(); syncSend({ type:"ack", cmd:"endOp", ok:true });
+        /* Antes so ajustava timerEndAt e esperava o tick() perceber. Mas tick()
+           roda em requestAnimationFrame, que o navegador PAUSA em aba de fundo:
+           com a roleta minimizada o comando respondia "ok" e nada acontecia.
+           Agora encerra direto. */
+        timerEndAt = Date.now(); timeUp();
+        syncSend({ type:"ack", cmd:"endOp", ok:true });
         break;
     }
   }).subscribe(st => {
