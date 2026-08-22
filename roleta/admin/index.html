@@ -804,7 +804,12 @@ if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
 
 /* Avanca o relogio local. Recebe o maior valor ja visto para nunca regredir. */
 function tick(vistoFora){
-  relogio = Math.max(relogio, parseInt(vistoFora, 10) || 0) + 1;
+  /* Date.now() entra como PISO, nao como fonte da verdade. Motivo: os dados
+     antigos foram gravados com rev = Date.now() (~1.78e12). Um painel recem-
+     aberto comeca em 0 e, sem esse piso, TODA edicao dele perderia para um
+     painel que ainda carrega o carimbo antigo. O comportamento Lamport
+     continua valendo — o max sempre inclui o maior valor ja visto. */
+  relogio = Math.max(relogio, parseInt(vistoFora, 10) || 0, Date.now()) + 1;
   try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
   return relogio;
 }
