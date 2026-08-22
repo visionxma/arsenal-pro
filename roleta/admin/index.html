@@ -1048,6 +1048,7 @@ function renderChips(){
 
 function render(){
   renderChips();
+  if (typeof backupAutomatico === "function") backupAutomatico();  // rede de seguranca, 1x por navegador
   if (typeof renderListas === "function") renderListas();   // mantem o "no ar" das listas em dia
   cfgMinutes.value = cfg.minutes;
   cfgWait.value = cfg.waitSec;
@@ -1536,17 +1537,26 @@ fListaNome.addEventListener("keydown", e => {
   if (e.key === "Enter"){ e.preventDefault(); btnSalvarLista.click(); }
 });
 
-/* Rede de seguranca: na primeira vez que o painel roda com esta versao, guarda
-   sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la. */
-(function backupAutomatico(){
+/* Rede de seguranca: na primeira vez que este navegador tem uma lista de verdade,
+   guarda sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la.
+   NAO pode rodar so na carga: um painel recem-aberto comeca vazio e so recebe a
+   lista alguns instantes depois — era exatamente o caso em que o backup mais
+   importa. Por isso e chamado do render(), protegido pela flag. */
+function backupAutomatico(){
   const FLAG = "cj_listas_auto_v1";
   try {
     if (localStorage.getItem(FLAG)) return;
-    if (!experts.length) return;
-    listas.unshift(snapshotAtual("Backup automatico (antes das listas salvas)"));
-    if (salvarListas()) localStorage.setItem(FLAG, "1");
+    if (!listaPropria || !experts.length) return;      // ainda sem base real
+    listas.unshift(snapshotAtual("Backup automático (formação encontrada no ar)"));
+    if (salvarListas()){
+      localStorage.setItem(FLAG, "1");
+      renderListas();
+      toast("Formação atual guardada em Listas salvas.");
+    } else {
+      listas.shift();
+    }
   } catch {}
-})();
+}
 
 /* ================= Configurações (auto-save) ================= */
 function numCfg(input, key, min, max, label, nullable){
