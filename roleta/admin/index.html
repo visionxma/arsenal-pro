@@ -1063,16 +1063,30 @@
 "use strict";
 /* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
 /* version.json fica em ../version.json (mesma pasta da roleta). Verifica a cada 60s
-   e recarrega o painel ao detectar versão nova. Usa só fetch + location.reload. */
+   e recarrega o painel ao detectar versão nova. Usa só fetch + location.reload.
+   NUNCA recarrega no meio do trabalho do operador: campo em edição, foto
+   recortada ainda não salva ou modal aberto adiam o reload para a próxima
+   checagem (a roleta tem a mesma guarda via __roletaBusy). */
 (function(){
   var MY_VER = null;
+  var ocupado = function(){
+    try {
+      var ae = document.activeElement;
+      if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== "checkbox") return true;
+      var aberto = function(id){ var el = document.getElementById(id); return !!(el && el.classList.contains("show")); };
+      if (aberto("cropModal") || aberto("cmodal") || aberto("fotoPrevia")) return true;
+      var preenchido = function(id){ var el = document.getElementById(id); return !!(el && el.value && el.value.trim()); };
+      if (preenchido("fName") || preenchido("fMinutes") || preenchido("fListaNome") || preenchido("fLiveUrl")) return true;
+    } catch (e) {}
+    return false;
+  };
   var check = function(){
     fetch("../version.json?cb=" + Date.now(), { cache: "no-store" })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){
         if (!d || !d.v) return;
         if (MY_VER === null){ MY_VER = d.v; return; }
-        if (d.v !== MY_VER) location.reload();
+        if (d.v !== MY_VER && !ocupado()) location.reload();
       })
       .catch(function(){});
   };

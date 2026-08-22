@@ -951,6 +951,7 @@ const COL_A = ["#0e5fa8","#0a2440","#071527"];
 const COL_CURRENT = "#0f5c39";
 const COL_DONE = "#070c15";
 let rotation = 0, spinning = false, pendingIdx = -1, pendingId = null, currentOpId = null, spinGuard = null;
+let spinEndAt = 0;   // relogio de parede do fim do giro: backstop p/ aba em 2º plano
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const IDLE_SPEEDS = [0, 0.02, 0.045, 0.1];   // desligado · lento · normal · rápido
@@ -1143,6 +1144,7 @@ async function spin(){
   wheel.style.transform = `rotate(${rotation}deg)`;
   clearTimeout(spinGuard);
   spinGuard = setTimeout(acabouGiro, dur*1000 + 600);   // rede de segurança
+  spinEndAt = Date.now() + dur*1000 + 600;              // backstop por relogio de parede
 }
 spinBtn.addEventListener("click", spin);
 hubBtn.addEventListener("click", spin);
@@ -1161,6 +1163,7 @@ document.addEventListener("keydown", e => {
    mover a roda entre a página e a tela cheia cancela a transição, e sem isso
    o sorteio ficava travado e o som do giro continuava sozinho. */
 function acabouGiro(){
+  spinEndAt = 0;
   if (!spinning || pendingIdx < 0) return;
   clearTimeout(spinGuard); spinGuard = null;
   const list = activeExperts();
@@ -1348,6 +1351,10 @@ function tick(){
    setInterval e desacelerado nessa situacao, mas continua disparando. */
 setInterval(() => {
   if (timerRAF && timerEndAt && Date.now() >= timerEndAt) timeUp();
+  /* Giro disparado pelo painel com esta aba em segundo plano: o setTimeout
+     do spinGuard e o transitionend podem ser adiados pelo navegador. Este
+     relogio de parede garante a conclusao do sorteio mesmo assim. */
+  if (spinEndAt && Date.now() >= spinEndAt) acabouGiro();
 }, 1000);
 function timeUp(){
   if (timerRAF){ cancelAnimationFrame(timerRAF); timerRAF = null; }
