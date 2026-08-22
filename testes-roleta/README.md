@@ -170,9 +170,53 @@ colar no console do painel.
 
 ---
 
-## Achado nao corrigido (fora do escopo pedido)
+## Mobile: scroll horizontal corrigido
 
-**Scroll horizontal no mobile em 390px**: os `.icon-btn` das linhas de expert
-estouram a viewport (chegam a `right: 492px` num viewport de 382px) e o nome do
-expert some. Ver `prints/05-mobile-390px-filtro.png`. Bug pre-existente, sem
-relacao com as mudancas desta rodada.
+A linha do expert nao cabia em 390px: `24 + 38 + selo + pilula + 40 + 3x32 +
+gaps` passa de 430px e **todos** os controles eram `flex:none`, entao a linha
+vazava a viewport — o nome sumia e a pagina inteira ganhava scroll horizontal.
+
+Os controles viraram um grupo (`.exp-acts`) que desce para a segunda linha em
+telas ate 560px. No desktop o layout continua identico.
+
+Antes: `prints/05-mobile-390px-filtro.png` · Depois: `prints/10-mobile-390px-corrigido.png`
+Desktop inalterado: `prints/11-desktop-inalterado.png`
+
+Medido em producao a 390px: **0 elementos vazando, sem scroll horizontal**.
+
+---
+
+## Editor de recorte da foto
+
+Antes a foto era cortada sozinha no centro (cover 240x240) e quem estava fora do
+quadrado simplesmente sumia. Agora escolher a imagem **abre direto** um editor:
+
+- arrastar para posicionar
+- roda do mouse, pinca no celular ou o controle deslizante para aproximar
+- girar 90 graus e redefinir
+- mascara circular no palco, porque e assim que o avatar aparece na roleta
+- o enquadramento e preso: o quadrado fica sempre preenchido, nunca sobra buraco
+- previa do resultado ao lado do campo, com **Reajustar** e **Remover**
+
+Saida continua 240x240 JPEG, igual a de antes. Sem biblioteca externa — o CSP so
+libera `cdn.jsdelivr.net`, e mais dependencia seria mais risco.
+
+Cancelar ou Escape nao deixa foto pela metade. Se por algum motivo o editor nao
+rodar, o corte automatico antigo continua como rede de seguranca.
+
+| # | Teste | Resultado |
+|---|-------|-----------|
+| C1 | Escala inicial cobre o quadrado | PASSOU |
+| C2 | Aproximar atualiza o controle | PASSOU |
+| C3 | Arrasto preso (sem buraco) | PASSOU |
+| C4 | Girar 90 mantem a cobertura | PASSOU |
+| C5 | Redefinir volta ao inicio | PASSOU |
+| C6 | Exporta 240x240 JPEG | PASSOU |
+| D1 | Aplicar fecha e mostra a previa | PASSOU |
+| D2 | Expert salvo com o recorte exato do operador | PASSOU |
+| E1 | Cancelar devolve null | PASSOU |
+| E2 | Limpar remove previa e arquivo | PASSOU |
+| E3 | Escape cancela | PASSOU |
+
+Prints: `prints/12-editor-de-recorte.png`, `prints/13-expert-com-foto-recortada.png`,
+`prints/14-editor-recorte-mobile.png`
