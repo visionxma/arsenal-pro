@@ -1176,6 +1176,7 @@ function acabouGiro(){
   pendingIdx = -1; pendingId = null;
   document.body.classList.remove("spinning");
   SFX.stop();                       // corta qualquer tique restante
+  finishFsExit();                   // saida da tela cheia adiada durante o giro
   if (!winner){ spinning = false; if (pendingRebuild){ pendingRebuild = false; buildWheel(); renderPool(); } setIdleText(false); setCta("Sortear Expert", false); return; }
   currentOpId = winner.id;
   marcaSorteado(winner.id);        // sai do sorteio até o ciclo reiniciar
@@ -1232,8 +1233,23 @@ function mountFs(on){
     if (wheelWrap.parentElement !== colWheel) colWheel.insertBefore(wheelWrap, colWheel.firstChild);
   }
 }
+/* Sair da tela cheia COM A RODA AINDA GIRANDO cancelava a transicao CSS —
+   mountFs troca o pai do wheelWrap e o navegador descarta a animacao — e a
+   roda congelava visualmente ate o fim do sorteio (a logica seguia pelo
+   spinGuard, mas o operador via a roleta parada). Agora a saida fica
+   PENDENTE: o modo teatro (mesmo visual da tela cheia, so CSS) segura o
+   palco sem re-parentear nada, e a desmontagem acontece em acabouGiro().
+   A janela "roda em movimento" e exatamente a classe `spinning` do body
+   (posta antes do transform do giro, removida em acabouGiro). */
+let fsExitPending = false;
+const rodaGirando = () => document.body.classList.contains("spinning");
 function syncFs(){
-  const on = fsOn();
+  let on = fsOn();
+  if (!on && rodaGirando()){
+    liveStage.classList.add("theater");
+    fsExitPending = true;
+    on = true;
+  }
   liveStage.classList.toggle("fs", on);
   mountFs(on);
   btnFs.innerHTML = on ? IC_EXIT : IC_FULL;
@@ -1241,8 +1257,14 @@ function syncFs(){
   btnFs.title = on ? "Sair da tela cheia" : "Tela cheia";
   layoutSegments();
 }
+function finishFsExit(){
+  if (!fsExitPending) return;
+  fsExitPending = false;
+  liveStage.classList.remove("theater");
+  syncFs();
+}
 async function enterFs(){
-  if (fsOn()) return;
+  if (fsOn()){ fsExitPending = false; return; }  // desistiu de sair no meio do giro
   const req = liveStage.requestFullscreen || liveStage.webkitRequestFullscreen;
   try {
     if (!req) throw new Error("sem API");
@@ -1251,7 +1273,8 @@ async function enterFs(){
   syncFs();
 }
 async function exitFs(){
-  liveStage.classList.remove("theater");
+  if (rodaGirando()) fsExitPending = true;         // teatro segura ate o giro acabar
+  else liveStage.classList.remove("theater");
   try { if (fsEl()) await (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch {}
   syncFs();
 }
@@ -1542,7 +1565,9 @@ document.addEventListener("keydown", e => {
     e.preventDefault(); openAdminPage();
   }
   if (e.key === "Escape" && liveStage.classList.contains("theater")){
-    liveStage.classList.remove("theater"); syncFs();
+    if (rodaGirando()) fsExitPending = true;  // sai quando o giro terminar
+    else liveStage.classList.remove("theater");
+    syncFs();
   }
 });
 
