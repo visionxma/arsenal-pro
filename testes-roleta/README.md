@@ -220,3 +220,63 @@ rodar, o corte automatico antigo continua como rede de seguranca.
 
 Prints: `prints/12-editor-de-recorte.png`, `prints/13-expert-com-foto-recortada.png`,
 `prints/14-editor-recorte-mobile.png`
+
+---
+
+## Rebranding: identidade visual da Safirion
+
+Tokens extraidos do proprio site (`safirion.com`), lidos dos estilos computados —
+nao foram inventados:
+
+| Papel | Valor |
+|---|---|
+| Fundo da pagina | `#03060f` |
+| Superficie (card, sidebar, modal) | `#0a1120` |
+| Superficie elevada (input) | `#0d1526` |
+| Azul primario | `#2389e6` |
+| Azul claro (hover/destaque) | `#4ba3f0` |
+| Texto secundario | `#8fa5b1` |
+| Texto terciario | `#6f818f` |
+| Borda | `rgba(255,255,255,.10)` |
+| Raio de superficie | 14-16px |
+| Titulos | peso 600, tracking negativo (-.02em) |
+
+**O principio da marca e contencao.** No site, a unica coisa com brilho e o CTA
+primario; todo o resto e superficie escura com borda de 1px e quase nenhuma
+sombra. O painel antigo espalhava gradiente, glow azul e borda colorida por toda
+parte — era o oposto da marca.
+
+Removidos: gradiente radial do fundo, gradiente dos botoes, gradiente da barra de
+rolagem, bordas azuis genericas, sombras pesadas e a familia Montserrat.
+A hierarquia passou a vir de peso e tracking, nao de peso 800/900.
+
+A `Mazzard` do site e comercial e nao pode ser embutida; o proprio site cai em
+`-apple-system / Segoe UI / Roboto`. Ficou Poppins, geometrica e proxima do
+caracter da Mazzard, que ja estava carregada no painel.
+
+### Navegacao mobile
+
+O botao de menu ficava **dentro** da sidebar. Com ela deslocada para fora da
+tela, sobrava uma fatia de 13px na borda esquerda — alvo impossivel no toque.
+Agora ha barra superior propria com logo, titulo e indicador de conexao, e o
+menu fecha por item, Escape ou toque no fundo, com `aria-expanded` correto.
+
+### Verificacao
+
+| Largura | Resultado |
+|---|---|
+| 320px | sem overflow, alvos >= 38px |
+| 390px | sem overflow, linhas em 2 niveis |
+| 768px | 3 indicadores lado a lado, cartao ao vivo horizontal |
+| 1440px | layout completo, conteudo limitado a 1080px |
+| 1920px | sem overflow, sem esticar demais |
+
+Auditoria do CSS publicado: **0** resquicios do azul antigo (`#00A7FF`),
+**0** gradientes, **0** Montserrat, **0** sombras pesadas.
+Regressao funcional apos o rebranding: **14/14**.
+
+Corrigido na revisao:
+1. `.cmodal-row button` (mais especifica) apagava a borda do botao Cancelar
+2. o avatar do cartao ao vivo com `src=""` desenhava o glifo de imagem quebrada
+
+Prints: `brand-01` a `brand-15`; referencia do site em `ref-safirion-01/02`.
