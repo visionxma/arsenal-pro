@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arsenal Pro | Night Challenge</title>
 <meta name="description" content="O arsenal completo dos maiores traders que operam ao vivo: estratégias reais, indicadores exclusivos e IA integrada na Safirion. Disponível apenas durante o Night Challenge." />
+<meta name="theme-color" content="#060B18" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:title" content="Arsenal Pro | Night Challenge" />
+<meta property="og:description" content="O arsenal completo dos maiores traders que operam ao vivo: estratégias reais, indicadores exclusivos e IA integrada na Safirion. Disponível apenas durante o Night Challenge." />
+<meta name="twitter:card" content="summary" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oxanium:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -35,6 +41,12 @@
   --danger:#E2556A;
   --shadow-card:0 30px 70px -30px rgba(2,8,20,.9);
   --glow-accent:0 0 30px rgba(35,137,230,.35);
+  /* Neon: intensidade da referencia aplicada ao azul da marca.
+     Escalonado em 3 niveis para hierarquia de destaque. */
+  --neon-1:0 0 18px rgba(35,137,230,.30);
+  --neon-2:0 0 34px rgba(35,137,230,.45), 0 0 70px rgba(35,137,230,.18);
+  --neon-3:0 0 26px rgba(35,137,230,.55), 0 0 60px rgba(35,137,230,.35), 0 0 110px rgba(35,137,230,.15);
+  --neon-text:0 0 26px rgba(105,184,255,.45);
   --grad-card:linear-gradient(180deg,#121B2E 0%,#0D1526 100%);
   --container:1200px;
   --f-head:'Oxanium',system-ui,sans-serif;
@@ -116,6 +128,7 @@ em{font-style:normal;color:var(--accent-soft);font-weight:700}
   box-shadow:var(--glow-accent);
   transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, background-color .3s ease;
   white-space:nowrap;
+  touch-action:manipulation;
 }
 .btn:hover{transform:translateY(-2px);background:var(--accent-strong);box-shadow:0 0 50px rgba(35,137,230,.55)}
 .btn:active{transform:translateY(0) scale(.98)}
@@ -130,8 +143,8 @@ em{font-style:normal;color:var(--accent-soft);font-weight:700}
 .btn--lg .arr-c{width:40px;height:40px}
 
 @keyframes ctaPulse{
-  0%,100%{box-shadow:0 0 24px rgba(35,137,230,.32)}
-  50%{box-shadow:0 0 48px rgba(35,137,230,.58),0 0 80px rgba(35,137,230,.2)}
+  0%,100%{box-shadow:var(--neon-2)}
+  50%{box-shadow:var(--neon-3)}
 }
 .cta-pulse{animation:ctaPulse 3s ease-in-out infinite}
 @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
@@ -143,27 +156,110 @@ em{font-style:normal;color:var(--accent-soft);font-weight:700}
 
 /* ---------- Hero centralizado (padrão da referência) ---------- */
 .hero{
-  position:relative;padding:80px 0 88px;text-align:center;
+  position:relative;padding:64px 0 88px;text-align:center;
   background:
     radial-gradient(900px 420px at 50% -12%,rgba(35,137,230,.16),transparent 60%),
     var(--bg);
   overflow:hidden;
 }
+/* Arcos luminosos de fundo (assinatura visual da referencia).
+   Puramente decorativos: ficam atras do conteudo e nao capturam clique. */
+.hero-arcs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-arcs i{
+  position:absolute;border-radius:50%;border:1px solid transparent;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 60%,rgba(35,137,230,.09) 61%,transparent 74%);
+}
+/* --py e alimentado pelo parallax no scroll; compoe com o deslocamento base */
+.hero-arcs i{--py:0px}
+.hero-arcs .a1{width:1180px;height:1180px;left:50%;top:-560px;transform:translateX(-58%) translateY(var(--py))}
+.hero-arcs .a2{width:760px;height:760px;left:50%;top:-300px;transform:translateX(-14%) translateY(var(--py))}
+/* arco nitido com gradiente conico: a "faixa de luz" da referencia */
+.hero-arcs .glowarc{
+  width:1020px;height:1020px;left:50%;top:-470px;transform:translateX(-52%);
+  background:conic-gradient(from 190deg,transparent 0deg,rgba(35,137,230,.42) 42deg,rgba(105,184,255,.55) 62deg,transparent 104deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 49.2%,#000 49.6% 50.4%,transparent 50.8%);
+  mask:radial-gradient(circle,transparent 0 49.2%,#000 49.6% 50.4%,transparent 50.8%);
+  filter:blur(.6px);
+  /* a animacao controla o transform deste elemento; o parallax entra pelo
+     translateY do keyframe para os dois nao brigarem pela mesma propriedade */
+  animation:arcDrift 22s ease-in-out infinite;
+}
+@keyframes arcDrift{
+  0%,100%{transform:translateX(-52%) translateY(var(--py,0px)) rotate(0deg)}
+  50%{transform:translateX(-52%) translateY(var(--py,0px)) rotate(9deg)}
+}
+.hero .container{position:relative;z-index:1}
 .hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);font-weight:700;line-height:1.08;letter-spacing:-.028em;max-width:16ch;margin:0 auto 20px}
+/* Segunda linha menor que a primeira, criando hierarquia dentro do titulo.
+   Em 'em' (nao px) a proporcao se mantem sozinha nos breakpoints — o H1 usa
+   clamp(), entao um valor fixo quebraria a relacao em alguma largura.
+   line-height proprio para as duas linhas nao se afastarem. */
+.hero h1 .ac{
+  display:inline-block;
+  font-size:.78em;
+  line-height:1.14;
+  text-shadow:var(--neon-text);
+}
 .hero .lead{max-width:44rem;margin:0 auto}
 .hero-cta{margin-top:30px;display:flex;justify-content:center}
+/* eyebrow do hero: rotulo em caps espacado, como na referencia */
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;margin-bottom:20px;
+  padding:7px 18px;border-radius:999px;
+  background:var(--bg-3);border:1px solid var(--accent-line);
+  font-family:var(--f-head);font-size:.72rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--accent-soft);
+  box-shadow:var(--neon-1);
+}
+.hero-eyebrow .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent-soft);
+  box-shadow:0 0 10px var(--accent-soft);
+  animation:dotPulse 2.4s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{opacity:.5;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+
+/* Stats na dobra (1.000+ / 34+ da referencia) */
+.hero-stats{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:14px 40px;
+  margin-top:34px;
+}
+.hero-stats .hs{display:flex;align-items:baseline;gap:9px}
+.hero-stats .n{
+  font-family:var(--f-head);font-weight:700;font-size:1.6rem;color:#fff;
+  font-variant-numeric:lining-nums tabular-nums;text-shadow:var(--neon-text);
+}
+.hero-stats .l{font-size:.82rem;color:var(--muted-2);letter-spacing:.02em;text-align:left;line-height:1.3;white-space:nowrap}
+.hero-stats .sep{width:1px;align-self:stretch;background:var(--line-strong)}
 
 /* Painel-janela inclinado em 3D (mockup do painel da referência) */
-.browser-wrap{perspective:1600px;max-width:1000px;margin:56px auto 0}
+/* perspective agora vive no transform do .browser (funcao perspective()),
+   para o angulo e a profundidade serem interpolados juntos pelo --tilt. */
+.browser-wrap{max-width:1000px;margin:56px auto 0}
+/* O mockup se endireita conforme a pagina rola: --tilt (0..1) e alimentado
+   pelo scroll e interpola o angulo e a escala. Nao ha transition aqui de
+   proposito — o movimento acompanha o dedo/roda em tempo real, e uma
+   transition brigaria com isso criando atraso elastico. */
 .browser{
+  --tilt:1;                       /* 1 = totalmente inclinado, 0 = reto */
   position:relative;text-align:left;
   border-radius:20px;border:1px solid var(--accent-line);
   background:var(--surface);
   box-shadow:var(--shadow-card), 0 0 90px -25px rgba(35,137,230,.45);
-  transform:rotateX(14deg) scale(.985);transform-origin:50% 0;
-  transition:transform 2.4s cubic-bezier(.22,1,.36,1);
+  transform:
+    perspective(1600px)
+    rotateX(calc(var(--tilt) * var(--tilt-max, 14deg)))
+    scale(calc(1 - var(--tilt) * 0.015));
+  transform-origin:50% 0;
   will-change:transform;
 }
+/* Sem JS o mockup fica reto e legivel, nunca preso na posicao inclinada. */
+.no-js .browser{--tilt:0}
+/* Angulo proporcional a largura: em tela estreita o painel ocupa quase todo
+   o viewport e a mesma rotacao distorce bem mais; em tela larga ele sobra
+   espaco e aguenta mais inclinacao sem parecer tombado. */
+@media (min-width:1600px){ .browser{--tilt-max:16deg} }
+@media (max-width:1024px){ .browser{--tilt-max:12deg} }
 .b-head{
   display:flex;align-items:center;gap:8px;
   padding:12px 18px;border-bottom:1px solid var(--line);
@@ -255,6 +351,396 @@ em{font-style:normal;color:var(--accent-soft);font-weight:700}
 }
 .fx:hover::before,.fx.lit::before{opacity:1}
 .fx > *{position:relative;z-index:1}
+
+/* ============================================================
+   METAL LIQUIDO — cromado em CSS puro (sem WebGL)
+   O reflexo metalico vem de um conic-gradient com muitas paradas
+   claro/escuro girando devagar: em superficie curva e exatamente assim que
+   a luz se comporta. Um linear-gradient nao convence porque o brilho anda
+   em linha reta; o conico faz o reflexo "varrer" a peca.
+   ============================================================ */
+:root{
+  /* Paradas irregulares de proposito: espacamento uniforme le como listra,
+     nao como metal. */
+  --chrome:conic-gradient(from var(--chrome-ang,0deg),
+    #6E7480 0deg, #C8CFDA 28deg, #FFFFFF 44deg, #9AA3B2 66deg,
+    #454B57 96deg, #8A93A3 128deg, #EDF1F7 152deg, #B4BCC9 176deg,
+    #5A606C 208deg, #A8B1BF 240deg, #FFFFFF 268deg, #7C838F 292deg,
+    #3E434E 320deg, #6E7480 360deg);
+}
+@property --chrome-ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+
+@keyframes chromeSpin{to{--chrome-ang:360deg}}
+
+/* Superficie cromada reutilizavel. O elemento que recebe .metal ganha o
+   reflexo girando; o conteudo fica por cima via z-index. */
+.metal{
+  position:relative;
+  background:var(--chrome);
+  /* duas camadas de vida: o reflexo GIRA (chromeSpin) e a luz PULSA
+     (chromeGlow). Só o giro le como textura parada; o pulso e o que da a
+     sensacao de metal liquido reagindo a luz. */
+  animation:chromeSpin 9s linear infinite, chromeGlow 3.6s ease-in-out infinite;
+}
+@keyframes chromeGlow{
+  0%,100%{filter:brightness(.92) contrast(1.02)}
+  50%    {filter:brightness(1.32) contrast(1.12)}
+}
+/* Verniz: realce no topo e sombra embaixo dao volume de peca real.
+   Opacidade baixa de proposito — um veu forte apaga o proprio reflexo
+   cromado que esta por baixo. */
+/* Sem mix-blend-mode: overlay aqui mistura o verniz com TUDO que estiver
+   abaixo (inclusive a aura colorida dos cards), derrubando o contraste do
+   texto para 1,33:1 e escurecendo os icones ate o preto. Composicao normal
+   mantem o efeito contido na propria peca. */
+.metal::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:
+    /* brilho especular que varre a peca — e a luz oscilante do shader:
+       uma faixa clara viajando por cima do reflexo que ja gira */
+    linear-gradient(var(--sheen-ang,105deg),
+      transparent 18%,
+      rgba(255,255,255,.18) 34%,
+      rgba(255,255,255,.92) 50%,
+      rgba(255,255,255,.18) 66%,
+      transparent 82%) var(--sheen-pos,-140%) 0 / 260% 100% no-repeat,
+    /* verniz fixo: volume da peca */
+    linear-gradient(180deg,rgba(255,255,255,.34),transparent 40%,rgba(0,0,0,.26));
+  z-index:1;
+  animation:sheenSweep 3.6s cubic-bezier(.45,0,.35,1) infinite;
+}
+@property --sheen-pos{syntax:'<percentage>';inherits:false;initial-value:-140%}
+/* A luz nao passa em velocidade constante: acelera no meio e repousa nas
+   pontas — e isso que le como oscilacao viva, nao como varredura mecanica. */
+@keyframes sheenSweep{
+  0%   {--sheen-pos:-140%}
+  55%  {--sheen-pos:140%}
+  100% {--sheen-pos:140%}
+}
+.metal > *{position:relative;z-index:2}
+
+/* Cada peca comeca a oscilacao num momento diferente: sincronizadas, 26
+   pecas piscando juntas viram estroboscopio. */
+.metal:nth-of-type(2n)::before{animation-delay:-1.1s}
+.metal:nth-of-type(3n)::before{animation-delay:-2.3s}
+.metal:nth-of-type(5n)::before{animation-delay:-.6s}
+
+/* Fallback: navegador sem @property nao interpola o angulo, entao a
+   animacao nao roda. O gradiente estatico ja parece metal — so nao gira. */
+@supports not (background:conic-gradient(from 0deg,#000,#fff)){
+  .metal{background:linear-gradient(135deg,#6E7480,#EDF1F7 40%,#454B57 70%,#A8B1BF)}
+}
+
+/* ---------- CTA cromado ----------
+   O botao de conversao precisa continuar legivel: o texto vai sobre um
+   nucleo escuro (como no componente original), e o cromado forma o anel
+   ao redor. Assim o metal aparece sem competir com a leitura. */
+.btn.metal{
+  background:var(--chrome);
+  /* 3px era fino demais: o conic-gradient precisa de area para o reflexo
+     aparecer, senao le como borda cinza chapada. */
+  padding:5px;
+  /* Sem 'inset 0 1px 0 branco': aquele realce virava uma LINHA BRANCA
+     CONTINUA no topo do anel, exatamente onde a luz corre — o olho lia a
+     linha fixa e o ponto de luz sumia dentro dela. */
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.6),
+    0 18px 40px -18px rgba(0,0,0,.8),
+    var(--neon-1);
+  /* cromado mais escuro no CTA: da contraste para o ponto de luz brilhar */
+  background:conic-gradient(from var(--chrome-ang,0deg),
+    #565D6B 0deg, #A8B1C0 30deg, #D9E0EA 48deg, #7A8393 80deg,
+    #3C414B 124deg, #8B94A4 164deg, #C2CAD8 194deg, #666E7C 230deg,
+    #33383F 278deg, #7A8393 318deg, #565D6B 360deg);
+  /* so o giro: o pulso de brilho clareava o anel inteiro e afogava a luz */
+  animation:chromeSpin 9s linear infinite;
+}
+.btn.metal .btn-core{
+  display:inline-flex;align-items:center;justify-content:center;gap:13px;
+  width:100%;height:100%;border-radius:999px;
+  padding:8px 10px 8px 26px;
+  background:linear-gradient(180deg,#1B2436 0%,#0A101C 100%);
+  color:#EEF4FB;
+  transition:background .3s ease;
+  /* acima do brilho especular: o nucleo nao deve receber a varredura, so a
+     moldura — senao o texto pisca junto */
+  z-index:4;
+}
+/* O brilho especular do .metal cobriria a moldura inteira e saturaria a
+   borda, apagando o ponto de luz que corre. No CTA ele fica so no nucleo. */
+.btn.metal::before{inset:5px;border-radius:999px}
+.btn.metal:hover .btn-core{background:linear-gradient(180deg,#22304A 0%,#0D1626 100%)}
+.btn.metal:active{transform:translateY(1px) scale(.985)}
+/* acelera o reflexo no hover: a peca "esquenta" ao ser tocada */
+.btn.metal:hover{animation-duration:3.4s}
+.btn.metal .arr-c{background:#050A14;color:#DCE7F2}
+
+/* ---------- Luz correndo AO REDOR da borda ----------
+   Diferente do brilho especular (que varre em linha reta), aqui um ponto
+   de luz percorre o PERIMETRO. O conic-gradient com um arco claro estreito
+   girando faz exatamente isso: onde o arco passa, a borda acende.
+   A mascara recorta so a moldura, entao a luz corre pela borda e nao
+   invade o interior do botao. */
+/* Um ponto de luz que percorre o CONTORNO usando offset-path. Tentativas
+   anteriores falharam por motivos distintos:
+     - conic-gradient distribui por angulo, entao num botao largo o ponto
+       trava nos cantos superiores (medido: 0px em 0,9s);
+     - linear-gradient deslizando atravessa a peca em linha reta, nao
+       circula o perimetro.
+   offset-path com rect(...round) segue a pill de verdade, cantos inclusos,
+   e offset-distance de 0% a 100% da a volta completa — sem parar. */
+/* Sem offset-path o ponto ficaria parado num canto, pior que nao ter nada.
+   A luz so e criada onde a propriedade existe de fato. */
+.btn.metal .edge-light{display:none}
+@supports (offset-path: rect(0 100% 100% 0 round 999px)){
+  .btn.metal .edge-light{
+    display:block;
+    position:absolute;inset:0;pointer-events:none;z-index:3;
+    border-radius:inherit;
+    overflow:hidden;                  /* mantem o brilho dentro do botao */
+  }
+}
+/* Nucleo: grande o bastante para se destacar. Com 52px a luz cabia inteira
+   na altura do botao (~66px) e o olho nao a separava do cromado — agora
+   ultrapassa a peca e vira um brilho inequivoco. */
+.btn.metal .edge-light::before{
+  content:"";position:absolute;
+  width:130px;height:130px;margin:-65px 0 0 -65px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    #FFFFFF 0%,
+    rgba(240,249,255,1) 10%,
+    rgba(190,228,255,.95) 22%,
+    rgba(120,190,255,.7) 38%,
+    rgba(60,145,240,.34) 56%,
+    rgba(30,105,215,.12) 74%,
+    transparent 86%);
+  /* o caminho acompanha a borda: inset de 2.5px centraliza o ponto na
+     espessura do anel de 5px */
+  offset-path:rect(2.5px calc(100% - 2.5px) calc(100% - 2.5px) 2.5px round 999px);
+  offset-distance:var(--run,0%);
+  offset-rotate:0deg;
+  animation:edgeOrbit 3.2s linear infinite;
+}
+/* Rastro: um segundo ponto maior e mais fraco, atrasado no mesmo caminho.
+   E ele que da a leitura de cometa em vez de bolinha isolada. */
+.btn.metal .edge-light::after{
+  content:"";position:absolute;
+  width:210px;height:210px;margin:-105px 0 0 -105px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(160,212,255,.55) 0%,
+    rgba(100,175,250,.34) 30%,
+    rgba(55,130,225,.16) 52%,
+    rgba(30,100,200,.05) 70%,
+    transparent 82%);
+  offset-path:rect(2.5px calc(100% - 2.5px) calc(100% - 2.5px) 2.5px round 999px);
+  offset-distance:var(--run,0%);
+  offset-rotate:0deg;
+  animation:edgeOrbit 3.2s linear infinite;
+  animation-delay:-.2s;              /* fica atras do nucleo, formando cauda */
+}
+@property --run{syntax:'<percentage>';inherits:false;initial-value:0%}
+@keyframes edgeOrbit{
+  from{--run:0%}
+  to  {--run:100%}
+}
+/* no hover a luz acelera: o botao responde ao toque */
+.btn.metal:hover .edge-light::before,
+.btn.metal:hover .edge-light::after{animation-duration:1.5s}
+/* no hover a luz corre mais rapido: o botao responde ao toque */
+.btn.metal:hover::after{animation-duration:1.4s}
+
+/* ---------- Chips numerados cromados ---------- */
+.nchip.metal{
+  border:0;padding:0;
+  animation-duration:14s;            /* peca pequena: reflexo mais lento */
+  background:conic-gradient(from var(--chrome-ang,0deg),
+    #4A505C 0deg, #DDE4EE 52deg, #FFFFFF 78deg, #757D8B 118deg,
+    #2E333D 168deg, #B6BECC 214deg, #FFFFFF 250deg, #656C79 292deg,
+    #3A3F49 330deg, #4A505C 360deg);
+}
+.nchip.metal .chip-core{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin:1px;padding:3px 13px;border-radius:999px;
+  background:linear-gradient(180deg,#151D2C,#0A101B);
+  color:#C9D4E2;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- Icones dos cards cromados ----------
+   Peca pequena tem pouca area para o conic-gradient se manifestar, entao
+   recebe um gradiente com menos paradas e saltos maiores: o reflexo fica
+   legivel mesmo em 46px. */
+/* Dupla classe: .kcard .ibox e .rowc .ric tem especificidade 0,2,0 e
+   venceriam um seletor simples, deixando as pecas sem o cromado. */
+.ibox.metal.metal,.ric.metal.metal{
+  border:0;animation-duration:12s;
+  background:conic-gradient(from var(--chrome-ang,0deg),
+    #4A505C 0deg, #DDE4EE 52deg, #FFFFFF 78deg, #757D8B 118deg,
+    #2E333D 168deg, #B6BECC 214deg, #FFFFFF 250deg, #656C79 292deg,
+    #3A3F49 330deg, #4A505C 360deg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 3px 8px -3px rgba(0,0,0,.7);
+}
+/* O icone fica escuro sobre a peca cromada (como gravado no metal), com
+   realce claro embaixo para nao sumir nas zonas escuras do reflexo. */
+.ibox.metal > svg,.ric.metal > svg{
+  color:#141C29;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.55));
+}
+
+/* ---------- Badge da garantia cromado ----------
+   O selo NAO recebe .metal: ele ja usa ::before (anel tracejado) e a
+   animacao badgePulse — a classe generica quebraria os dois. Aqui o
+   cromado entra como um anel proprio em ::after, preservando tudo. */
+.g-badge--chrome::after{
+  content:"";position:absolute;inset:-7px;border-radius:50%;
+  padding:7px;
+  background:var(--chrome);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  /* gira o reflexo e pulsa o brilho ao mesmo tempo: o anel do selo tambem
+     precisa da luz oscilante, mas aqui ela vem pela saturacao/brilho porque
+     a mascara ja ocupa o background */
+  animation:chromeSpin 16s linear infinite, chromePulse 3.6s ease-in-out infinite;
+  pointer-events:none;
+  z-index:-1;
+}
+@keyframes chromePulse{
+  0%,100%{filter:brightness(1) saturate(1)}
+  50%    {filter:brightness(1.42) saturate(1.15)}
+}
+
+/* ============================================================
+   AURA — glow difuso + borda-gradiente nos cards
+   A identidade segue azul Safirion, mas cada familia de card recebe uma
+   deriva de temperatura (ciano gelado -> azul puro -> violeta). Isso da
+   variacao cromatica sem sair da marca: e a mesma luz, em angulos
+   diferentes.
+   ============================================================ */
+:root{
+  /* Cada aura parte do azul da marca e migra para uma familia cromatica
+     distinta. O azul ancora a identidade; o destino da variedade. */
+  --aura-1:linear-gradient(137deg,#7DD3FC 0%,#2389E6 45%,#06B6D4 100%); /* ciano   */
+  --aura-2:linear-gradient(137deg,#9BC4FF 0%,#6D5AE6 45%,#C56BF0 100%); /* violeta */
+  --aura-3:linear-gradient(137deg,#69B8FF 0%,#E86CA8 45%,#FF8A5B 100%); /* magenta -> ambar */
+  --aura-4:linear-gradient(137deg,#7DD3FC 0%,#2BB6A6 45%,#4ADE80 100%); /* esmeralda */
+  --aura-5:linear-gradient(137deg,#B9A7FF 0%,#4361EE 45%,#2389E6 100%); /* lilas -> azul */
+}
+
+/* O glow fica atras do card, desfocado e sem capturar clique. Nasce fraco
+   e cresce no hover/foco — presente em repouso, vivo na interacao. */
+/* Usa ::after de proposito: ::before ja e do spotlight (.fx) e todos os
+   cards tem as duas classes — competir pelo mesmo pseudo-elemento faria um
+   anular o outro.
+
+   IMPORTANTE: .fx aplica isolation:isolate, que cria stacking context. Dentro
+   dele, z-index:-1 NAO manda o glow para tras do card — a luz fica presa
+   sobre o fundo e lava o texto (medido: 2,8-4,3:1, abaixo do AA). A solucao
+   e desfazer o isolamento nos cards com aura, para o -1 realmente descer
+   atras do fundo opaco do padding-box. */
+.aura{position:relative;isolation:auto}
+.aura.fx{isolation:auto}
+/* O glow precisa ficar atras de um fundo OPACO: com padding-box translucido
+   a luz atravessa o card e lava o texto (medido: 3,99:1 no card magenta,
+   abaixo do minimo AA de 4,5). A cor vibra na borda e na aura ao redor,
+   nunca por baixo do conteudo. */
+.aura::after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  /* a luz precisa vazar alem da caixa para parecer aura, nao preenchimento */
+  /* inset NEGATIVO: a aura nasce fora da caixa e so o halo aparece ao redor.
+     Recuo positivo colocava a luz sob o conteudo. */
+  inset:-10px -8px;
+  border-radius:40px;
+  background:var(--aura,var(--aura-2));
+  filter:blur(40px);
+  opacity:.50;
+  transition:opacity .5s ease,filter .5s ease;
+  will-change:opacity;
+}
+.aura:hover::after,.aura.lit::after,.aura:focus-within::after{
+  opacity:.78;filter:blur(46px);
+}
+
+/* Borda-gradiente pela tecnica de background-clip: o padding-box pinta o
+   fundo solido e o border-box pinta o gradiente, entao a borda vira um
+   contorno colorido de verdade — nao uma sombra imitando borda. */
+/* Dupla classe eleva a especificidade acima das regras base de cada familia
+   (.kcard, .rowc, .qual-panel definem background/border proprios). */
+/* O padding-box e opaco de proposito: e ele que impede a aura de vazar por
+   baixo do texto. Qualquer cor com alpha aqui derruba o contraste. */
+.aura-border.aura-border{
+  border:1px solid transparent;
+  background:
+    linear-gradient(#101A2B,#0C1424) padding-box,
+    var(--aura,var(--aura-2)) border-box;
+  transition:border-color .4s ease,box-shadow .4s ease,transform .4s cubic-bezier(.16,1,.3,1);
+}
+/* No hover a borda engrossa sem deslocar o conteudo (o padding compensa). */
+.aura-border:hover,.aura-border.lit{
+  border-width:1px;
+  box-shadow:0 0 0 1px rgba(105,184,255,.22), 0 18px 50px -28px rgba(35,137,230,.7);
+}
+
+/* Ciclo de 5: com 5 cards de dores nenhum tom se repete na mesma grade, e
+   cards vizinhos nunca compartilham a mesma luz. */
+.pain-list > *:nth-child(5n+1),
+.rowc-stack > *:nth-child(5n+1),
+.qual-grid > *:nth-child(5n+1){--aura:var(--aura-1)}
+.pain-list > *:nth-child(5n+2),
+.rowc-stack > *:nth-child(5n+2),
+.qual-grid > *:nth-child(5n+2){--aura:var(--aura-2)}
+.pain-list > *:nth-child(5n+3),
+.rowc-stack > *:nth-child(5n+3),
+.qual-grid > *:nth-child(5n+3){--aura:var(--aura-3)}
+.pain-list > *:nth-child(5n+4),
+.rowc-stack > *:nth-child(5n+4),
+.qual-grid > *:nth-child(5n+4){--aura:var(--aura-4)}
+.pain-list > *:nth-child(5n+5),
+.rowc-stack > *:nth-child(5n+5),
+.qual-grid > *:nth-child(5n+5){--aura:var(--aura-5)}
+
+/* Os cards do value stack sao sticky e se sobrepoem ao rolar: um glow
+   desfocado ali viraria borrao acumulado. Recebem a borda-gradiente e um
+   halo curto, sem o blur difuso. */
+.stack-card:nth-child(5n+1){--aura:var(--aura-1)}
+.stack-card:nth-child(5n+2){--aura:var(--aura-2)}
+.stack-card:nth-child(5n+3){--aura:var(--aura-3)}
+.stack-card:nth-child(5n+4){--aura:var(--aura-4)}
+.stack-card:nth-child(5n+5){--aura:var(--aura-5)}
+.stack-card.aura-border.aura-border{
+  border:1px solid transparent;
+  background:
+    linear-gradient(#121B2E,#0D1526) padding-box,
+    var(--aura,var(--aura-2)) border-box;
+}
+.stack-card.aura-border:hover{
+  box-shadow:0 0 0 1px rgba(105,184,255,.2), 0 -10px 40px -24px rgba(2,8,20,.9), 0 0 44px -18px rgba(35,137,230,.6);
+}
+
+/* ---------- Borda-gradiente que acende (efeito da referencia) ----------
+   mask-composite recorta o preenchimento e deixa so a moldura, entao o
+   gradiente vira contorno luminoso sem precisar de elemento extra. */
+.gborder{position:relative}
+.gborder::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  padding:1px;
+  background:linear-gradient(135deg,
+    rgba(35,137,230,0) 0%,
+    rgba(35,137,230,.85) 32%,
+    rgba(105,184,255,1) 50%,
+    rgba(35,137,230,.85) 68%,
+    rgba(35,137,230,0) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  opacity:0;transition:opacity .45s ease;
+  z-index:2;
+}
+.gborder:hover::after,.gborder.lit::after{opacity:1}
 @media (hover:hover){
   .fx:hover{border-color:var(--accent-line)!important}
 }
@@ -536,6 +1022,138 @@ em{font-style:normal;color:var(--accent-soft);font-weight:700}
 .final-list .ico{flex:none}
 .final .hero-cta{margin-top:0}
 
+/* ---------- Bolinha luminosa nos rotulos (padrao da referencia) ----------
+   Aplicada aos eyebrows ja existentes, sem alterar o texto. */
+.eyebrow .el{position:relative}
+.eyebrow .el::before{
+  content:"";display:inline-block;vertical-align:middle;
+  width:7px;height:7px;border-radius:50%;margin-right:9px;margin-top:-2px;
+  background:var(--accent-soft);box-shadow:0 0 10px var(--accent-soft);
+}
+
+/* ---------- Revelar em cascata dentro das grades ----------
+   Cada filho herda um atraso proporcional a sua posicao, entao os cards
+   entram em sequencia em vez de todos ao mesmo tempo. */
+[data-stagger] > *{
+  opacity:0;transform:translateY(22px);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);
+}
+[data-stagger].in > *{opacity:1;transform:none}
+[data-stagger].in > *:nth-child(1){transition-delay:.05s}
+[data-stagger].in > *:nth-child(2){transition-delay:.14s}
+[data-stagger].in > *:nth-child(3){transition-delay:.23s}
+[data-stagger].in > *:nth-child(4){transition-delay:.32s}
+[data-stagger].in > *:nth-child(5){transition-delay:.41s}
+[data-stagger].in > *:nth-child(6){transition-delay:.50s}
+[data-stagger].in > *:nth-child(7){transition-delay:.59s}
+[data-stagger].in > *:nth-child(8){transition-delay:.68s}
+
+/* ---------- Barras de progresso animadas (padrao da referencia) ----------
+   Preenchem quando entram na tela; o valor fica no proprio HTML para o
+   conteudo continuar legivel sem JS. */
+.bars{margin-top:26px;display:grid;gap:18px;max-width:30rem}
+.bar-item .bar-top{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:9px;
+}
+.bar-item .bar-lbl{
+  font-family:var(--f-head);font-size:.74rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted-2);
+}
+.bar-item .bar-val{
+  font-family:var(--f-head);font-weight:700;font-size:.92rem;color:var(--accent-soft);
+  font-variant-numeric:lining-nums tabular-nums;text-shadow:var(--neon-text);
+}
+/* display:block e obrigatorio: <span> inline ignora height */
+.bar-track{
+  display:block;height:6px;border-radius:999px;background:var(--bg-3);
+  border:1px solid var(--line);overflow:hidden;
+}
+.bar-fill{
+  display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--accent-strong),var(--accent-soft));
+  box-shadow:0 0 14px rgba(35,137,230,.6);
+  transition:width 1.5s cubic-bezier(.22,1,.36,1);
+  transition-delay:var(--bd,0s);
+}
+.bars.in .bar-fill{width:var(--w,0%)}
+
+/* ---------- Faixa diagonal com marquee (assinatura da referencia) ----------
+   Duas faixas cruzadas em angulos opostos, rolando em sentidos contrarios.
+   O conteudo e duplicado no HTML para o loop nao ter emenda visivel. */
+/* A altura ocupada por uma faixa rotacionada cresce com a largura da tela
+   (largura * sen(angulo)). Com altura fixa, as pontas eram cortadas em
+   degrau nas bordas em telas largas — por isso a altura acompanha o
+   viewport, com piso e teto para nao exagerar nos extremos. */
+/* Geometria da faixa rotacionada:
+     altura ocupada = largura * sen(angulo) + altura propria * cos(angulo)
+   Como a largura e 160% do viewport, a altura cresce junto com a tela. Em vez
+   de calibrar valores por breakpoint (fragil), a banda deriva a altura da
+   mesma formula: --ang e --striph alimentam o calc(), entao qualquer ajuste
+   de angulo se propaga sozinho para a altura. */
+.dband{
+  --ang:6.5deg;
+  --striph:44px;              /* altura da propria faixa (texto + padding) */
+  --w:160vw;                  /* largura da faixa, igual a .strip */
+  position:relative;z-index:2;
+  margin:-26px 0 -26px;
+  overflow:hidden;pointer-events:none;
+  /* isola o empilhamento para as faixas nao vazarem sobre o conteudo */
+  isolation:isolate;
+  /* +14px de respiro para o glow nao encostar na borda do recorte */
+  height:calc(var(--w) * sin(var(--ang)) + var(--striph) * cos(var(--ang)) + 14px);
+}
+/* Largura extra (160%) e deslocamento negativo garantem que a faixa
+   rotacionada sangre alem das bordas: sem isso a ponta aparece cortada
+   dentro da tela quando o angulo cresce. */
+.dband .strip{
+  position:absolute;left:-30%;width:160%;
+  display:flex;align-items:center;gap:0;
+  padding:9px 0;
+  white-space:nowrap;
+  will-change:transform;
+}
+/* Angulos opostos e simetricos: e o cruzamento em X que caracteriza a
+   referencia. Angulos proximos demais (ou do mesmo sinal) leem como duas
+   listras paralelas, nao como faixas cruzadas. */
+/* Centradas na banda: ancoradas em 50% e recuadas pela propria altura, as
+   duas cruzam no meio independentemente da altura calculada. */
+.dband .s1{
+  top:50%;transform:translateY(-50%) rotate(calc(-1 * var(--ang)));z-index:1;
+  background:linear-gradient(90deg,var(--accent-strong),var(--accent) 45%,var(--accent-soft));
+  box-shadow:0 0 30px rgba(35,137,230,.38);
+}
+/* a faixa escura passa por cima no cruzamento, como na referencia */
+.dband .s2{
+  top:50%;transform:translateY(-50%) rotate(var(--ang));z-index:2;
+  background:linear-gradient(90deg,#0B1830,#12294A 50%,#0B1830);
+  border-top:1px solid var(--accent-line);border-bottom:1px solid var(--accent-line);
+}
+/* A duracao vem de --dur, calculada no JS a partir da distancia real que a
+   trilha percorre. Com duracao fixa a faixa acelerava em telas largas (mais
+   copias = mais distancia no mesmo tempo); assim a velocidade em px/s fica
+   constante em qualquer largura. Os valores aqui sao apenas fallback. */
+.dband .track{display:flex;align-items:center;flex:none;animation:mqScroll var(--dur,60s) linear infinite}
+.dband .s2 .track{animation-direction:reverse}
+.dband .track span{
+  display:inline-flex;align-items:center;gap:12px;padding:0 17px;flex:none;
+  font-family:var(--f-head);font-weight:700;font-size:.78rem;letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.dband .s1 .track span{color:#04101F}
+.dband .s2 .track span{color:var(--accent-soft)}
+.dband .track span::after{
+  content:"</>";font-size:.86rem;opacity:.62;font-weight:600;
+}
+@keyframes mqScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* Em telas largas o mesmo angulo gera uma diagonal muito mais alta, o que
+   afasta demais as duas faixas e desmancha a leitura do X. O angulo diminui
+   conforme a tela cresce para manter a proporcao vista na referencia.
+   Precisa vir DEPOIS das regras base: mesma especificidade, entao quem
+   aparece por ultimo vence. */
+/* So o angulo muda; a altura da banda se recalcula sozinha pela formula. */
+@media (min-width:1400px){ .dband{--ang:4.2deg} }
+@media (min-width:1800px){ .dband{--ang:3.2deg} }
+
 /* ---------- Barra de progresso de leitura ---------- */
 .progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:40;pointer-events:none}
 .progress i{
@@ -566,6 +1184,33 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   .browser-wrap[data-reveal] .oc-row{opacity:1;transform:none;transition:none}
   .btn,.kcard,.rowc,.browser{transition:none}
   .cta-pulse,.float{animation:none}
+  /* marquee, arcos e pulsos param: movimento continuo e o que mais incomoda
+     quem pediu reducao de movimento */
+  .dband .track{animation:none}
+  .hero-arcs .glowarc{animation:none}
+  .hero-eyebrow .dot{animation:none}
+  /* sem transicao, mas ja preenchidas: barra vazia seria perda de conteudo,
+     nao reducao de movimento */
+  .bar-fill{transition:none;width:var(--w,0%)}
+  /* cards da cascata visiveis de imediato, sem sequenciamento */
+  [data-stagger] > *{opacity:1;transform:none;transition:none}
+  [data-stagger].in > *{transition-delay:0s}
+  .gborder::after{transition:none}
+  /* aura permanece visivel, apenas sem transicao de intensidade */
+  .aura::after{transition:none}
+  .aura-border.aura-border{transition:none}
+  /* mockup entra reto: a inclinacao 3D e justamente o tipo de movimento
+     que incomoda quem pediu reducao */
+  .browser{--tilt:0 !important}
+  /* o cromado para de girar mas continua metalico: o gradiente fica fixo
+     num angulo agradavel em vez de sumir */
+  .metal,.g-badge--chrome::after{animation:none;--chrome-ang:32deg}
+  /* o brilho especular para numa posicao agradavel em vez de sumir */
+  .metal::before{animation:none;--sheen-pos:34%}
+  /* a luz da borda para num ponto visivel em vez de sumir */
+  /* a luz para num ponto visivel da borda em vez de sumir */
+  .btn.metal .edge-light::before,
+  .btn.metal .edge-light::after{animation:none;--run:14%}
   .g-badge,.g-badge::before{animation:none}
   .g-ripple{animation:none;opacity:0}
   .magic-rings,.magic-rings .mr,.magic-rings::after{animation:none}
@@ -591,12 +1236,31 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 @media (max-width:768px){
   .section{padding:48px 0}
   .hero{padding:44px 0 56px}
+  /* stats empilham: separador vertical perde sentido e desalinha */
+  .hero-stats{flex-direction:column;align-items:center;gap:14px;margin-top:26px}
+  .hero-stats .sep{display:none}
+  .hero-stats .hs{justify-content:center;min-width:0}
+  .hero-stats .n{font-size:1.42rem}
+  /* faixa diagonal mais baixa e com texto menor no celular; angulo maior
+     porque a tela estreita encurta a diagonal visivel */
+  /* angulo maior no celular: a tela estreita encurta a diagonal visivel.
+     A altura acompanha sozinha pela formula. */
+  /* No celular nao ha hover: '.lit' e aplicado por scroll, entao varios
+     cards ficam acesos ao mesmo tempo. Intensidade menor para o glow nao
+     virar preenchimento e comer o contraste do texto. */
+  .aura::after{inset:12px 14px;opacity:.30;filter:blur(34px)}
+  .aura:hover::after,.aura.lit::after,.aura:focus-within::after{opacity:.46;filter:blur(38px)}
+  .dband{--ang:8deg;--striph:36px;margin:-14px 0}
+  .dband .track span{font-size:.66rem;padding:0 12px;gap:9px}
+  .bars{max-width:none}
   .hero h1{font-size:clamp(1.8rem,8vw,2.6rem)}
   .hero-cta .btn{width:100%;justify-content:space-between}
   .guarantee{grid-template-columns:1fr;gap:26px;justify-items:center;text-align:center;padding:30px 24px}
   .guarantee > div:last-child{text-align:left}
-  /* no celular o painel entra inclinado e se endireita ao aparecer na tela */
-  .browser{transform:rotateX(10deg) scale(.99)}
+  /* No celular o mesmo angulo distorce muito mais (o painel ocupa quase toda
+     a largura), entao reduzimos o maximo em vez de sobrescrever o transform
+     — sobrescrever aqui mataria o endireitar progressivo. */
+  .browser{--tilt-max:9deg}
   .browser-wrap{margin-top:40px}
   .b-body{padding:20px 18px 0}
   .hstat{padding:12px 14px}
@@ -671,23 +1335,35 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 
 <!-- 01 · HERO -->
 <header class="hero">
+  <div class="hero-arcs" aria-hidden="true">
+    <i class="a1"></i><i class="a2"></i><i class="glowarc"></i>
+  </div>
   <div class="container">
+    <span class="hero-eyebrow" data-reveal style="--d:.04s">
+      <span class="dot" aria-hidden="true"></span>Safirion Corujão de Traders
+    </span>
     <h1 data-reveal style="--d:.08s">Você Não Precisa<br /><span class="ac">de Mais Um Curso</span></h1>
     <p class="lead" data-reveal style="--d:.16s">
       Os maiores traders que vivem do mercado reuniram em uma única noite tudo que usam para faturar —
       <strong>estratégias reais, indicadores exclusivos e IA integrada</strong>. Você para de adivinhar e começa a operar como profissional <em>a partir de hoje</em>.
     </p>
     <div class="hero-cta" data-reveal style="--d:.24s">
-      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
-        Quero o Arsenal Pro — R$ 997
-        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span>
-      </a>
+      <a class="btn btn--lg cta-pulse metal" href="https://go.perfectpay.com.br/PPU38CQEKU7" data-checkout><span class="edge-light" aria-hidden="true"></span><span class="btn-core">Quero o Arsenal Pro — R$ 997
+        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span></span></a>
     </div>
     <p class="price-note" data-reveal style="--d:.3s">
       Valor total: <s>R$ 10.000</s> em entregáveis<br />
       Arsenal Pro — apenas essa noite: <b>R$ 997</b><br />
       Acesso imediato · Disponível apenas durante o Night Challenge
     </p>
+
+    <div class="hero-stats" data-reveal style="--d:.36s">
+      <div class="hs"><span class="n" data-count="11">11</span><span class="l">Traders ao vivo</span></div>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="hs"><span class="n" data-count="10000" data-prefix="R$ ">R$ 10.000</span><span class="l">Em entregáveis</span></div>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="hs"><span class="n" data-count="7" data-suffix=" dias">7 dias</span><span class="l">De garantia</span></div>
+    </div>
 
     <!-- Painel-janela inclinado com a oferta (mockup do painel, como na referência) -->
     <div class="browser-wrap" data-reveal style="--d:.34s">
@@ -730,6 +1406,20 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
   </div>
 </header>
 
+<!-- Faixa diagonal com marquee (ritmo visual da referência) -->
+<div class="dband" aria-hidden="true">
+  <div class="strip s1">
+    <div class="track">
+      <span>Estratégias Reais</span><span>Indicadores Exclusivos</span><span>IA Integrada</span><span>Traders Ao Vivo</span><span>Arsenal Pro</span><span>Night Challenge</span><span>Estratégias Reais</span><span>Indicadores Exclusivos</span><span>IA Integrada</span><span>Traders Ao Vivo</span><span>Arsenal Pro</span><span>Night Challenge</span><span>Estratégias Reais</span><span>Indicadores Exclusivos</span><span>IA Integrada</span><span>Traders Ao Vivo</span><span>Arsenal Pro</span><span>Night Challenge</span><span>Estratégias Reais</span><span>Indicadores Exclusivos</span><span>IA Integrada</span><span>Traders Ao Vivo</span><span>Arsenal Pro</span><span>Night Challenge</span>
+    </div>
+  </div>
+  <div class="strip s2">
+    <div class="track">
+      <span>Método PHIZ 5K</span><span>Price Action</span><span>Ultra Sniper</span><span>Olho de Deus</span><span>MACD Sniper</span><span>Fluxo Ultra</span><span>Método PHIZ 5K</span><span>Price Action</span><span>Ultra Sniper</span><span>Olho de Deus</span><span>MACD Sniper</span><span>Fluxo Ultra</span><span>Método PHIZ 5K</span><span>Price Action</span><span>Ultra Sniper</span><span>Olho de Deus</span><span>MACD Sniper</span><span>Fluxo Ultra</span><span>Método PHIZ 5K</span><span>Price Action</span><span>Ultra Sniper</span><span>Olho de Deus</span><span>MACD Sniper</span><span>Fluxo Ultra</span>
+    </div>
+  </div>
+</div>
+
 <main>
 
 <!-- 02 · CONTEXTO — POR QUE ISSO EXISTE -->
@@ -764,31 +1454,31 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
       </span>
       <h2><span class="dm">Você Já Passou por</span> <span class="ac">Alguma Dessas Situações?</span></h2>
     </div>
-    <div class="pain-list">
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="21 11 21 17 15 17"/></svg></div>
+    <div class="pain-list" data-stagger>
+      <div class="kcard fx aura aura-border">
+        <div class="ibox metal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 9 13 13 9 21 17"/><polyline points="21 11 21 17 15 17"/></svg></div>
         <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p>
-        <div class="kfoot"><span class="nchip">001</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
+        <div class="kfoot"><span class="nchip metal"><span class="chip-core">001</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg></div>
+      <div class="kcard fx aura aura-border">
+        <div class="ibox metal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="21"/><line x1="3" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="21" y2="12"/></svg></div>
         <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p>
-        <div class="kfoot"><span class="nchip">002</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
+        <div class="kfoot"><span class="nchip metal"><span class="chip-core">002</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 8 8 8"/></svg></div>
+      <div class="kcard fx aura aura-border">
+        <div class="ibox metal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 8 8 8"/></svg></div>
         <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p>
-        <div class="kfoot"><span class="nchip">003</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
+        <div class="kfoot"><span class="nchip metal"><span class="chip-core">003</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
+      <div class="kcard fx aura aura-border">
+        <div class="ibox metal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></div>
         <p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p>
-        <div class="kfoot"><span class="nchip">004</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
+        <div class="kfoot"><span class="nchip metal"><span class="chip-core">004</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
-      <div class="kcard fx" data-reveal>
-        <div class="ibox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h4"/><path d="M12 3v9"/><polyline points="8 8 12 12 16 8"/></svg></div>
+      <div class="kcard fx aura aura-border">
+        <div class="ibox metal" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h4"/><path d="M12 3v9"/><polyline points="8 8 12 12 16 8"/></svg></div>
         <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p>
-        <div class="kfoot"><span class="nchip">005</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
+        <div class="kfoot"><span class="nchip metal"><span class="chip-core">005</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </div>
     </div>
     </div><!-- /pain-section -->
@@ -814,10 +1504,31 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
         <p class="lead" style="margin-top:14px;max-width:30rem">O Arsenal Pro reúne o que 11 traders levaram anos para construir: <strong>suas melhores estratégias, seus indicadores exclusivos e uma IA integrada diretamente na Safirion</strong> — tudo entregue em uma única noite, <em>por uma fração do valor real</em>.</p>
         <p style="margin-top:12px;max-width:30rem"><strong>Não é uma coleção de conteúdo jogado em uma pasta.</strong></p>
         <p style="margin-top:8px;max-width:30rem">É um sistema com <em>três dimensões</em>:</p>
+
+        <div class="bars" data-bars>
+          <div class="bar-item">
+            <div class="bar-top">
+              <span class="bar-lbl">Estratégia</span><span class="bar-val">100%</span>
+            </div>
+            <span class="bar-track"><i class="bar-fill" style="--w:100%;--bd:.1s"></i></span>
+          </div>
+          <div class="bar-item">
+            <div class="bar-top">
+              <span class="bar-lbl">Ferramenta</span><span class="bar-val">100%</span>
+            </div>
+            <span class="bar-track"><i class="bar-fill" style="--w:100%;--bd:.26s"></i></span>
+          </div>
+          <div class="bar-item">
+            <div class="bar-top">
+              <span class="bar-lbl">IA Integrada</span><span class="bar-val">100%</span>
+            </div>
+            <span class="bar-track"><i class="bar-fill" style="--w:100%;--bd:.42s"></i></span>
+          </div>
+        </div>
       </div>
       <div class="rowc-stack">
-        <div class="rowc fx" data-reveal="right">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
+        <div class="rowc fx aura aura-border" data-reveal="right">
+          <span class="ric metal" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 1</span>
             <h3>Estratégia</h3>
@@ -825,8 +1536,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           </div>
           <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
         </div>
-        <div class="rowc fx" data-reveal="right" style="--d:.12s">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span>
+        <div class="rowc fx aura aura-border" data-reveal="right" style="--d:.12s">
+          <span class="ric metal" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 2</span>
             <h3>Ferramenta</h3>
@@ -834,8 +1545,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           </div>
           <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
         </div>
-        <div class="rowc fx" data-reveal="right" style="--d:.24s">
-          <span class="ric" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/><line x1="2" y1="9" x2="5" y2="9"/><line x1="2" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="22" y2="9"/><line x1="19" y1="15" x2="22" y2="15"/><circle cx="12" cy="12" r="2.4"/></svg></span>
+        <div class="rowc fx aura aura-border" data-reveal="right" style="--d:.24s">
+          <span class="ric metal" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/><line x1="9" y1="2" x2="9" y2="5"/><line x1="15" y1="2" x2="15" y2="5"/><line x1="9" y1="19" x2="9" y2="22"/><line x1="15" y1="19" x2="15" y2="22"/><line x1="2" y1="9" x2="5" y2="9"/><line x1="2" y1="15" x2="5" y2="15"/><line x1="19" y1="9" x2="22" y2="9"/><line x1="19" y1="15" x2="22" y2="15"/><circle cx="12" cy="12" r="2.4"/></svg></span>
           <div class="rtx">
             <span class="rtag">Dimensão 3</span>
             <h3>IA</h3>
@@ -861,78 +1572,78 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
     </div>
 
     <div class="stack-list">
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Taylon</span><span class="nchip">01</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Taylon</span><span class="nchip metal"><span class="chip-core">01</span></span></div>
         <h3>Método PHIZ 5K</h3>
         <p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Patrick</span><span class="nchip">02</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Patrick</span><span class="nchip metal"><span class="chip-core">02</span></span></div>
         <h3>Mestre do Price Action</h3>
         <p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Miriele</span><span class="nchip">03</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Miriele</span><span class="nchip metal"><span class="chip-core">03</span></span></div>
         <h3>Ultra Sniper + Aula Especializada</h3>
         <p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Julin</span><span class="nchip">04</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Julin</span><span class="nchip metal"><span class="chip-core">04</span></span></div>
         <h3>Mentoria Completa — Do Zero ao Avançado</h3>
         <p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Thon Carvalho</span><span class="nchip">05</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Thon Carvalho</span><span class="nchip metal"><span class="chip-core">05</span></span></div>
         <h3>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</h3>
         <p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Ed Trader</span><span class="nchip">06</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Ed Trader</span><span class="nchip metal"><span class="chip-core">06</span></span></div>
         <h3>Método VPA — Leitura de Velas e Controle Emocional</h3>
         <p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 297</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Vitor Lela</span><span class="nchip">07</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Vitor Lela</span><span class="nchip metal"><span class="chip-core">07</span></span></div>
         <h3>Estratégia Validada em 6 Anos + Indicador Exclusivo</h3>
         <p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 397</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Eduardo Bastos</span><span class="nchip">08</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Eduardo Bastos</span><span class="nchip metal"><span class="chip-core">08</span></span></div>
         <h3>MACD Sniper</h3>
         <p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 197</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Tio Vitão</span><span class="nchip">09</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Tio Vitão</span><span class="nchip metal"><span class="chip-core">09</span></span></div>
         <h3>Olho de Deus — IA Integrada com a Safirion</h3>
         <p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 997</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Molina</span><span class="nchip">10</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Molina</span><span class="nchip metal"><span class="chip-core">10</span></span></div>
         <h3>Indicador LEAD + Aula Fluxo Ultra</h3>
         <p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
       </article>
 
-      <article class="stack-card fx" data-reveal>
-        <div class="stack-head"><span class="who">— Suzana</span><span class="nchip">11</span></div>
+      <article class="stack-card fx aura-border" data-reveal>
+        <div class="stack-head"><span class="who">— Suzana</span><span class="nchip metal"><span class="chip-core">11</span></span></div>
         <h3>Retração ST + Treinamento Completo</h3>
         <p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p>
         <div class="kfoot"><span class="val"><small>Valor individual</small>R$ 497</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg></div>
@@ -952,7 +1663,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 <section class="section">
   <div class="container">
     <div class="qual-grid">
-      <div class="qual-panel qual-panel--yes fx" data-reveal="left">
+      <div class="qual-panel qual-panel--yes fx aura aura-border" data-reveal="left">
         <h3>O Arsenal Pro É Para Você Se...</h3>
         <ul class="qual-list">
           <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</li>
@@ -963,7 +1674,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           <li><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</li>
         </ul>
       </div>
-      <div class="qual-panel qual-panel--no fx" data-reveal="right" style="--d:.12s">
+      <div class="qual-panel qual-panel--no fx aura aura-border" data-reveal="right" style="--d:.12s">
         <h3>O Arsenal Pro Não É Para Você Se...</h3>
         <ul class="qual-list">
           <li><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E2556A" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</li>
@@ -1001,7 +1712,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
           <span class="mr"></span><span class="mr"></span><span class="mr"></span>
           <span class="mr"></span><span class="mr"></span><span class="mr"></span>
         </div>
-        <div class="g-badge">
+        <div class="g-badge g-badge--chrome">
           <span class="g-ripple"></span>
           <span class="g-ripple g-ripple--2"></span>
           <div>
@@ -1034,10 +1745,8 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
       <li data-reveal="left" style="--d:.24s"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69B8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg> 7 dias de garantia incondicional</li>
     </ul>
     <div class="hero-cta" data-reveal>
-      <a class="btn btn--lg cta-pulse" href="#" data-checkout>
-        Quero o Arsenal Pro — R$ 997
-        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span>
-      </a>
+      <a class="btn btn--lg cta-pulse metal" href="https://go.perfectpay.com.br/PPU38CQEKU7" data-checkout><span class="edge-light" aria-hidden="true"></span><span class="btn-core">Quero o Arsenal Pro — R$ 997
+        <span class="arr-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"/><polyline points="8 6 18 6 18 16"/></svg></span></span></a>
     </div>
     <p class="price-note" data-reveal>
       Valor total: <s>R$ 10.000</s> em entregáveis<br />
@@ -1053,7 +1762,7 @@ footer{border-top:1px solid var(--line);padding:38px 0 48px;background:var(--bg-
 // ============================================
 // CONFIGURAÇÃO: troque o link abaixo
 // ============================================
-const CHECKOUT_URL = "#";      // TODO: link de checkout do Arsenal Pro
+const CHECKOUT_URL = "https://go.perfectpay.com.br/PPU38CQEKU7";
 
 document.querySelectorAll("[data-checkout]").forEach(a => a.href = CHECKOUT_URL);
 
@@ -1064,6 +1773,150 @@ const io = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+// as barras usam o mesmo gatilho: preenchem ao entrar na tela
+document.querySelectorAll("[data-bars]").forEach(el => io.observe(el));
+// grades em cascata: os filhos entram em sequencia
+document.querySelectorAll("[data-stagger]").forEach(el => io.observe(el));
+
+// ---- Marquee: garante conteudo suficiente para o loop nunca abrir buraco ----
+// O loop desloca -50% da trilha, entao METADE do conteudo precisa ser mais
+// larga que a faixa. Com um numero fixo de copias isso quebra em telas largas
+// (falta conteudo e aparece vao vazio), por isso as copias sao calculadas a
+// partir da largura real e refeitas quando a janela muda de tamanho.
+(function(){
+  const tracks = document.querySelectorAll('.dband .track');
+  if (!tracks.length) return;
+
+  tracks.forEach(track => {
+    // guarda o conjunto original de itens (uma unidade do padrao)
+    const base = Array.from(track.children).map(n => n.cloneNode(true));
+    // o HTML ja vem com o padrao duplicado; reduz para uma unidade so
+    const unidade = base.slice(0, base.length / 2);
+    track.dataset.unidade = '';
+    track._unidade = unidade.length ? unidade : base;
+  });
+
+  const preencher = () => {
+    tracks.forEach(track => {
+      const unidade = track._unidade;
+      // remonta a partir de uma unidade limpa
+      track.innerHTML = '';
+      unidade.forEach(n => track.appendChild(n.cloneNode(true)));
+      const larguraUnidade = track.scrollWidth;
+      if (!larguraUnidade) return;
+
+      const alvo = track.parentElement.getBoundingClientRect().width;
+      // metade da trilha precisa cobrir a faixa inteira -> cada metade
+      // precisa de pelo menos 'alvo' de largura; +1 unidade de folga.
+      const copiasPorMetade = Math.max(1, Math.ceil(alvo / larguraUnidade) + 1);
+      const total = copiasPorMetade * 2;
+      for (let i = 1; i < total; i++) {
+        unidade.forEach(n => track.appendChild(n.cloneNode(true)));
+      }
+
+      // Velocidade constante: a animacao percorre metade da trilha, entao a
+      // duracao acompanha essa distancia. Sem isso, quanto maior a tela mais
+      // rapido o texto passava.
+      const distancia = track.scrollWidth / 2;
+      const PX_POR_SEGUNDO = 38;              // ritmo de leitura confortavel
+      const dur = distancia / PX_POR_SEGUNDO;
+      // a faixa de baixo anda um pouco mais devagar, para as duas nao ficarem
+      // sincronizadas e o cruzamento ter vida
+      const fator = track.closest('.s2') ? 1.25 : 1;
+      track.style.setProperty('--dur', (dur * fator).toFixed(1) + 's');
+    });
+  };
+
+  preencher();
+  let t;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(preencher, 160); }, { passive:true });
+})();
+
+// ---- Mockup: endireita progressivamente conforme a pagina rola ----
+// O angulo acompanha o scroll em vez de trocar de estado de uma vez: a
+// inclinacao vai de 14deg ate 0 no intervalo em que o painel sobe pela tela.
+(function(){
+  const el = document.querySelector('.browser');
+  if (!el) return;
+
+  const reduz = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (reduz.matches) { el.style.setProperty('--tilt', '0'); return; }
+
+  let ticking = false;
+  // posicao absoluta do topo do painel no documento; recalculada no resize
+  // porque o layout (e portanto a ancora) muda com a largura
+  let inicioRef = null;
+
+  const calcular = () => {
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+
+    // Curso ancorado na posicao do proprio painel: comeca a endireitar
+    // quando ele entra na tela (topo na base do viewport) e termina quando
+    // sobe ate a zona de leitura. Fracoes fixas do viewport nao servem —
+    // em telas altas o painel ja nasce visivel e o efeito comecaria no meio.
+    //
+    // A ancora e recalculada a cada quadro (nao cacheada): guardar o valor
+    // do primeiro calculo o contamina se a pagina abrir ja rolada, com
+    // ancora restaurada pelo navegador ou vinda de um link com hash.
+    inicioRef = r.top + window.scrollY;   // topo absoluto no documento
+    // Se o painel ja nasce visivel (telas altas), 'comeca' seria negativo e
+    // o curso apareceria adiantado logo no topo da pagina — o efeito
+    // comecaria pela metade. O piso em 0 garante inclinacao cheia na
+    // abertura, independente da altura da tela.
+    const comeca = Math.max(0, inicioRef - vh);
+    const curso  = Math.max(260, vh * 0.6); // distancia ate ficar reto
+    // p e o progresso DENTRO do curso; antes dele o painel ainda nao entrou
+    // na tela e deve permanecer inclinado (p=0), nao reto.
+    const p = Math.min(1, Math.max(0, (window.scrollY - comeca) / curso));
+
+    // easeOutCubic: desacelera na chegada, entao o painel "assenta" reto
+    // em vez de parar de golpe.
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.style.setProperty('--tilt', (1 - eased).toFixed(4));
+    ticking = false;
+  };
+
+  const agendar = () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(calcular); }
+  };
+
+  window.addEventListener('scroll', agendar, { passive: true });
+  window.addEventListener('resize', () => { inicioRef = null; agendar(); }, { passive: true });
+  // reage se o usuario ligar 'reduzir movimento' com a pagina aberta
+  reduz.addEventListener('change', e => {
+    if (e.matches) el.style.setProperty('--tilt', '0'); else agendar();
+  });
+  calcular();
+})();
+
+// ---- Parallax dos arcos do hero (profundidade ao rolar) ----
+(function(){
+  const arcs = document.querySelector('.hero-arcs');
+  if (!arcs) return;
+  // respeita quem pediu menos movimento
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const layers = [
+    { el: arcs.querySelector('.a1'), k: 0.16 },
+    { el: arcs.querySelector('.a2'), k: 0.26 },
+    { el: arcs.querySelector('.glowarc'), k: 0.10 },
+  ].filter(l => l.el);
+
+  let ticking = false;
+  const update = () => {
+    const y = window.scrollY;
+    // para de calcular quando o hero ja saiu da tela
+    if (y < window.innerHeight * 1.2) {
+      layers.forEach(l => { l.el.style.setProperty('--py', (y * l.k).toFixed(1) + 'px'); });
+    }
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
+})();
 
 // ---- Efeito de card: spotlight que segue o ponteiro/toque ----
 (function(){
