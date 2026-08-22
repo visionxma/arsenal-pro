@@ -3,1009 +3,1046 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Admin — Roleta dos Experts</title>
+<title>Painel Admin · Roleta dos Experts</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%2300A7FF'/%3E%3C/svg%3E" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23070b12'/%3E%3Cpath d='M16 6 L26 26 H21.5 L16 14.5 L10.5 26 H6 Z' fill='%232389e6'/%3E%3C/svg%3E" />
 <style>
   /* ===================================================================
-     SISTEMA VISUAL SAFIRION v2 — Painel Admin da Roleta
-     Tokens medidos direto de safirion.com (computed styles, 22/08/2026):
-       fonte Mazzard 600 com tracking -2% (Poppins e o par mais proximo
-       no Google Fonts) · H1 56px · H2 40px · H3 28px · card-title 19px
-       texto de apoio #a1b8c3 · azul #2389e6 / #4ba3f0 · CTA ciano com
-       GLOW · cards navy #0a1120 raio 16-20px sobre preto #000
-       borda rgba(255,255,255,.08-.16) · marcador numerado "001" em pill
-       verde #34d399 · vermelho #f87171
-     A assinatura do site: fundo quase preto com brilho azul e malha de
-     pontos, numeros grandes, secoes ancoradas por "001/002/003", e UM
-     unico elemento brilhante por tela (o CTA). Este painel segue isso.
+     PAINEL ADMIN · ROLETA — v3 "ferramenta interna"
+     Reformulação: sidebar = navegação real (uma tela por função),
+     densidade de painel operacional, tabelas administrativas, radius
+     discreto, azul Safirion reservado para ação/estado ativo.
+     A lógica de dados/sincronização é a MESMA da v2 (não mexer).
      =================================================================== */
   :root{
-    /* superficies — degraus perceptiveis do fundo ate o controle */
-    --ink:#020409;            /* pagina (quase preto, como o site) */
-    --ink-2:#050a14;          /* trilho / topbar */
-    --surface:#0a1120;        /* card (navy Safirion) */
-    --surface-2:#101b31;      /* campo, linha de lista */
-    --surface-3:#16233c;      /* hover */
-    --surface-4:#1c2c4a;      /* pressionado */
-    /* marca */
+    --bg:#070b12;            /* página */
+    --s1:#0c121d;            /* painel / sidebar */
+    --s2:#111927;            /* campo, linha ativa, hover leve */
+    --s3:#182335;            /* hover forte / pressionado */
+    --line:rgba(255,255,255,.07);
+    --line-2:rgba(255,255,255,.13);
+    --text:#eef4fb;
+    --t2:#c6d2e1;
+    --t3:#9fb0c4;
+    --t4:#66788e;
     --brand:#2389e6;
     --brand-2:#4ba3f0;
-    --cyan:#00a7ff;
-    --brand-dim:rgba(35,137,230,.12);
-    --brand-dim-2:rgba(35,137,230,.22);
-    --brand-line:rgba(35,137,230,.42);
-    /* texto — t1 titulo/valor · t2 nome/label · t3 apoio · t4 detalhe */
-    --text:#ffffff;
-    --t2:#e2ecf7;
-    --t3:#a1b8c3;   /* o cinza-azulado do proprio site */
-    --t4:#7f95a8;
-    --muted:#a1b8c3;
-    --muted-2:#7f95a8;
-    /* linhas */
-    --line:rgba(255,255,255,.08);
-    --line-2:rgba(255,255,255,.16);
-    /* compatibilidade com nomes antigos */
-    --bg-1:#0a1120; --bg-2:#020409; --panel:#0a1120; --pill-border:rgba(255,255,255,.08);
-    --btn-ink:#04121f;
-    /* semantica (verde/vermelho do site) */
-    --ok:#34d399;         --ok-dim:rgba(52,211,153,.12);   --ok-line:rgba(52,211,153,.38);
-    --danger:#f87171;     --danger-dim:rgba(248,113,113,.12); --danger-line:rgba(248,113,113,.4);
-    --warn:#fbbf24;       --warn-dim:rgba(251,191,36,.12); --warn-line:rgba(251,191,36,.38);
-    /* forma */
-    --r-lg:20px;   /* cards */
-    --r-md:12px;   /* controles */
-    --r-sm:10px;
-    --shadow-float:0 24px 60px rgba(0,0,0,.6);
-    --glow:0 0 26px rgba(0,167,255,.38), 0 6px 18px rgba(0,0,0,.35);
-    --glow-strong:0 0 34px rgba(0,167,255,.55), 0 6px 18px rgba(0,0,0,.35);
-    /* gradiente do CTA (o azul-ciano do "Comece Agora") */
-    --cta:linear-gradient(180deg,#3fa2f5 0%,#1179d8 100%);
-    --sbw:256px;
-    --sbw-min:76px;
-    --tbh:60px;
+    --brand-dim:rgba(35,137,230,.13);
+    --brand-line:rgba(35,137,230,.45);
+    --ok:#34d399;   --ok-dim:rgba(52,211,153,.1);    --ok-line:rgba(52,211,153,.35);
+    --danger:#f87171; --danger-dim:rgba(248,113,113,.09); --danger-line:rgba(248,113,113,.35);
+    --warn:#fbbf24;  --warn-dim:rgba(251,191,36,.1); --warn-line:rgba(251,191,36,.35);
+    --r:6px;                 /* controles */
+    --r-lg:8px;              /* painéis */
+    --sbw:240px;
+    --sbw-min:64px;
+    --tbh:52px;
+    --shadow-float:0 16px 48px rgba(0,0,0,.55);
   }
   *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-  html{ scroll-behavior:smooth; scroll-padding-top:24px; -webkit-text-size-adjust:100%; }
+  html{ -webkit-text-size-adjust:100%; }
   body{
-    font-family:'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color:var(--text); min-height:100vh; background:var(--ink);
-    font-size:14.5px; line-height:1.55;
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color:var(--text); min-height:100vh; background:var(--bg);
+    font-size:13.5px; line-height:1.5;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-  /* fundo assinatura Safirion: brilho azul + malha de pontos, fixos.
-     So decoracao — fica atras de tudo e nao captura clique. */
-  body::before{
-    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(1100px 560px at 72% -12%, rgba(35,137,230,.17), transparent 70%),
-      radial-gradient(700px 420px at -8% 30%, rgba(35,137,230,.07), transparent 70%);
-  }
-  body::after{
-    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-    background-image:radial-gradient(rgba(75,163,240,.14) 1px, transparent 1.4px);
-    background-size:26px 26px;
-    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 46%);
-    mask-image:linear-gradient(180deg,#000 0%,transparent 46%);
   }
   a{ color:inherit; text-decoration:none; }
   button, input, select, textarea{ font-family:inherit; }
   ::selection{ background:rgba(35,137,230,.4); }
-  :focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
-
+  :focus-visible{ outline:2px solid var(--brand-2); outline-offset:1px; border-radius:3px; }
   ::-webkit-scrollbar{ width:10px; height:10px }
   ::-webkit-scrollbar-track{ background:transparent }
-  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:99px; border:3px solid transparent; background-clip:content-box }
-  ::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.24); background-clip:content-box }
-  *{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.16) transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.13); border-radius:99px; border:3px solid transparent; background-clip:content-box }
+  ::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.22); background-clip:content-box }
+  *{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent; }
+  .num{ font-variant-numeric:tabular-nums; }
 
   /* ================= BARRA SUPERIOR (mobile) ================= */
   .topbar{
     display:none; position:fixed; top:0; left:0; right:0; z-index:48;
     height:var(--tbh); align-items:center; gap:12px; padding:0 14px;
-    background:rgba(4,8,16,.92); backdrop-filter:blur(12px);
+    background:rgba(9,13,20,.94); backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
   .tb-burger{
-    width:40px; height:40px; flex:none; border-radius:var(--r-sm); cursor:pointer;
+    width:36px; height:36px; flex:none; border-radius:var(--r); cursor:pointer;
     display:grid; place-items:center; color:var(--text);
-    background:var(--surface-2); border:1px solid var(--line-2);
+    background:var(--s2); border:1px solid var(--line-2);
   }
-  .tb-burger:active{ background:var(--surface-3); }
-  .tb-logo{ height:24px; display:block; flex:none; }
-  .tb-title{ font-weight:600; font-size:14.5px; letter-spacing:-.01em; color:var(--text);
+  .tb-burger:active{ background:var(--s3); }
+  .tb-logo{ height:20px; display:block; flex:none; }
+  .tb-title{ font-weight:600; font-size:13px; color:var(--t2);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .tb-dot{ width:8px; height:8px; border-radius:50%; background:var(--muted-2); flex:none; margin-left:auto;
-    transition:background .3s, box-shadow .3s; }
-  .tb-dot.on{ background:var(--ok); box-shadow:0 0 10px rgba(52,211,153,.8); }
+  .tb-dot{ width:8px; height:8px; border-radius:50%; background:var(--t4); flex:none; margin-left:auto;
+    transition:background .3s; }
+  .tb-dot.on{ background:var(--ok); }
 
   /* ================= SIDEBAR ================= */
   .sidebar{
     position:fixed; top:0; bottom:0; left:0; z-index:50; width:var(--sbw);
-    background:linear-gradient(180deg,#081020 0%,#050a14 100%);
+    background:var(--s1);
     border-right:1px solid var(--line);
     display:flex; flex-direction:column;
-    transition:width .3s cubic-bezier(.16,1,.3,1), transform .3s cubic-bezier(.16,1,.3,1);
-    overflow:visible;
+    transition:width .22s cubic-bezier(.2,0,.2,1), transform .22s cubic-bezier(.2,0,.2,1);
   }
-  .sb-top{ padding:24px 20px 18px; border-bottom:1px solid var(--line); }
-  .sb-top img, .sb-logo{ height:28px; width:auto; display:block; }
-  .sb-title{ margin-top:16px; font-weight:600; font-size:11px;
-    text-transform:uppercase; letter-spacing:.14em; color:var(--t4); white-space:nowrap; }
-  .conn{ display:inline-flex; align-items:center; gap:8px; margin-top:10px;
-    font-size:12px; font-weight:500; color:var(--t3); white-space:nowrap;
-    padding:5px 12px 5px 9px; border-radius:99px;
-    background:rgba(255,255,255,.04); border:1px solid var(--line);
-    transition:border-color .3s, background .3s; }
-  .conn i{ width:7px; height:7px; border-radius:50%; background:#3d4a5e; flex:none; transition:background .3s, box-shadow .3s; }
-  .conn.on{ border-color:var(--ok-line); background:var(--ok-dim); }
-  .conn.on i{ background:var(--ok); box-shadow:0 0 8px rgba(52,211,153,.7); }
-  .conn.on span{ color:var(--ok); }
+  .sb-top{ padding:16px 16px 14px; border-bottom:1px solid var(--line); }
+  .sb-top img{ height:22px; width:auto; display:block; }
+  .sb-title{ margin-top:10px; font-weight:600; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--t4); white-space:nowrap; }
 
-  .sb-nav{ flex:1; padding:16px 12px; display:flex; flex-direction:column; gap:4px; overflow-y:auto; }
+  .sb-nav{ flex:1; padding:10px 10px 14px; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; }
+  .sb-group{ margin-top:14px; padding:0 8px 6px; font-size:10px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.12em; color:var(--t4); white-space:nowrap; }
+  .sb-nav .sb-group:first-child{ margin-top:4px; }
   .sb-item{
-    display:flex; align-items:center; gap:12px; width:100%; padding:10px 12px;
-    border-radius:var(--r-md); cursor:pointer; text-align:left;
-    background:transparent; border:1px solid transparent; color:var(--t3);
-    font-size:14px; font-weight:500; letter-spacing:-.005em;
-    transition:background .18s, color .18s;
+    position:relative; display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px;
+    border-radius:var(--r); cursor:pointer; text-align:left;
+    background:transparent; border:0; color:var(--t3);
+    font-size:13px; font-weight:500;
+    transition:background .15s, color .15s;
   }
-  .sb-item:hover{ background:var(--surface-3); color:var(--text); }
-  .sb-item.active{ background:var(--brand-dim); border-color:var(--brand-line); color:var(--text); font-weight:600; position:relative; }
+  .sb-item + .sb-item{ margin-top:2px; }
+  .sb-item:hover{ background:var(--s2); color:var(--text); }
+  .sb-item svg{ width:16px; height:16px; flex:none; opacity:.85; }
+  .sb-item .lbl{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-item.active{
+    background:var(--brand-dim); color:#fff; font-weight:600;
+  }
+  .sb-item.active svg{ color:var(--brand-2); opacity:1; }
   .sb-item.active::before{
-    content:""; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
-    width:3px; height:22px; border-radius:0 3px 3px 0; background:var(--brand-2);
-    box-shadow:0 0 10px rgba(0,167,255,.8);
+    content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px;
+    border-radius:0 2px 2px 0; background:var(--brand-2);
   }
-  .sb-item .ni{
-    width:32px; height:32px; border-radius:10px; display:grid; place-items:center; flex:none;
-    background:rgba(255,255,255,.04); border:1px solid var(--line); color:var(--t3);
-    transition:color .18s, background .18s, border-color .18s;
-  }
-  .sb-item:hover .ni{ color:var(--text); border-color:var(--line-2); }
-  .sb-item.active .ni{ background:var(--brand-dim-2); border-color:var(--brand-line); color:var(--brand-2); }
-  .sb-foot{ padding:12px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:4px; }
-  .sb-foot .sb-item .ni{ background:rgba(255,255,255,.04); border-color:var(--line); color:var(--t4); }
+  .sb-foot{ padding:10px; border-top:1px solid var(--line); }
+  .sb-foot .sb-item{ color:var(--t4); }
+  .sb-foot .sb-item:hover{ color:var(--text); }
 
+  /* status de conexão no rodapé do bloco superior */
+  .conn{ display:flex; align-items:center; gap:8px; margin:0; padding:10px 16px;
+    font-size:12px; font-weight:500; color:var(--t4); white-space:nowrap; overflow:hidden;
+    border-bottom:1px solid var(--line); }
+  .conn i{ width:7px; height:7px; border-radius:50%; background:#42506a; flex:none; transition:background .3s; }
+  .conn.on i{ background:var(--ok); }
+  .conn.on span{ color:var(--ok); }
+  .conn span{ overflow:hidden; text-overflow:ellipsis; }
+
+  /* botão recolher/expandir — controle de primeira classe, meio vertical */
   .sb-handle{
-    position:absolute; top:26px; right:-13px; z-index:51;
-    width:26px; height:26px; border-radius:50%; cursor:pointer; padding:0;
-    border:1px solid var(--line-2); background:var(--surface-2); color:var(--muted-2);
+    position:absolute; top:50%; right:-13px; transform:translateY(-50%); z-index:51;
+    width:26px; height:64px; border-radius:8px; cursor:pointer; padding:0;
+    border:1px solid var(--line-2); background:var(--s2); color:var(--t3);
     display:flex; align-items:center; justify-content:center;
-    opacity:0; transition:opacity .2s, color .2s, border-color .2s, background .2s;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+    transition:color .15s, border-color .15s, background .15s;
   }
-  .sidebar:hover .sb-handle, .sb-handle:focus-visible{ opacity:1; }
-  .sb-handle:hover{ color:var(--text); border-color:var(--brand-line); background:var(--surface-3); }
-  .sb-handle svg{ width:13px; height:13px; transition:transform .3s cubic-bezier(.16,1,.3,1); }
+  .sb-handle:hover{ color:#fff; border-color:var(--brand-line); background:var(--s3); }
+  .sb-handle svg{ width:14px; height:14px; transition:transform .22s cubic-bezier(.2,0,.2,1); }
   body.sb-min .sb-handle svg{ transform:rotate(180deg); }
 
   body.sb-min .sidebar{ width:var(--sbw-min); }
-  body.sb-min .sb-title, body.sb-min .conn span, body.sb-min .sb-item .lbl{ display:none; }
-  body.sb-min .sb-top{ padding:24px 12px 16px; display:flex; flex-direction:column; align-items:center; }
-  body.sb-min .sb-top img{ height:24px; }
-  body.sb-min .conn{ justify-content:center; margin-top:12px; padding:5px 9px; }
-  body.sb-min .sb-item{ justify-content:center; padding:10px 8px; }
-  body.sb-min .sb-item.active::before{ left:-12px; }
+  body.sb-min .sb-title, body.sb-min .sb-item .lbl, body.sb-min .conn span{ display:none; }
+  body.sb-min .sb-group{ padding:0; height:1px; margin:12px 8px 8px; background:var(--line); overflow:hidden; color:transparent; }
+  body.sb-min .sb-nav .sb-group:first-child{ display:none; }
+  body.sb-min .sb-top{ padding:16px 0 14px; display:flex; justify-content:center; }
+  /* o logo é um wordmark largo: recolhido, mostra só o touro (recorte à esquerda) */
+  body.sb-min .sb-top img{ height:22px; width:30px; object-fit:cover; object-position:left center; }
+  body.sb-min .conn{ justify-content:center; padding:10px 0; }
+  body.sb-min .sb-item{ justify-content:center; padding:9px 0; }
+  body.sb-min .sb-item.active::before{ top:8px; bottom:8px; }
 
-  /* ================= AREA PRINCIPAL ================= */
-  .main{ margin-left:var(--sbw); padding:34px clamp(20px,3vw,52px) 90px; transition:margin-left .3s cubic-bezier(.16,1,.3,1); }
+  /* ================= ÁREA PRINCIPAL ================= */
+  .main{ margin-left:var(--sbw); padding:0 0 64px; transition:margin-left .22s cubic-bezier(.2,0,.2,1); }
   body.sb-min .main{ margin-left:var(--sbw-min); }
-  .wrap{ width:100%; max-width:1560px; margin:0 auto; display:flex; flex-direction:column; gap:18px;
-    counter-reset:sec; }
-  .wrap > *, .card-body > *, .grid2 > *, .exp-list > *{ min-width:0; }
+  .wrap{ width:100%; max-width:1080px; margin:0 auto; padding:28px clamp(18px,3vw,40px) 0; }
 
-  /* ---------- cabecalho da pagina: escala de hero, como o site ---------- */
-  .page-head{ margin-bottom:6px; }
-  /* pill de contexto acima do titulo (o "Corretora global · Forex · Cripto" do hero) */
-  .ph-kicker{
-    display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:99px;
-    font-size:12px; font-weight:500; letter-spacing:.02em; color:var(--t3);
-    background:rgba(255,255,255,.04); border:1px solid var(--line-2); margin-bottom:16px;
-  }
-  .ph-kicker i{ width:7px; height:7px; border-radius:50%; background:var(--brand-2); flex:none;
-    box-shadow:0 0 9px rgba(0,167,255,.9); }
-  .page-head h1{
-    font-weight:600; font-size:clamp(30px,3.2vw,44px); line-height:1.12; letter-spacing:-.03em;
-    color:var(--text);
-  }
-  .page-head h1 em{ font-style:normal;
-    background:linear-gradient(92deg,var(--brand) 0%,var(--cyan) 100%);
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-  .page-head h1 .dim{ color:var(--t4); font-weight:600; }
-  .page-head p{ margin-top:12px; font-size:15.5px; color:var(--t3); max-width:70ch; line-height:1.65; }
-  .page-head p b{ color:var(--t2); font-weight:600; }
+  /* telas: uma por item da sidebar */
+  .view{ display:none; }
+  .view.active{ display:block; animation:vfade .16s ease; }
+  @keyframes vfade{ from{ opacity:0; transform:translateY(3px);} to{ opacity:1; transform:none;} }
 
-  /* ================= INDICADORES (resumo da rodada) ================= */
-  .chips{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
-  .chip{
-    position:relative; text-align:left; padding:20px 22px 18px; border-radius:var(--r-lg); cursor:pointer;
-    background:linear-gradient(180deg,#0d1729 0%,#080f1d 100%);
-    border:1px solid var(--line); color:inherit; font:inherit;
-    transition:background .18s, border-color .18s, box-shadow .18s;
-  }
-  .chip:hover{ border-color:var(--line-2); transform:translateY(-1px); }
-  .chip:active{ transform:translateY(1px); }
-  .chip{ transition:background .18s, border-color .18s, box-shadow .18s, transform .18s; }
-  .chip b{
-    display:block; font-weight:600; font-size:clamp(34px,2.6vw,42px); line-height:1;
-    letter-spacing:-.035em; color:var(--text); font-variant-numeric:tabular-nums;
-  }
-  .chip span{ display:block; margin-top:10px; font-size:11.5px; color:var(--t3);
-    text-transform:uppercase; letter-spacing:.12em; font-weight:600; }
-  /* filtro ativo: o unico chip aceso, com fio azul e leve brilho */
-  .chip[aria-pressed="true"]{
-    border-color:var(--brand-line);
-    background:linear-gradient(180deg,rgba(35,137,230,.16) 0%,rgba(35,137,230,.05) 100%);
-    box-shadow:0 0 22px rgba(35,137,230,.18), inset 0 1px 0 rgba(255,255,255,.06);
-  }
-  .chip[aria-pressed="true"] b{ color:var(--brand-2); }
-  .chip[aria-pressed="true"] span{ color:var(--brand-2); }
-  .exp-row.hiddenByStat{ display:none; }
+  /* cabeçalho de página */
+  .page-head{ display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+  .page-head .ph-txt{ flex:1 1 260px; min-width:0; }
+  .page-head h1{ font-weight:600; font-size:18px; letter-spacing:-.01em; color:var(--text); }
+  .page-head p{ margin-top:3px; font-size:13px; color:var(--t4); }
+  .page-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 
-  /* ================= CARTAO AO VIVO (o hero do painel) ================= */
-  .live-card{
-    position:relative; display:flex; align-items:center; gap:16px 20px; flex-wrap:wrap;
-    padding:22px 24px; border-radius:var(--r-lg);
-    background:linear-gradient(180deg,#0d1729 0%,#080f1d 100%);
-    border:1px solid var(--line); overflow:hidden;
-  }
-  .live-card::before{ /* brilho de fundo so quando ha operacao */
-    content:""; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .4s;
-    background:radial-gradient(420px 200px at 12% 0%, rgba(35,137,230,.22), transparent 70%);
-  }
-  .live-card.running{ border-color:var(--brand-line); }
-  .live-card.running::before{ opacity:1; }
-  .live-card img{ width:64px; height:64px; border-radius:50%; object-fit:cover; flex:none;
-    border:2px solid var(--line-2); position:relative;
-    background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%237f95a8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center/26px no-repeat; }
-  .live-card.running img{ border-color:var(--brand-2); box-shadow:0 0 18px rgba(0,167,255,.45); }
-  .lc-txt{ flex:1 1 240px; min-width:0; position:relative; }
-  .lc-status{
-    display:inline-flex; align-items:center; gap:7px;
-    font-size:11px; text-transform:uppercase; letter-spacing:.12em; font-weight:600; color:var(--t3);
-    padding:4px 12px; border-radius:99px;
-    background:rgba(255,255,255,.05); border:1px solid var(--line);
-    white-space:nowrap; }
-  .lc-status::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--t4); flex:none; }
-  .live-card.running .lc-status{ color:var(--brand-2); background:var(--brand-dim); border-color:var(--brand-line); }
-  .live-card.running .lc-status::before{ background:var(--brand-2); box-shadow:0 0 8px rgba(0,167,255,.9); }
-  /* operação pausada: o cartao inteiro muda para ambar — inconfundivel */
-  .live-card.paused{ border-color:var(--warn-line); }
-  .live-card.paused::before{
-    background:radial-gradient(420px 200px at 12% 0%, rgba(251,191,36,.16), transparent 70%); }
-  .live-card.paused .lc-status{ color:var(--warn); background:var(--warn-dim); border-color:var(--warn-line); }
-  .live-card.paused .lc-status::before{ background:var(--warn); box-shadow:0 0 8px rgba(251,191,36,.85); }
-  .live-card.paused img{ border-color:var(--warn); box-shadow:0 0 18px rgba(251,191,36,.35); }
-  .live-card.paused .lc-timer{ color:var(--warn); }
-  .lc-main{ font-weight:600; font-size:clamp(20px,1.8vw,24px); letter-spacing:-.025em; margin-top:9px;
-    line-height:1.2; overflow-wrap:anywhere; }
-  .lc-main b{ font-weight:600; }
-  .lc-timer{ font-size:15px; color:var(--brand-2); font-weight:600; font-variant-numeric:tabular-nums; }
-  /* flex 1 1 auto + min-width 0: com 4 acoes a fileira ENCOLHE e quebra linha
-     dentro do cartao, em vez de estourar a borda e cortar o ultimo botao */
-  .lc-actions{ display:flex; gap:10px; flex:1 1 auto; min-width:0; margin-left:auto; flex-wrap:wrap; justify-content:flex-end; position:relative; }
-
-  /* ================= CARTOES / SECOES ================= */
-  .card{ border-radius:var(--r-lg);
-    background:linear-gradient(180deg,#0c1526 0%,#080f1d 100%);
-    border:1px solid var(--line); overflow:hidden;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.05); }
-  /* titulo de secao nivel Safirion: pill numerada "001" + titulo de 19px */
-  .card > h2{
-    display:flex; align-items:center; gap:14px; padding:20px 24px;
-    font-weight:600; font-size:20px; letter-spacing:-.02em; text-transform:none;
-    color:var(--text);
+  /* ================= PAINÉIS / SEÇÕES ================= */
+  .panel{ background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; }
+  .panel + .panel, .panel + .stats, .stats + .panel{ margin-top:16px; }
+  .panel-h{
+    display:flex; align-items:center; gap:12px; padding:12px 16px;
     border-bottom:1px solid var(--line);
   }
-  .card > h2::before{
-    counter-increment:sec;
-    content:"0" counter(sec, decimal-leading-zero);
-    flex:none; display:inline-flex; align-items:center; justify-content:center;
-    padding:5px 13px; border-radius:99px;
-    font-size:12px; font-weight:600; letter-spacing:.1em; line-height:1.4;
-    font-variant-numeric:tabular-nums;
-    color:var(--brand-2); background:var(--brand-dim); border:1px solid var(--brand-line);
+  .panel-h h2{ font-weight:600; font-size:13.5px; color:var(--text); }
+  .panel-h .ph-side{ margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--t4); }
+  .panel-b{ padding:16px; }
+  .panel-b > * + *{ margin-top:14px; }
+  .panel-b.tight{ padding:0; }
+  .panel-b.tight > * + *{ margin-top:0; }
+
+  /* ================= AO VIVO ================= */
+  .op-bar{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    padding:14px 16px;
   }
-  .card-body{ padding:22px 24px 24px; display:flex; flex-direction:column; gap:18px; }
-  .grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,195px),1fr)); gap:16px 18px; }
+  .op-bar img{ width:44px; height:44px; border-radius:50%; object-fit:cover; flex:none;
+    border:1px solid var(--line-2);
+    background:var(--s2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2366788e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center/20px no-repeat; }
+  .op-txt{ flex:1 1 200px; min-width:0; }
+  .op-status{ display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--t4); }
+  .op-status::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--t4); flex:none; }
+  .op-main{ font-weight:600; font-size:15px; margin-top:2px; color:var(--text); overflow-wrap:anywhere; }
+  .op-main .op-timer{ color:var(--brand-2); font-variant-numeric:tabular-nums; }
+  .op-bar.running .op-status{ color:var(--brand-2); }
+  .op-bar.running .op-status::before{ background:var(--brand-2); }
+  .op-bar.running img{ border-color:var(--brand-line); }
+  .op-bar.paused .op-status{ color:var(--warn); }
+  .op-bar.paused .op-status::before{ background:var(--warn); }
+  .op-bar.paused img{ border-color:var(--warn-line); }
+  .op-bar.paused .op-main .op-timer{ color:var(--warn); }
+  .op-cta{ display:flex; gap:8px; flex-wrap:wrap; margin-left:auto; align-items:center; }
+  .op-sec{ display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    padding:10px 16px; border-top:1px solid var(--line); background:rgba(255,255,255,.015); }
+  .op-sec .lbl-sec{ font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--t4); margin-right:4px; }
 
-  /* ---------- historico da rodada ---------- */
-  .h2-side{ margin-left:auto; flex:none; font-size:11.5px; font-weight:600; color:var(--t3);
-    text-transform:uppercase; letter-spacing:.1em;
-    padding:5px 12px; border-radius:99px; background:rgba(255,255,255,.04); border:1px solid var(--line); }
-  .h2-side:empty{ display:none; }
-  .hist-list{ list-style:none; display:flex; flex-direction:column; gap:8px; }
-  .hist-item{ display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:var(--r-md);
-    background:var(--surface-2); border:1px solid var(--line); }
-  .hist-item:first-child{ border-color:var(--brand-line); background:var(--brand-dim); }
-  .hist-pos{ flex:none; min-width:24px; text-align:right; font-size:13px; font-weight:600;
-    color:var(--t4); font-variant-numeric:tabular-nums; }
-  .hist-item:first-child .hist-pos{ color:var(--brand-2); }
-  .hist-item img{ width:34px; height:34px; border-radius:50%; object-fit:cover; flex:none;
-    border:1px solid var(--line-2); }
-  .hist-nome{ flex:1; min-width:0; font-size:15px; font-weight:500; color:var(--t2);
-    letter-spacing:-.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .hist-item:first-child .hist-nome{ color:var(--text); font-weight:600; }
-  .hist-hora{ flex:none; font-size:12.5px; font-weight:600; color:var(--t3);
-    font-variant-numeric:tabular-nums; padding:4px 11px; border-radius:99px;
-    background:rgba(255,255,255,.05); border:1px solid var(--line); }
-  .hist-item:first-child .hist-hora{ color:var(--brand-2); background:var(--brand-dim-2); border-color:var(--brand-line); }
-  .hist-vazio{ padding:24px 22px; text-align:center; font-size:14px; color:var(--t3);
-    background:rgba(255,255,255,.02); border:1px dashed var(--line-2); border-radius:var(--r-md); }
+  /* faixa de indicadores: um container, células com divisores */
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr);
+    background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; }
+  .stat{ padding:13px 16px; border-left:1px solid var(--line); min-width:0; }
+  .stat:first-child{ border-left:0; }
+  .stat b{ display:block; font-weight:600; font-size:21px; line-height:1.15; color:var(--text);
+    font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat span{ display:block; margin-top:2px; font-size:11px; font-weight:500; color:var(--t4);
+    text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat b.small{ font-size:14px; line-height:1.6; }
 
-  /* ================= FORMULARIOS ================= */
-  .field{ display:flex; flex-direction:column; gap:8px; }
-  .field label{ font-size:13.5px; font-weight:600; color:var(--t2); letter-spacing:-.005em; }
+  /* ================= FORMULÁRIOS ================= */
+  .field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .field label{ font-size:12.5px; font-weight:600; color:var(--t2); }
   .field input[type=text],.field input[type=number],.field input[type=password],
   .field input[type=url],.field input[type=email],.field input[type=search],.field input:not([type]),
   .field select, .exp-search, .cm-input, .gate-field input{
-    width:100%; padding:12px 15px; border-radius:var(--r-md); font-size:15px; color:var(--text);
-    background:var(--surface-2); border:1px solid var(--line-2); outline:none;
-    transition:border-color .18s, background .18s, box-shadow .18s;
+    width:100%; padding:8px 11px; border-radius:var(--r); font-size:13.5px; color:var(--text);
+    background:var(--s2); border:1px solid var(--line-2); outline:none;
+    transition:border-color .15s, background .15s, box-shadow .15s;
   }
-  .field input:hover, .field select:hover, .exp-search:hover{ border-color:rgba(255,255,255,.24); }
+  .field input:hover, .field select:hover, .exp-search:hover{ border-color:rgba(255,255,255,.22); }
   .field input:focus, .field select:focus, .exp-search:focus, .cm-input:focus, .gate-field input:focus{
-    border-color:var(--brand); background:var(--surface-3); box-shadow:0 0 0 3px rgba(35,137,230,.18);
+    border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15);
   }
   .field input::placeholder, .exp-search::placeholder{ color:var(--t4); }
   .field input:disabled{ opacity:.5; cursor:not-allowed; }
   .field select{
-    appearance:none; cursor:pointer; padding-right:40px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a1b8c3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 14px center;
+    appearance:none; cursor:pointer; padding-right:34px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239fb0c4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 11px center;
   }
-  .field select option{ background:#0a1120; color:#fff; }
-  .sub{ font-size:13px; color:var(--t4); line-height:1.6; max-width:82ch; }
-  .sub b{ color:var(--t2); font-weight:600; }
+  .field select option{ background:#0c121d; color:#fff; }
+  .sub{ font-size:12px; color:var(--t4); line-height:1.5; }
+  .sub b{ color:var(--t3); font-weight:600; }
+  .grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr)); gap:14px; }
 
-  /* upload de arquivo */
   .field input[type=file]{
-    width:100%; font-size:13px; color:var(--t3); cursor:pointer;
-    background:var(--surface-2); border:1px dashed var(--line-2); border-radius:var(--r-md);
-    padding:10px 12px; transition:border-color .18s, background .18s;
+    width:100%; font-size:12.5px; color:var(--t3); cursor:pointer;
+    background:var(--s2); border:1px dashed var(--line-2); border-radius:var(--r);
+    padding:8px 10px; transition:border-color .15s;
   }
-  .field input[type=file]:hover{ border-color:var(--brand-line); background:var(--surface-3); }
+  .field input[type=file]:hover{ border-color:var(--brand-line); }
   .field input[type=file]::file-selector-button{
-    margin-right:12px; padding:8px 16px; border-radius:99px; cursor:pointer;
-    font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.01em;
-    background:var(--brand-dim); border:1px solid var(--brand-line); color:var(--brand-2);
-    transition:background .18s;
+    margin-right:10px; padding:6px 12px; border-radius:var(--r); cursor:pointer;
+    font-family:inherit; font-size:12px; font-weight:600;
+    background:var(--s3); border:1px solid var(--line-2); color:var(--t2);
+    transition:background .15s;
   }
-  .field input[type=file]:hover::file-selector-button{ background:var(--brand-dim-2); }
+  .field input[type=file]:hover::file-selector-button{ background:var(--brand-dim); }
 
-  /* link da live */
-  .url-row{ display:flex; align-items:center; gap:0; border-radius:var(--r-md);
-    background:var(--surface-2); border:1px solid var(--line-2); overflow:hidden;
-    transition:border-color .18s, box-shadow .18s; }
-  .url-row:focus-within{ border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.18); }
-  .url-row .url-ic{ display:grid; place-items:center; width:44px; flex:none; color:var(--t4); }
-  .url-row input[type=url]{
-    flex:1; min-width:0; padding:12px 4px 12px 0; font-size:15px; color:var(--text);
-    background:transparent; border:0; outline:none;
-  }
-  .url-row input[type=url]::placeholder{ color:var(--t4); }
-  .url-apply{
-    flex:none; margin:6px; padding:9px 18px; border-radius:99px; cursor:pointer;
-    font-size:13px; font-weight:600; letter-spacing:.01em;
-    background:var(--cta); color:#fff; border:0; box-shadow:0 0 16px rgba(0,167,255,.28);
-    transition:filter .18s, box-shadow .18s;
-  }
-  .url-apply:hover{ filter:brightness(1.12); box-shadow:0 0 22px rgba(0,167,255,.45); }
-  .url-current{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--t4); }
-  .url-current b{ color:var(--t2); font-weight:600; word-break:break-all; }
-  .url-dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-2); flex:none;
-    box-shadow:0 0 8px rgba(0,167,255,.8); }
+  /* linha de configuração: rótulo + descrição à esquerda, controle à direita */
+  .set-row{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
+  .set-row + .set-row{ border-top:1px solid var(--line); }
+  .set-txt{ flex:1 1 220px; min-width:0; }
+  .set-txt .st-l{ font-size:13px; font-weight:600; color:var(--t2); }
+  .set-txt .st-d{ font-size:12px; color:var(--t4); margin-top:1px; }
+  .set-ctl{ flex:none; display:flex; align-items:center; gap:8px; }
+  .set-ctl input[type=number]{ width:88px; padding:7px 10px; border-radius:var(--r); font-size:13px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    text-align:right; font-variant-numeric:tabular-nums;
+    transition:border-color .15s, box-shadow .15s; }
+  .set-ctl select{ padding:7px 30px 7px 10px; border-radius:var(--r); font-size:13px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    appearance:none; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239fb0c4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 9px center; }
+  .set-ctl select option{ background:#0c121d; color:#fff; }
+  .set-ctl input[type=number]:focus, .set-ctl select:focus{
+    border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .set-ctl .unit{ font-size:12px; color:var(--t4); }
 
   /* interruptor */
-  .switch-row{ display:flex; align-items:center; justify-content:space-between; gap:14px;
-    font-size:14.5px; font-weight:500; color:var(--t2); cursor:pointer; padding:13px 16px;
-    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-md);
-    transition:background .18s, border-color .18s; }
-  .switch-row:hover{ background:var(--surface-3); border-color:var(--line-2); }
-  .sw{ position:relative; width:44px; height:25px; flex:none; cursor:pointer; }
-  .sw input{ position:absolute; inset:-9px -7px; width:auto; height:auto; opacity:0; margin:0; cursor:pointer; z-index:2; }
-  .sw .tr{ position:absolute; inset:0; border-radius:99px; background:var(--surface-4);
-    border:1px solid var(--line-2); transition:background .22s, border-color .22s, box-shadow .22s; }
-  .sw .th{ position:absolute; top:3px; left:3px; width:17px; height:17px; border-radius:50%;
-    background:var(--t3); transition:transform .22s cubic-bezier(.16,1,.3,1), background .22s; }
-  .sw input:checked + .tr{ background:var(--brand); border-color:var(--brand-2); box-shadow:0 0 12px rgba(0,167,255,.35); }
-  .sw input:checked + .tr .th{ transform:translateX(19px); background:#fff; }
+  .sw{ position:relative; width:36px; height:20px; flex:none; cursor:pointer; display:inline-block; }
+  .sw input{ position:absolute; inset:-8px -6px; width:auto; height:auto; opacity:0; margin:0; cursor:pointer; z-index:2; }
+  .sw .tr{ position:absolute; inset:0; border-radius:99px; background:var(--s3);
+    border:1px solid var(--line-2); transition:background .18s, border-color .18s; }
+  .sw .th{ position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%;
+    background:var(--t3); transition:transform .18s cubic-bezier(.2,0,.2,1), background .18s; }
+  .sw input:checked + .tr{ background:var(--brand); border-color:var(--brand); }
+  .sw input:checked + .tr .th{ transform:translateX(16px); background:#fff; }
   .sw input:focus-visible + .tr{ outline:2px solid var(--brand-2); outline-offset:2px; }
 
-  /* ================= BOTOES ================= */
-  /* primario: a pill com glow do "Comece Agora" — o unico elemento que brilha */
-  .abtn{
-    padding:12px 24px; border-radius:99px; cursor:pointer;
-    font-size:14px; font-weight:600; letter-spacing:.01em;
-    background:var(--cta); color:#fff; border:1px solid rgba(255,255,255,.14);
-    box-shadow:var(--glow);
-    transition:filter .18s, box-shadow .18s, background .18s, border-color .18s, opacity .18s;
+  /* ================= BOTÕES ================= */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    padding:8px 14px; border-radius:var(--r); cursor:pointer;
+    font-size:13px; font-weight:600;
+    background:var(--s2); color:var(--t2); border:1px solid var(--line-2);
+    transition:background .15s, color .15s, border-color .15s, opacity .15s;
+    white-space:nowrap;
   }
-  .abtn:hover{ filter:brightness(1.1); box-shadow:var(--glow-strong); }
-  .abtn:active{ transform:translateY(1px); }
-  .abtn:disabled{ opacity:.4; cursor:not-allowed; filter:none; box-shadow:none; }
-  .abtn--ghost{ background:rgba(255,255,255,.04); color:var(--t2); border-color:var(--line-2); box-shadow:none; }
-  .abtn--ghost:hover{ background:var(--surface-3); color:var(--text); border-color:rgba(255,255,255,.26); filter:none; box-shadow:none; }
-  .abtn--danger{ background:var(--danger-dim); color:var(--danger); border-color:var(--danger-line); box-shadow:none; }
-  .abtn--danger:hover{ background:rgba(248,113,113,.2); filter:none; box-shadow:none; }
-  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn:hover{ background:var(--s3); color:var(--text); border-color:rgba(255,255,255,.22); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+  .btn svg{ width:14px; height:14px; flex:none; }
+  .btn-pri{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .btn-pri:hover{ background:#2f95f2; border-color:#2f95f2; color:#fff; }
+  .btn-pri:disabled{ background:var(--brand); border-color:var(--brand); }
+  .btn-lg{ padding:10px 20px; font-size:13.5px; }
+  .btn-danger{ background:transparent; border-color:var(--danger-line); color:var(--danger); }
+  .btn-danger:hover{ background:var(--danger-dim); border-color:var(--danger); color:var(--danger); }
+  .btn-sm{ padding:5px 10px; font-size:12px; font-weight:600; border-radius:5px; }
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
 
-  /* ================= LISTA DE EXPERTS ================= */
-  .exp-search{ margin:0; padding-left:44px !important;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237f95a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:16px center; }
-  .exp-list{ display:flex; flex-direction:column; gap:8px; }
-  .exp-row{
-    display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:var(--r-md);
-    background:var(--surface-2); border:1px solid var(--line);
-    transition:background .18s, border-color .18s;
-  }
-  .exp-row:hover{ background:var(--surface-3); border-color:var(--line-2); }
-  .exp-row.inactive{ opacity:.45; }
-  .exp-row .idx{ flex:none; min-width:24px; text-align:right; font-variant-numeric:tabular-nums;
-    font-size:12.5px; font-weight:600; color:var(--t4); }
-  .exp-row img{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex:none;
-    border:1px solid var(--line-2); }
-  .exp-row .nm{ flex:1; font-weight:500; font-size:15px; min-width:0; letter-spacing:-.01em;
-    color:var(--t2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .exp-row .drawn{
-    flex:none; display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:99px;
-    font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--ok); background:var(--ok-dim); border:1px solid var(--ok-line);
-  }
-  .exp-row .drawn svg{ width:10px; height:10px; }
-  .exp-row.done{ border-color:var(--ok-line); background:rgba(52,211,153,.05); }
-  .exp-row.done .nm{ color:var(--t3); }
-  .exp-row .tmin{ flex:none; font-size:11.5px; font-weight:600; padding:4px 11px; border-radius:99px;
-    color:var(--brand-2); background:var(--brand-dim); border:1px solid var(--brand-line);
-    font-variant-numeric:tabular-nums; }
-  .exp-row .tmin.std{ color:var(--t4); background:rgba(255,255,255,.05); border-color:var(--line); }
-  .exp-acts{ display:flex; align-items:center; gap:8px; flex:none; margin-left:auto; }
   .icon-btn{
-    width:32px; height:32px; border-radius:10px; display:grid; place-items:center; flex:none; cursor:pointer;
-    background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--t3);
-    transition:background .18s, color .18s, border-color .18s;
+    width:28px; height:28px; border-radius:5px; display:grid; place-items:center; flex:none; cursor:pointer;
+    background:transparent; border:1px solid transparent; color:var(--t4);
+    transition:background .15s, color .15s, border-color .15s;
   }
-  .icon-btn:hover{ background:var(--surface-4); color:var(--text); border-color:var(--line-2); }
-  .icon-btn.del{ color:var(--t4); }
+  .icon-btn:hover{ background:var(--s3); color:var(--text); border-color:var(--line-2); }
+  .icon-btn.on{ color:var(--ok); }
   .icon-btn.del:hover{ background:var(--danger-dim); border-color:var(--danger-line); color:var(--danger); }
-  .exp-row.hiddenByFilter{ display:none; }
-  .exp-empty{ padding:24px 22px; text-align:center; font-size:14px; color:var(--t3);
-    background:rgba(255,255,255,.02); border:1px dashed var(--line-2); border-radius:var(--r-md); }
 
-  /* filtro compacto abaixo da busca */
-  .chips-mini{ display:flex; gap:8px; flex-wrap:wrap; }
-  .chip-mini{
-    display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:99px; cursor:pointer;
-    background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--t3);
-    font:inherit; font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.07em;
-    transition:background .18s, border-color .18s, color .18s;
-  }
-  .chip-mini:hover{ background:var(--surface-3); color:var(--t2); border-color:var(--line-2); }
-  .chip-mini[aria-pressed="true"]{ background:var(--brand-dim); border-color:var(--brand-line); color:var(--brand-2); }
-  .chip-mini b{ font-weight:600; font-size:13px; color:var(--text); font-variant-numeric:tabular-nums; }
-  .chip-mini[aria-pressed="true"] b{ color:var(--brand-2); }
+  /* etiquetas de estado */
+  .tag{ display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:4px;
+    font-size:11px; font-weight:600; white-space:nowrap; }
+  .tag-ok{ color:var(--ok); background:var(--ok-dim); border:1px solid var(--ok-line); }
+  .tag-brand{ color:var(--brand-2); background:var(--brand-dim); border:1px solid var(--brand-line); }
+  .tag-mut{ color:var(--t4); background:rgba(255,255,255,.04); border:1px solid var(--line); }
+  .tag-warn{ color:var(--warn); background:var(--warn-dim); border:1px solid var(--warn-line); }
 
-  /* ================= LISTAS SALVAS ================= */
-  .lst-row{
-    display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:var(--r-md); margin-bottom:8px;
-    background:var(--surface-2); border:1px solid var(--line); transition:border-color .18s, background .18s;
+  /* ================= TABELAS ================= */
+  .tbl-wrap{ overflow-x:auto; }
+  table.tbl{ width:100%; border-collapse:collapse; font-size:13px; }
+  .tbl th{
+    text-align:left; padding:9px 14px; font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.07em; color:var(--t4);
+    border-bottom:1px solid var(--line-2); white-space:nowrap;
+    background:rgba(255,255,255,.015);
   }
-  .lst-row:hover{ background:var(--surface-3); border-color:var(--line-2); }
-  .lst-row.atual{ border-color:var(--brand-line); background:var(--brand-dim); }
-  .lst-info{ flex:1; min-width:0; }
-  .lst-nome{ font-weight:600; font-size:15px; letter-spacing:-.01em; color:var(--text);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .lst-meta{ font-size:12.5px; color:var(--t4); margin-top:3px; }
-  .lst-acts{ display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; flex:none; }
-  .lst-btn{
-    padding:7px 13px; border-radius:99px; cursor:pointer; font:inherit;
-    font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
-    background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--t3);
-    transition:background .18s, color .18s, border-color .18s;
+  .tbl td{ padding:8px 14px; border-bottom:1px solid var(--line); color:var(--t2); vertical-align:middle; }
+  .tbl tbody tr:last-child td{ border-bottom:0; }
+  .tbl tbody tr{ transition:background .12s; }
+  .tbl tbody tr:hover{ background:rgba(255,255,255,.025); }
+  .tbl td.r, .tbl th.r{ text-align:right; }
+  .tbl td.c, .tbl th.c{ text-align:center; }
+  .tbl .cell-nm{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .tbl .cell-nm img{ width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none;
+    border:1px solid var(--line-2); }
+  .tbl .cell-nm .nm{ font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; min-width:0; }
+  .tbl tr.inactive .cell-nm{ opacity:.45; }
+  .tbl tr.hiddenByStat, .tbl tr.hiddenByFilter{ display:none; }
+  .tbl .acts{ display:flex; gap:4px; justify-content:flex-end; }
+  .tbl input.cell-min{ width:74px; padding:5px 8px; border-radius:5px; font-size:12.5px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    text-align:right; font-variant-numeric:tabular-nums; transition:border-color .15s, box-shadow .15s; }
+  .tbl input.cell-min:focus{ border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .tbl input.cell-min::placeholder{ color:var(--t4); }
+  .tbl-empty{ padding:26px 16px; text-align:center; font-size:13px; color:var(--t4); }
+
+  /* barra de ferramentas de tabela (busca + filtros) */
+  .tbl-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    padding:10px 14px; border-bottom:1px solid var(--line); }
+  .exp-search{ flex:1 1 200px; max-width:320px; padding-left:32px !important;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2366788e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:10px center; }
+  .seg{ display:inline-flex; border:1px solid var(--line-2); border-radius:var(--r); overflow:hidden; }
+  .seg button{
+    padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer;
+    background:transparent; border:0; color:var(--t4); border-left:1px solid var(--line);
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+    transition:background .15s, color .15s;
   }
-  .lst-btn:hover{ background:var(--surface-4); color:var(--text); border-color:var(--line-2); }
-  .lst-btn.danger{ color:var(--t4); }
-  .lst-btn.danger:hover{ background:var(--danger-dim); border-color:var(--danger-line); color:var(--danger); }
-  .lst-vazio{ padding:24px 22px; text-align:center; font-size:14px; color:var(--t3);
-    background:rgba(255,255,255,.02); border:1px dashed var(--line-2); border-radius:var(--r-md); }
+  .seg button:first-child{ border-left:0; }
+  .seg button:hover{ color:var(--t2); background:var(--s2); }
+  .seg button[aria-pressed="true"]{ background:var(--brand-dim); color:var(--brand-2); }
+  .seg button b{ font-weight:600; font-variant-numeric:tabular-nums; }
+
+  /* ================= LINK DA TRANSMISSÃO ================= */
+  .url-row{ display:flex; align-items:center; gap:8px; }
+  .url-row input[type=url]{
+    flex:1; min-width:0; padding:8px 11px; font-size:13px; color:var(--text);
+    background:var(--s2); border:1px solid var(--line-2); border-radius:var(--r); outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .url-row input[type=url]:focus{ border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .url-row input[type=url]::placeholder{ color:var(--t4); }
+  .url-current{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--t4);
+    flex-wrap:wrap; }
+  .url-current b{ color:var(--t2); font-weight:500; word-break:break-all; }
+
+  /* ================= ZONA DE RISCO ================= */
+  .panel.risk{ border-color:var(--danger-line); }
+  .panel.risk .panel-h{ border-bottom-color:var(--danger-line); background:var(--danger-dim); }
+  .panel.risk .panel-h h2{ color:var(--danger); }
+  .risk-row{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
+  .risk-row + .risk-row{ border-top:1px solid var(--line); }
+  .risk-row .set-txt .st-l{ color:var(--t2); }
+
+  /* prévia da foto recortada */
+  .foto-previa{ display:none; align-items:center; gap:10px; padding:8px 11px; border-radius:var(--r);
+    background:var(--s2); border:1px solid var(--line); }
+  .foto-previa.show{ display:flex; }
+  .foto-previa img{ width:34px; height:34px; border-radius:50%; object-fit:cover; flex:none; border:1px solid var(--line-2); }
+  .foto-previa .fp-txt{ flex:1; min-width:0; font-size:12.5px; color:var(--t3); }
+  .foto-previa button{ flex:none; padding:5px 10px; border-radius:5px; font:inherit; font-size:12px; font-weight:600;
+    cursor:pointer; background:var(--s3); border:1px solid var(--line-2); color:var(--t2);
+    transition:background .15s, color .15s; }
+  .foto-previa button:hover{ background:var(--brand-dim); color:var(--text); }
+
+  /* formulário de expert (abre sob demanda) */
+  .exp-form{ display:none; border-bottom:1px solid var(--line); padding:16px; background:rgba(255,255,255,.015); }
+  .exp-form.show{ display:block; }
+  .exp-form > * + *{ margin-top:12px; }
 
   /* ================= AVISO FLUTUANTE ================= */
   .toast{
-    position:fixed; left:50%; bottom:26px; transform:translate(-50%,16px); z-index:130;
-    display:flex; align-items:center; gap:12px; max-width:calc(100vw - 32px);
-    padding:13px 18px; border-radius:99px; font-size:13.5px; font-weight:500; color:var(--text);
-    background:var(--surface-3); border:1px solid var(--line-2); box-shadow:var(--shadow-float);
-    opacity:0; pointer-events:none; transition:opacity .22s, transform .22s cubic-bezier(.16,1,.3,1);
+    position:fixed; right:20px; bottom:20px; transform:translateY(10px); z-index:130;
+    display:flex; align-items:center; gap:12px; max-width:min(420px, calc(100vw - 32px));
+    padding:11px 15px; border-radius:var(--r-lg); font-size:13px; font-weight:500; color:var(--text);
+    background:var(--s3); border:1px solid var(--line-2); box-shadow:var(--shadow-float);
+    opacity:0; pointer-events:none; transition:opacity .18s, transform .18s cubic-bezier(.2,0,.2,1);
   }
-  .toast.show{ opacity:1; transform:translate(-50%,0); pointer-events:auto; }
+  .toast.show{ opacity:1; transform:none; pointer-events:auto; }
   .toast .undo{
-    flex:none; padding:7px 14px; border-radius:99px; cursor:pointer; font:inherit;
-    font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+    flex:none; padding:5px 11px; border-radius:5px; cursor:pointer; font:inherit;
+    font-size:12px; font-weight:600;
     background:var(--brand-dim); border:1px solid var(--brand-line); color:var(--brand-2);
   }
-  .toast .undo:hover{ background:var(--brand-dim-2); }
+  .toast .undo:hover{ background:rgba(35,137,230,.22); }
 
   /* ================= MODAL ================= */
   .cmodal{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center; padding:20px;
-    background:rgba(2,4,9,.78); backdrop-filter:blur(8px); }
-  .cmodal.show{ display:flex; animation:cmFade .18s ease; }
+    background:rgba(4,7,12,.78); backdrop-filter:blur(6px); }
+  .cmodal.show{ display:flex; animation:cmFade .15s ease; }
   @keyframes cmFade{ from{opacity:0} to{opacity:1} }
-  .cmodal-card{ width:100%; max-width:420px; border-radius:var(--r-lg); padding:28px; text-align:center;
-    background:linear-gradient(180deg,#0d1729 0%,#080f1d 100%);
-    border:1px solid var(--line-2); box-shadow:var(--shadow-float);
-    animation:cmUp .22s cubic-bezier(.16,1,.3,1); }
-  @keyframes cmUp{ from{transform:translateY(10px)} to{transform:none} }
-  .cmodal-card h3{ font-weight:600; font-size:19px; letter-spacing:-.02em; margin-bottom:8px; color:var(--text); }
-  .cmodal-card p{ font-size:14px; color:var(--t3); line-height:1.6; margin-bottom:22px; }
-  .cmodal-row{ display:flex; gap:10px; }
-  .cmodal-row button{ flex:1; padding:12px; border-radius:99px; font:inherit;
-    font-weight:600; font-size:13.5px; cursor:pointer; border:1px solid transparent; transition:background .18s, filter .18s; }
+  .cmodal-card{ width:100%; max-width:400px; border-radius:var(--r-lg); padding:22px; text-align:left;
+    background:var(--s1); border:1px solid var(--line-2); box-shadow:var(--shadow-float);
+    animation:cmUp .18s cubic-bezier(.2,0,.2,1); }
+  @keyframes cmUp{ from{transform:translateY(8px)} to{transform:none} }
+  .cmodal-card h3{ font-weight:600; font-size:15px; margin-bottom:6px; color:var(--text); }
+  .cmodal-card p{ font-size:13px; color:var(--t3); line-height:1.55; margin-bottom:18px; }
+  .cmodal-row{ display:flex; gap:8px; justify-content:flex-end; }
+  .cmodal-row button{ padding:8px 16px; border-radius:var(--r); font:inherit;
+    font-weight:600; font-size:13px; cursor:pointer; border:1px solid transparent; transition:background .15s; }
   .cmodal-row .cm-cancel{ background:transparent; border-color:var(--line-2); color:var(--t3); }
-  .cmodal-row .cm-cancel:hover{ background:rgba(255,255,255,.06); color:var(--text); }
-  .cmodal-row .cm-ok{ background:var(--cta); border-color:rgba(255,255,255,.14); color:#fff; box-shadow:0 0 16px rgba(0,167,255,.28); }
-  .cmodal-row .cm-ok:hover{ filter:brightness(1.1); }
-  .cmodal-row .cm-ok.danger{ background:linear-gradient(180deg,#ef6a6a,#d94848); box-shadow:0 0 16px rgba(248,113,113,.25); }
-  .cm-input{ text-align:left; margin:10px 0 2px; }
+  .cmodal-row .cm-cancel:hover{ background:var(--s2); color:var(--text); }
+  .cmodal-row .cm-ok{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .cmodal-row .cm-ok:hover{ background:#2f95f2; }
+  .cmodal-row .cm-ok.danger{ background:#d94848; border-color:#d94848; }
+  .cmodal-row .cm-ok.danger:hover{ background:#e35b5b; }
+  .cm-input{ text-align:left; margin:0 0 16px; }
 
-  /* ---------- editor de recorte ---------- */
-  .cropm-card{ max-width:440px; }
-  .cropm-stage{ position:relative; width:100%; aspect-ratio:1/1; margin:0 auto 16px; border-radius:var(--r-md);
-    overflow:hidden; background:var(--ink); border:1px solid var(--line); touch-action:none; cursor:grab; }
+  /* editor de recorte */
+  .cropm-card{ max-width:420px; }
+  .cropm-stage{ position:relative; width:100%; aspect-ratio:1/1; margin:0 auto 14px; border-radius:var(--r);
+    overflow:hidden; background:var(--bg); border:1px solid var(--line); touch-action:none; cursor:grab; }
   .cropm-stage:active{ cursor:grabbing; }
   .cropm-stage canvas{ display:block; width:100%; height:100%; }
   .cropm-mask{ position:absolute; inset:0; pointer-events:none;
-    box-shadow:0 0 0 9999px rgba(2,4,9,.68); border-radius:50%;
+    box-shadow:0 0 0 9999px rgba(4,7,12,.68); border-radius:50%;
     border:1px solid rgba(255,255,255,.4); }
-  .cropm-tools{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+  .cropm-tools{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
   .cropm-tools input[type=range]{ flex:1; accent-color:var(--brand); cursor:pointer; min-width:0; }
-  .crop-btn{ flex:none; width:36px; height:36px; border-radius:var(--r-sm); display:grid; place-items:center; cursor:pointer;
-    background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--t3);
-    font-size:15px; font-weight:600; line-height:1; transition:background .18s, color .18s, border-color .18s; }
-  .crop-btn:hover{ background:rgba(255,255,255,.07); color:var(--text); border-color:var(--line-2); }
+  .crop-btn{ flex:none; width:32px; height:32px; border-radius:var(--r); display:grid; place-items:center; cursor:pointer;
+    background:var(--s2); border:1px solid var(--line-2); color:var(--t3);
+    font-size:14px; font-weight:600; line-height:1; transition:background .15s, color .15s; }
+  .crop-btn:hover{ background:var(--s3); color:var(--text); }
   .crop-btn:active{ transform:translateY(1px); }
-  .crop-btn.wide{ width:auto; padding:0 13px; font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
-  .foto-previa{ display:none; align-items:center; gap:12px; padding:10px 13px; border-radius:var(--r-md);
-    background:var(--surface-2); border:1px solid var(--line); }
-  .foto-previa.show{ display:flex; }
-  .foto-previa img{ width:42px; height:42px; border-radius:50%; object-fit:cover; flex:none; border:1px solid var(--line-2); }
-  .foto-previa .fp-txt{ flex:1; min-width:0; font-size:13px; color:var(--t3); }
-  .foto-previa button{ flex:none; padding:7px 13px; border-radius:99px; font:inherit; font-size:11.5px; font-weight:600;
-    text-transform:uppercase; letter-spacing:.05em; cursor:pointer;
-    background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--t3); transition:background .18s, color .18s; }
-  .foto-previa button:hover{ background:rgba(255,255,255,.08); color:var(--text); }
+  .crop-btn.wide{ width:auto; padding:0 11px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
 
   /* ================= LOGIN ================= */
   body.locked .sidebar, body.locked .main, body.locked .topbar{ filter:blur(8px); pointer-events:none; user-select:none; }
   .gate{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px;
-    background:
-      radial-gradient(900px 480px at 70% -10%, rgba(35,137,230,.16), transparent 70%),
-      rgba(2,4,9,.94); }
-  .gate.show{ display:flex; animation:fade .25s ease; }
+    background:rgba(4,7,12,.94); }
+  .gate.show{ display:flex; animation:fade .2s ease; }
   @keyframes fade{ from{opacity:0} to{opacity:1} }
-  .gate-card{ width:100%; max-width:392px; padding:38px 32px; border-radius:var(--r-lg); text-align:center;
-    background:linear-gradient(180deg,#0d1729 0%,#080f1d 100%);
-    border:1px solid var(--line-2); box-shadow:var(--shadow-float); }
-  .gate-card img{ height:32px; margin:0 auto 24px; display:block; }
-  .gate-card h2{ font-weight:600; font-size:23px; letter-spacing:-.025em; color:var(--text); }
-  .gate-card p.g-sub{ font-size:14px; color:var(--t3); margin:9px 0 26px; line-height:1.6; }
-  .gate-field{ text-align:left; margin-bottom:14px; }
-  .gate-field label{ display:block; font-size:13px; font-weight:600; color:var(--t2); margin-bottom:7px; }
+  .gate-card{ width:100%; max-width:372px; padding:30px 28px; border-radius:var(--r-lg); text-align:center;
+    background:var(--s1); border:1px solid var(--line-2); box-shadow:var(--shadow-float); }
+  .gate-card img{ height:26px; margin:0 auto 20px; display:block; }
+  .gate-card h2{ font-weight:600; font-size:18px; color:var(--text); }
+  .gate-card p.g-sub{ font-size:13px; color:var(--t4); margin:6px 0 20px; }
+  .gate-field{ text-align:left; margin-bottom:12px; }
+  .gate-field label{ display:block; font-size:12.5px; font-weight:600; color:var(--t2); margin-bottom:6px; }
   .gate-field input.err{ border-color:var(--danger); }
   .pass-wrap{ position:relative; }
-  .pass-wrap input{ padding-right:46px; }
-  .pass-eye{ position:absolute; top:50%; right:7px; transform:translateY(-50%);
-    width:34px; height:34px; border-radius:8px; display:grid; place-items:center; cursor:pointer;
-    background:transparent; border:0; color:var(--t4); transition:color .18s, background .18s; }
-  .pass-eye:hover{ color:var(--text); background:rgba(255,255,255,.06); }
+  .pass-wrap input{ padding-right:42px; }
+  .pass-eye{ position:absolute; top:50%; right:5px; transform:translateY(-50%);
+    width:32px; height:32px; border-radius:5px; display:grid; place-items:center; cursor:pointer;
+    background:transparent; border:0; color:var(--t4); transition:color .15s, background .15s; }
+  .pass-eye:hover{ color:var(--text); background:var(--s2); }
   @keyframes shake{ 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)}
     30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
   .gate-card.wrong{ animation:shake .4s; }
-  .gate-btn{ width:100%; margin-top:10px; padding:14px; border-radius:99px; cursor:pointer;
-    font-weight:600; font-size:14.5px; letter-spacing:.01em;
-    background:var(--cta); color:#fff; border:1px solid rgba(255,255,255,.14);
-    box-shadow:var(--glow); transition:filter .18s, box-shadow .18s; }
-  .gate-btn:hover{ filter:brightness(1.1); box-shadow:var(--glow-strong); }
+  .gate-btn{ width:100%; margin-top:8px; padding:11px; border-radius:var(--r); cursor:pointer;
+    font-weight:600; font-size:13.5px;
+    background:var(--brand); color:#fff; border:1px solid var(--brand);
+    transition:background .15s; }
+  .gate-btn:hover{ background:#2f95f2; }
   .gate-btn:active{ transform:translateY(1px); }
-  .gate-err{ display:none; margin-top:14px; font-size:13px; color:var(--danger); }
+  .gate-err{ display:none; margin-top:12px; font-size:12.5px; color:var(--danger); }
   .gate-card.wrong .gate-err{ display:block; }
 
   .sb-bg{ display:none; }
 
   /* ================= RESPONSIVO ================= */
-  /* Desktop largo: grid de 6 colunas — cada secao ocupa so a largura que
-     precisa e NENHUMA coluna fica com buraco (o layout anterior deixava
-     ~340px vazios sob o historico). */
-  @media (min-width:1280px){
-    /* Posicionamento 100% EXPLICITO (coluna E linha). O auto-placement
-       colocava "Tempos & giro" uma linha abaixo de "Link da live" e
-       deixava meia tela vazia ao lado do 001. */
-    .wrap{ display:grid; grid-template-columns:repeat(6,1fr); align-items:start; gap:18px; }
-    .page-head{ grid-column:1 / -1; grid-row:1; }
-    /* faixa 1: indicadores + cartao ao vivo */
-    .chips{ grid-column:1 / 4; grid-row:2; grid-template-columns:repeat(3,1fr); align-self:stretch; }
-    .live-card{ grid-column:4 / 7; grid-row:2; align-self:stretch; }
-    /* faixa 2: link da live e historico empilhados a esquerda; tempos &
-       giro (a secao mais alta) ocupa as duas linhas a direita */
-    #secLiveUrl{ grid-column:1 / 4; grid-row:3; }
-    #secHist{ grid-column:1 / 4; grid-row:4; }
-    #secTimes{ grid-column:4 / 7; grid-row:3 / 5; }
-    /* faixas cheias */
-    #secExperts{ grid-column:1 / -1; grid-row:5; }
-    #secListas{ grid-column:1 / -1; grid-row:6; }
-    /* faixa final: as tres secoes curtas dividem uma linha so */
-    #secRound{ grid-column:1 / 3; grid-row:7; align-self:stretch; }
-    #secFx{ grid-column:3 / 5; grid-row:7; align-self:stretch; }
-    #secBackup{ grid-column:5 / 7; grid-row:7; align-self:stretch; }
-  }
-  /* so em telas bem largas a lista de experts vira duas colunas — abaixo
-     disso a coluna fica estreita e os nomes eram truncados demais */
-  @media (min-width:1680px){
-    .exp-list{ display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; }
-  }
-  /* notebook */
-  @media (max-width:1180px){
-    .main{ padding:32px 24px 80px; }
-  }
-  /* tablet */
   @media (max-width:900px){
     .topbar{ display:flex; }
     .sidebar{ transform:translateX(-100%); box-shadow:var(--shadow-float); }
     body.sb-open .sidebar{ transform:none; }
     body.sb-min .sidebar{ width:var(--sbw); }
-    body.sb-min .sb-title, body.sb-min .conn span, body.sb-min .sb-item .lbl{ display:initial; }
-    body.sb-min .sb-top{ padding:24px 20px 18px; display:block; }
-    body.sb-min .sb-item{ justify-content:flex-start; padding:10px 12px; }
+    body.sb-min .sb-title, body.sb-min .sb-item .lbl, body.sb-min .conn span{ display:initial; }
+    body.sb-min .sb-group{ padding:0 8px 6px; height:auto; margin:14px 0 0; background:transparent; color:var(--t4); }
+    body.sb-min .sb-nav .sb-group:first-child{ display:block; margin-top:4px; }
+    body.sb-min .sb-top{ padding:16px 16px 14px; display:block; justify-content:flex-start; }
+    body.sb-min .conn{ justify-content:flex-start; padding:10px 16px; }
+    body.sb-min .sb-item{ justify-content:flex-start; padding:8px 10px; }
     .sb-handle{ display:none; }
-    .main{ margin-left:0; padding:calc(var(--tbh) + 22px) 20px 80px; }
+    .main{ margin-left:0; padding-top:var(--tbh); }
     body.sb-min .main{ margin-left:0; }
-    .sb-bg{ display:block; position:fixed; inset:0; z-index:49; background:rgba(2,4,9,.74);
-      opacity:0; pointer-events:none; transition:opacity .3s; }
+    .sb-bg{ display:block; position:fixed; inset:0; z-index:49; background:rgba(4,7,12,.72);
+      opacity:0; pointer-events:none; transition:opacity .25s; }
     body.sb-open .sb-bg{ opacity:1; pointer-events:auto; }
     body.sb-open{ overflow:hidden; }
-    .wrap{ gap:16px; }
+    .wrap{ padding-top:20px; }
   }
-  /* mobile */
-  @media (max-width:640px){
-    .main{ padding:calc(var(--tbh) + 18px) 14px 72px; }
-    .wrap{ gap:14px; }
-    .page-head h1{ font-size:clamp(26px,8vw,30px); }
-    .page-head p{ font-size:14px; }
-    .ph-kicker{ margin-bottom:12px; }
-    .card > h2{ padding:16px 18px; font-size:17px; gap:11px; }
-    .card > h2::before{ padding:4px 10px; font-size:11px; }
-    .card-body{ padding:18px; gap:16px; }
-    .chips{ grid-template-columns:1fr 1fr; gap:10px; }
-    .chips .chip:first-child{ grid-column:1 / -1; }
-    .chip{ padding:16px 18px 15px; }
-    .chip b{ font-size:30px; }
-    .chip span{ margin-top:7px; letter-spacing:.09em; }
-    .switch-row{ padding:12px 13px; }
-    /* cartao ao vivo empilha para nao espremer o nome */
-    .live-card{ flex-wrap:wrap; padding:18px; }
-    .live-card img{ width:54px; height:54px; }
-    .lc-txt{ flex:1 1 calc(100% - 74px); }
-    .lc-main{ font-size:19px; }
-    .lc-actions{ flex:1 1 100%; justify-content:stretch; }
-    /* 4 acoes: grade 2x2 no toque, cada botao com area confortavel */
-    .lc-actions .abtn{ flex:1 1 45%; padding:12px 10px; }
-    .icon-btn{ width:38px; height:38px; }
-    .crop-btn{ width:38px; height:38px; }
-    .lst-btn{ padding:8px 13px; }
-    .chip-mini{ padding:8px 13px; }
-    .pass-eye{ width:36px; height:36px; }
-    .exp-row{ flex-wrap:wrap; row-gap:10px; }
-    .exp-row .nm{ flex:1 1 100px; }
-    .exp-acts{ flex:1 1 100%; margin-left:0; justify-content:flex-end; }
-    .lst-row{ flex-wrap:wrap; row-gap:10px; }
-    .lst-nome{ white-space:normal; overflow:visible; text-overflow:clip; line-height:1.35; }
-    .lst-info{ flex:1 1 100%; }
-    .lst-acts{ flex:1 1 100%; justify-content:flex-start; }
-    .btn-row .abtn{ flex:1; }
-    .toast{ left:14px; right:14px; bottom:14px; transform:translateY(16px); max-width:none; border-radius:var(--r-md); }
-    .toast.show{ transform:none; }
-    .cmodal{ padding:14px; }
-    .cmodal-card{ padding:22px; }
-  }
-  @media (max-width:480px){
-    /* o campo do link ficava espremido ao lado do botao */
+  @media (max-width:720px){
+    .stats{ grid-template-columns:1fr 1fr; }
+    .stats .stat:nth-child(3), .stats .stat:nth-child(4){ border-top:1px solid var(--line); }
+    .stats .stat:nth-child(3){ border-left:0; }
+    .op-cta{ flex:1 1 100%; margin-left:0; }
+    .op-cta .btn{ flex:1; }
+    .op-sec{ flex-wrap:wrap; }
+    .op-sec .btn{ flex:1 1 auto; }
+    .page-actions{ width:100%; }
+    .page-actions .btn{ flex:1 1 auto; }
+    .set-row{ flex-wrap:wrap; }
+    .toast{ left:14px; right:14px; bottom:14px; max-width:none; }
     .url-row{ flex-wrap:wrap; }
-    .url-row input[type=url]{ flex:1 1 calc(100% - 44px); padding-right:12px; }
-    .url-apply{ flex:1 1 100%; margin:0 6px 6px; }
+    .url-row input[type=url]{ flex:1 1 100%; }
+    .url-row .btn{ flex:1; }
   }
-  @media (max-width:380px){
-    .chips{ grid-template-columns:1fr; }
-    .chips .chip:first-child{ grid-column:auto; }
-    .cropm-tools{ flex-wrap:wrap; }
-    .cropm-tools input[type=range]{ flex:1 1 100%; order:-1; }
-  }
-  /* areas de toque confortaveis em telas sensiveis */
   @media (pointer:coarse){
-    .icon-btn, .crop-btn{ width:40px; height:40px; }
-    .lst-btn, .foto-previa button, .toast .undo{ padding:9px 14px; }
-    .chip-mini{ padding:9px 14px; }
-    .sb-item{ padding:12px; }
+    .icon-btn{ width:34px; height:34px; }
+    .crop-btn{ width:38px; height:38px; }
+    .sb-item{ padding:11px 10px; }
+    .btn-sm{ padding:7px 12px; }
   }
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
-    html{ scroll-behavior:auto; }
   }
 </style>
 </head>
 <body class="locked">
 
-  <!-- Sidebar -->
   <div class="sb-bg" id="sbBg"></div>
 
-  <!-- Barra superior: so aparece em telas <=900px. O botao de menu antigo
-       ficava dentro da sidebar; com ela fora da tela sobrava uma fatia de
-       13px na borda, impossivel de acertar no toque. -->
+  <!-- Barra superior: só aparece em telas <=900px -->
   <header class="topbar" id="topbar">
     <button class="tb-burger" id="tbBurger" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="sidebar">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <img class="tb-logo" src="../../assets/logo.svg" alt="Safirion" />
-    <span class="tb-title">Roleta dos Experts</span>
+    <span class="tb-title" id="tbTitle">Ao vivo</span>
     <i class="tb-dot" id="tbDot" aria-hidden="true"></i>
   </header>
+
   <aside class="sidebar" id="sidebar">
     <div class="sb-top">
-      <img class="sb-logo" src="../../assets/logo.svg" alt="Safirion" />
-      <div class="sb-title">Painel Admin · Roleta</div>
-      <div class="conn" id="conn"><i></i><span id="connTxt">Procurando a roleta…</span></div>
+      <img src="../../assets/logo.svg" alt="Safirion" />
+      <div class="sb-title">Admin · Roleta</div>
     </div>
+    <div class="conn" id="conn"><i></i><span id="connTxt">Procurando a roleta…</span></div>
     <nav class="sb-nav" aria-label="Seções do painel">
-      <button class="sb-item active" data-goto="secLive" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4" fill="currentColor" stroke="none"/></svg></span>
+      <div class="sb-group">Operação</div>
+      <button class="sb-item active" data-view="live" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></svg>
         <span class="lbl">Ao vivo</span>
       </button>
-      <button class="sb-item" data-goto="secTimes" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg></span>
-        <span class="lbl">Tempos &amp; giro</span>
+      <button class="sb-item" data-view="round" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+        <span class="lbl">Rodada e sorteio</span>
       </button>
-      <button class="sb-item" data-goto="secExperts" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <button class="sb-item" data-view="times" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>
+        <span class="lbl">Tempos e giro</span>
+      </button>
+      <div class="sb-group">Cadastros</div>
+      <button class="sb-item" data-view="experts" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span class="lbl">Experts</span>
       </button>
-      <button class="sb-item" data-goto="secListas" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v4H4z"/><path d="M9 20h11"/></svg></span>
+      <button class="sb-item" data-view="lists" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v4H4z"/><path d="M9 20h11"/></svg>
         <span class="lbl">Listas salvas</span>
       </button>
-      <button class="sb-item" data-goto="secRound" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></span>
-        <span class="lbl">Rodada &amp; sorteio</span>
-      </button>
-      <button class="sb-item" data-goto="secFx" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg></span>
+      <div class="sb-group">Personalização</div>
+      <button class="sb-item" data-view="fx" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
         <span class="lbl">Efeitos</span>
       </button>
-      <button class="sb-item" data-goto="secBackup" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-        <span class="lbl">Backup &amp; reset</span>
+      <div class="sb-group">Sistema</div>
+      <button class="sb-item" data-view="backup" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span class="lbl">Backup e reset</span>
       </button>
     </nav>
     <div class="sb-foot">
       <a class="sb-item" href="../" target="_blank" rel="noopener">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
-        <span class="lbl">Abrir a roleta</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="lbl">Abrir roleta</span>
       </a>
       <button class="sb-item" id="btnLogout" type="button">
-        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="lbl">Sair</span>
       </button>
     </div>
-    <button class="sb-handle" id="sbHandle" type="button" aria-label="Recolher ou expandir o menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg>
+    <button class="sb-handle" id="sbHandle" type="button" aria-label="Recolher ou expandir a navegação" title="Recolher ou expandir a navegação">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14 6 8 12 14 18"/></svg>
     </button>
   </aside>
 
-  <!-- Conteúdo -->
   <main class="main">
     <div class="wrap">
 
-      <div class="page-head" id="secLive">
-        <span class="ph-kicker"><i aria-hidden="true"></i>Painel Admin · sincronizado com a roleta em tempo real</span>
-        <h1>Roleta dos <em>Experts</em> <span class="dim">— Controle</span></h1>
-        <p>Tudo que você salvar aqui é aplicado na roleta <b>em tempo real</b>. Deixe a página da roleta aberta em outra aba ou tela.</p>
-      </div>
-
-      <div class="chips" aria-label="Resumo da rodada">
-        <button class="chip" type="button" data-filter="all" aria-pressed="true"><b id="stTotal">0</b><span>Experts ativos</span></button>
-        <button class="chip" type="button" data-filter="left" aria-pressed="false"><b id="stLeft">0</b><span>No sorteio</span></button>
-        <button class="chip" type="button" data-filter="done" aria-pressed="false"><b id="stDone">0</b><span>Já sorteados</span></button>
-      </div>
-
-      <div class="live-card" id="liveCard">
-        <img id="liveAv" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
-        <div class="lc-txt">
-          <div class="lc-status" id="liveStatus">STATUS</div>
-          <div class="lc-main" id="liveMain">—</div>
+      <!-- ============ TELA: AO VIVO ============ -->
+      <section class="view active" id="view-live">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Ao vivo</h1>
+            <p>Estado da operação e sorteio.</p>
+          </div>
         </div>
-        <div class="lc-actions">
-          <button class="abtn" id="btnSpinNow" type="button">Sortear agora</button>
-          <button class="abtn abtn--ghost" id="btnPauseOp" type="button" disabled>Pausar</button>
-          <button class="abtn abtn--ghost" id="btnEndOp" type="button">Encerrar operação</button>
-          <button class="abtn abtn--ghost" id="btnResetRoundTop" type="button">Reiniciar rodada</button>
-        </div>
-      </div>
 
-      <!-- LINK DA LIVE (botão "Entrar na live" do /corujao) -->
-      <section class="card" id="secLiveUrl">
-        <h2>Link do botão “Entrar na live”</h2>
-        <div class="card-body">
-          <div class="field">
-            <label for="fLiveUrl">Endereço da live (página do Corujão)</label>
-            <div class="url-row">
-              <span class="url-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg></span>
-              <input type="url" id="fLiveUrl" inputmode="url" placeholder="Cole aqui o link da live (https://…)" autocomplete="off" spellcheck="false" />
-              <button class="abtn url-apply" id="btnSaveLiveUrl" type="button">Aplicar</button>
+        <div class="panel">
+          <div class="op-bar" id="liveCard">
+            <img id="liveAv" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
+            <div class="op-txt">
+              <div class="op-status" id="liveStatus">Aguardando sorteio</div>
+              <div class="op-main" id="liveMain">Nenhum expert em operação</div>
             </div>
-            <p class="sub">Atualiza o botão <b>Entrar na live</b> em tempo real para todos na página do Corujão. Aceita apenas endereços http(s).</p>
+            <div class="op-cta">
+              <button class="btn btn-pri btn-lg" id="btnSpinNow" type="button">Sortear agora</button>
+            </div>
           </div>
-          <div class="url-current">
-            <span class="url-dot" aria-hidden="true"></span>
-            <span>Link ativo agora:</span>
-            <b id="liveUrlNow">padrão (Google Meet)</b>
+          <div class="op-sec">
+            <span class="lbl-sec">Ações</span>
+            <button class="btn btn-sm" id="btnPauseOp" type="button" disabled>Pausar</button>
+            <button class="btn btn-sm" id="btnEndOp" type="button">Encerrar operação</button>
+            <button class="btn btn-sm" id="btnResetRoundTop" type="button">Reiniciar rodada</button>
           </div>
         </div>
-      </section>
 
-      <!-- HISTORICO DA RODADA -->
-      <section class="card" id="secHist">
-        <h2>
-          Histórico da rodada
-          <span class="h2-side" id="histCount"></span>
-        </h2>
-        <div class="card-body">
-          <ol class="hist-list" id="histList"></ol>
-          <p class="sub">Os últimos sorteios desta rodada, do mais recente para o mais antigo. Reiniciar a rodada ou limpar o histórico em <b>Rodada &amp; sorteio</b> zera esta lista.</p>
+        <div class="stats" aria-label="Resumo operacional">
+          <div class="stat"><b id="stTotal">0</b><span>Experts ativos</span></div>
+          <div class="stat"><b id="stLeft">0</b><span>Aguardando sorteio</span></div>
+          <div class="stat"><b id="stDone">0</b><span>Já sorteados</span></div>
+          <div class="stat"><b class="small" id="stOp">Aguardando</b><span>Operação</span></div>
         </div>
-      </section>
 
-      <!-- TEMPOS & GIRO -->
-      <section class="card" id="secTimes">
-        <h2>Tempos &amp; giro</h2>
-        <div class="card-body">
-          <div class="grid2">
-            <div class="field">
-              <label for="cfgMinutes">Tempo padrão de operação (min)</label>
-              <input type="number" id="cfgMinutes" min="1" max="180" step="1" inputmode="numeric" />
-              <p class="sub">Cada expert pode ter um tempo próprio na lista abaixo.</p>
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Link da transmissão</h2>
+            <div class="ph-side"><span class="tag tag-mut" id="liveUrlTag">Padrão</span></div>
+          </div>
+          <div class="panel-b">
+            <div class="url-current">
+              <span>Link ativo:</span>
+              <b id="liveUrlNow">padrão (Google Meet)</b>
+              <button class="btn btn-sm" id="btnCopyLiveUrl" type="button">Copiar</button>
             </div>
             <div class="field">
-              <label for="cfgWait">Espera p/ próximo giro (s)</label>
-              <input type="number" id="cfgWait" min="0" max="300" step="1" inputmode="numeric" />
-              <p class="sub">Usada só com o sorteio automático ligado.</p>
+              <label for="fLiveUrl">Alterar o link do botão "Entrar na live"</label>
+              <div class="url-row">
+                <input type="url" id="fLiveUrl" inputmode="url" placeholder="https://…" autocomplete="off" spellcheck="false" />
+                <button class="btn btn-pri" id="btnSaveLiveUrl" type="button">Aplicar</button>
+              </div>
+              <p class="sub">Atualiza em tempo real o botão da página do Corujão. Aceita apenas endereços http(s).</p>
             </div>
           </div>
-          <div class="grid2">
+        </div>
+      </section>
+
+      <!-- ============ TELA: RODADA E SORTEIO ============ -->
+      <section class="view" id="view-round">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Rodada e sorteio</h1>
+            <p>Controle da rodada atual e histórico dos sorteios.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn" id="btnResetRound" type="button">Reiniciar rodada</button>
+            <button class="btn" id="btnClearHist" type="button">Limpar histórico</button>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Resumo da rodada">
+          <div class="stat"><b class="small" id="rdStatus">—</b><span>Status da rodada</span></div>
+          <div class="stat"><b id="rdPart">0</b><span>Participantes</span></div>
+          <div class="stat"><b id="rdLeft">0</b><span>Aguardando sorteio</span></div>
+          <div class="stat"><b id="rdDone">0</b><span>Já sorteados</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Próximo sorteio</h2></div>
+          <div class="panel-b">
             <div class="field">
-              <label for="cfgSpinSec">Duração do giro (s)</label>
-              <input type="number" id="cfgSpinSec" min="2" max="30" step="1" inputmode="numeric" placeholder="Variável (6,8–9,7)" />
-              <p class="sub">Em branco: cada giro sorteia a duração.</p>
+              <label for="fForce">Forçar próximo sorteado (opcional)</label>
+              <select id="fForce"><option value="">Sorteio aleatório</option></select>
+              <p class="sub">Vale só para o próximo giro e exige a roleta aberta.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Histórico da rodada</h2>
+            <div class="ph-side"><span id="histCount"></span></div>
+          </div>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th class="r" style="width:56px">Ordem</th>
+                  <th>Expert</th>
+                  <th style="width:110px">Horário</th>
+                  <th style="width:130px">Status</th>
+                </tr></thead>
+                <tbody id="histBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: TEMPOS E GIRO ============ -->
+      <section class="view" id="view-times">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Tempos e giro</h1>
+            <p>Alterações são salvas e aplicadas na roleta automaticamente.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Configurações gerais</h2></div>
+          <div class="panel-b tight">
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgMinutes">Tempo padrão de operação</label></div>
+                <div class="st-d">Usado por todo expert sem tempo próprio.</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgMinutes" min="1" max="180" step="1" inputmode="numeric" />
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgWait">Espera para o próximo giro</label></div>
+                <div class="st-d">Usada só com o sorteio automático ligado.</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgWait" min="0" max="300" step="1" inputmode="numeric" />
+                <span class="unit">s</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgSpinSec">Duração do giro</label></div>
+                <div class="st-d">Em branco, cada giro sorteia a duração (6,8–9,7 s).</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgSpinSec" min="2" max="30" step="1" inputmode="numeric" placeholder="auto" />
+                <span class="unit">s</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgRounds">Voltas do giro</label></div>
+                <div class="st-d">Em branco, cada giro sorteia as voltas (6–11).</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgRounds" min="2" max="16" step="1" inputmode="numeric" placeholder="auto" />
+                <span class="unit">voltas</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Sorteio automático</div>
+                <div class="st-d">Sorteia o próximo expert ao fim do tempo.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swAuto" aria-label="Sorteio automático"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Tempo por expert</h2>
+            <div class="ph-side"><span id="timesCount"></span></div>
+          </div>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th>Expert</th>
+                  <th class="r" style="width:120px">Tempo</th>
+                  <th class="c" style="width:80px">Ativo</th>
+                  <th class="r" style="width:110px">Ações</th>
+                </tr></thead>
+                <tbody id="timesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: EXPERTS ============ -->
+      <section class="view" id="view-experts">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Experts</h1>
+            <p>Cadastro dos participantes da roleta.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn" id="btnAtivarTodos" type="button">Ativar todos</button>
+            <button class="btn" id="btnDesativarTodos" type="button">Desativar todos</button>
+            <button class="btn" id="btnGoListas" type="button">Listas salvas</button>
+            <button class="btn btn-pri" id="btnAddExpert" type="button">Adicionar expert</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="exp-form" id="expForm">
+            <div class="grid2">
+              <div class="field">
+                <label for="fName" id="formTitle">Adicionar expert</label>
+                <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
+              </div>
+              <div class="field">
+                <label for="fMinutes">Tempo próprio (min, opcional)</label>
+                <input type="number" id="fMinutes" min="1" max="180" step="1" placeholder="Usar o tempo padrão" />
+              </div>
             </div>
             <div class="field">
-              <label for="cfgRounds">Voltas do giro</label>
-              <input type="number" id="cfgRounds" min="2" max="16" step="1" inputmode="numeric" placeholder="Variável (6–11)" />
-              <p class="sub">Em branco: cada giro sorteia as voltas.</p>
+              <label for="fPhoto">Foto (opcional)</label>
+              <input type="file" id="fPhoto" accept="image/*" />
+              <p class="sub">Ao escolher a imagem abre o editor de recorte. Sem foto, usamos as iniciais.</p>
+              <div class="foto-previa" id="fotoPrevia">
+                <img id="fotoPreviaImg" src="" alt="Prévia da foto recortada" />
+                <span class="fp-txt">Foto recortada e pronta.</span>
+                <button type="button" id="btnReeditarFoto">Reajustar</button>
+                <button type="button" id="btnRemoverFoto">Remover</button>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-pri" id="btnSaveExpert" type="button">Adicionar</button>
+              <button class="btn" id="btnCancelEdit" type="button">Cancelar</button>
             </div>
           </div>
-          <div class="field">
-            <label for="cfgIdle">Giro ocioso (enquanto espera o sorteio)</label>
-            <select id="cfgIdle">
-              <option value="0">Desligado</option>
-              <option value="1">Lento</option>
-              <option value="2">Normal</option>
-              <option value="3">Rápido</option>
-            </select>
+
+          <div class="tbl-tools">
+            <input type="text" id="expSearch" class="exp-search" placeholder="Buscar pelo nome…" autocomplete="off" />
+            <div class="seg" role="group" aria-label="Filtrar por status">
+              <button type="button" data-filter="all" aria-pressed="true">Todos <b id="stTotalMini">0</b></button>
+              <button type="button" data-filter="left" aria-pressed="false">No sorteio <b id="stLeftMini">0</b></button>
+              <button type="button" data-filter="done" aria-pressed="false">Sorteados <b id="stDoneMini">0</b></button>
+            </div>
           </div>
-          <label class="switch-row" for="swAuto">Sortear o próximo automaticamente ao fim do tempo
-            <span class="sw"><input type="checkbox" id="swAuto"><span class="tr"><span class="th"></span></span></span>
-          </label>
-          <p class="sub">As alterações são salvas e aplicadas na roleta automaticamente.</p>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th style="width:34px" class="r">#</th>
+                <th>Nome</th>
+                <th style="width:120px">Status</th>
+                <th class="r" style="width:90px">Tempo</th>
+                <th class="r" style="width:110px">Participações</th>
+                <th style="width:110px">Último sorteio</th>
+                <th class="r" style="width:150px">Ações</th>
+              </tr></thead>
+              <tbody id="expBody"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <!-- EXPERTS -->
-      <section class="card" id="secExperts">
-        <h2>Experts</h2>
-        <div class="card-body">
-          <div class="grid2">
+      <!-- ============ TELA: LISTAS SALVAS ============ -->
+      <section class="view" id="view-lists">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Listas salvas</h1>
+            <p>Formações completas guardadas para aplicar quando quiser.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Salvar a formação atual</h2></div>
+          <div class="panel-b">
             <div class="field">
-              <label for="fName" id="formTitle">Adicionar expert</label>
-              <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
-            </div>
-            <div class="field">
-              <label for="fMinutes">Tempo deste expert (min, opcional)</label>
-              <input type="number" id="fMinutes" min="1" max="180" step="1" placeholder="Usar o tempo padrão" />
-            </div>
-          </div>
-          <div class="field">
-            <label for="fPhoto">Foto (opcional)</label>
-            <input type="file" id="fPhoto" accept="image/*" />
-            <p class="sub">Ao escolher a imagem abre o editor para recortar do jeito que quiser. Sem foto, usamos as iniciais.</p>
-            <div class="foto-previa" id="fotoPrevia">
-              <img id="fotoPreviaImg" src="" alt="Prévia da foto recortada" />
-              <span class="fp-txt">Foto recortada e pronta.</span>
-              <button type="button" id="btnReeditarFoto">Reajustar</button>
-              <button type="button" id="btnRemoverFoto">Remover</button>
+              <label for="fListaNome">Nome da lista</label>
+              <div class="url-row">
+                <input type="text" id="fListaNome" placeholder="Ex.: Night Challenge, noite 1" autocomplete="off" maxlength="60">
+                <button class="btn btn-pri" id="btnSalvarLista" type="button">Salvar lista</button>
+              </div>
+              <p class="sub">Guarda a lista de experts que está no ar agora, com fotos e tempos.</p>
             </div>
           </div>
-          <div class="btn-row">
-            <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
-            <button class="abtn abtn--ghost" id="btnCancelEdit" type="button" style="display:none">Cancelar</button>
-          </div>
-          <input type="text" id="expSearch" class="exp-search" placeholder="Buscar expert pelo nome…" autocomplete="off" />
-          <div class="chips-mini" aria-label="Filtrar lista por status">
-            <button class="chip-mini" type="button" data-filter="all" aria-pressed="true"><b id="stTotalMini">0</b><span>Experts ativos</span></button>
-            <button class="chip-mini" type="button" data-filter="left" aria-pressed="false"><b id="stLeftMini">0</b><span>No sorteio</span></button>
-            <button class="chip-mini" type="button" data-filter="done" aria-pressed="false"><b id="stDoneMini">0</b><span>Já sorteados</span></button>
-          </div>
-          <div class="exp-list" id="expList"></div>
-          <p class="sub">Interruptor tira o expert da roleta sem removê-lo · ✓ marca/desmarca quem já foi sorteado · lápis edita · lixeira remove.</p>
         </div>
-      </section>
 
-      <!-- LISTAS SALVAS -->
-      <section class="card" id="secListas">
-        <h2>Listas salvas</h2>
-        <div class="card-body">
-          <div class="field">
-            <label for="fListaNome">Salvar a lista de experts atual com um nome</label>
-            <input type="text" id="fListaNome" placeholder="Ex.: Night Challenge — noite 1" autocomplete="off" maxlength="60">
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Listas guardadas</h2>
+            <div class="ph-side"><span id="listasCount"></span></div>
           </div>
-          <div class="btn-row">
-            <button class="abtn" id="btnSalvarLista" type="button">Salvar lista atual</button>
-          </div>
-          <div id="listasBox"></div>
-          <p class="sub">Guarde a formação atual antes de testar qualquer coisa. <b>Aplicar</b> troca a roleta para a lista escolhida · <b>Atualizar</b> regrava a lista salva com a formação de agora · <b>Apagar</b> descarta só o registro salvo, sem mexer na roleta.</p>
-        </div>
-      </section>
-
-      <!-- RODADA & SORTEIO -->
-      <section class="card" id="secRound">
-        <h2>Rodada &amp; sorteio</h2>
-        <div class="card-body">
-          <div class="field">
-            <label for="fForce">Forçar próximo sorteado (opcional)</label>
-            <select id="fForce"><option value="">— sorteio aleatório —</option></select>
-            <p class="sub">Vale só para o próximo giro e exige a roleta aberta. Use com sabedoria.</p>
-          </div>
-          <div class="btn-row">
-            <button class="abtn abtn--ghost" id="btnResetRound" type="button">Reiniciar rodada</button>
-            <button class="abtn abtn--ghost" id="btnClearHist" type="button">Limpar histórico</button>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th>Nome</th>
+                  <th class="r" style="width:90px">Experts</th>
+                  <th style="width:150px">Criada em</th>
+                  <th style="width:90px">Status</th>
+                  <th class="r" style="width:240px">Ações</th>
+                </tr></thead>
+                <tbody id="listasBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- EFEITOS -->
-      <section class="card" id="secFx">
-        <h2>Efeitos</h2>
-        <div class="card-body">
-          <label class="switch-row" for="swConfetti">Confete ao sortear
-            <span class="sw"><input type="checkbox" id="swConfetti"><span class="tr"><span class="th"></span></span></span>
-          </label>
-          <label class="switch-row" for="swSound">Som ligado por padrão
-            <span class="sw"><input type="checkbox" id="swSound"><span class="tr"><span class="th"></span></span></span>
-          </label>
+      <!-- ============ TELA: EFEITOS ============ -->
+      <section class="view" id="view-fx">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Efeitos</h1>
+            <p>Aparência e som da roleta durante a live.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Aparência da roleta</h2></div>
+          <div class="panel-b tight">
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Confete ao sortear</div>
+                <div class="st-d">Dispara confete na tela da roleta quando um expert é sorteado.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swConfetti" aria-label="Confete ao sortear"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Som ligado por padrão</div>
+                <div class="st-d">A roleta abre com os efeitos sonoros ativados.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swSound" aria-label="Som ligado por padrão"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgIdle">Giro ocioso</label></div>
+                <div class="st-d">Velocidade da roda enquanto espera o sorteio.</div>
+              </div>
+              <div class="set-ctl">
+                <select id="cfgIdle">
+                  <option value="0">Desligado</option>
+                  <option value="1">Lento</option>
+                  <option value="2">Normal</option>
+                  <option value="3">Rápido</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- BACKUP -->
-      <section class="card" id="secBackup">
-        <h2>Backup &amp; reset</h2>
-        <div class="card-body">
-          <div class="btn-row">
-            <button class="abtn abtn--ghost" id="btnExport" type="button">Exportar backup</button>
-            <label class="abtn abtn--ghost" for="fImport" style="cursor:pointer">Importar backup
-              <input type="file" id="fImport" accept="application/json" hidden />
-            </label>
+      <!-- ============ TELA: BACKUP E RESET ============ -->
+      <section class="view" id="view-backup">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Backup e reset</h1>
+            <p>Exportação, restauração e ações de risco.</p>
           </div>
-          <p class="sub">O backup leva experts (com fotos), configurações, rodada e histórico em um arquivo .json.</p>
-          <button class="abtn abtn--danger" id="btnRestoreDefaults" type="button">Restaurar padrão</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Backup</h2></div>
+          <div class="panel-b">
+            <div class="btn-row">
+              <button class="btn btn-pri" id="btnExport" type="button">Exportar backup completo</button>
+              <button class="btn" id="btnExportExperts" type="button">Só experts</button>
+              <button class="btn" id="btnExportCfg" type="button">Só configurações</button>
+              <button class="btn" id="btnExportListas" type="button">Só listas salvas</button>
+              <button class="btn" id="btnExportRodada" type="button">Só dados da rodada</button>
+            </div>
+            <p class="sub">O backup completo leva experts (com fotos), configurações, listas salvas, rodada e histórico em um arquivo .json.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Restauração</h2></div>
+          <div class="panel-b">
+            <div class="btn-row">
+              <label class="btn" for="fImport" style="cursor:pointer">Importar backup
+                <input type="file" id="fImport" accept="application/json" hidden />
+              </label>
+            </div>
+            <p class="sub">Aceita o backup completo ou qualquer exportação parcial deste painel. Só o que existir no arquivo é substituído.</p>
+          </div>
+        </div>
+
+        <div class="panel risk">
+          <div class="panel-h"><h2>Zona de risco</h2></div>
+          <div class="panel-b tight">
+            <div class="risk-row">
+              <div class="set-txt">
+                <div class="st-l">Resetar configurações</div>
+                <div class="st-d">Volta tempos, giro e efeitos aos valores padrão. Não mexe nos experts.</div>
+              </div>
+              <div class="set-ctl">
+                <button class="btn btn-danger btn-sm" id="btnResetCfg" type="button">Resetar</button>
+              </div>
+            </div>
+            <div class="risk-row">
+              <div class="set-txt">
+                <div class="st-l">Restaurar estado inicial</div>
+                <div class="st-d">Apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.</div>
+              </div>
+              <div class="set-ctl">
+                <button class="btn btn-danger btn-sm" id="btnRestoreDefaults" type="button">Restaurar</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1024,8 +1061,8 @@
         <div class="pass-wrap">
           <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
           <button type="button" class="pass-eye" id="togglePass" aria-label="Mostrar senha" aria-pressed="false">
-            <svg class="eye-on" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="eye-off" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9m3.3-1.7A10.5 10.5 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+            <svg class="eye-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9m3.3-1.7A10.5 10.5 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
           </button>
         </div></div>
       <p class="gate-err">E-mail ou senha incorretos.</p>
@@ -1035,12 +1072,11 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <!-- Modal de confirmação (substitui o confirm nativo) -->
   <!-- editor de recorte da foto -->
   <div class="cmodal" id="cropModal" role="dialog" aria-modal="true" aria-label="Ajustar foto">
     <div class="cmodal-card cropm-card">
       <h3>Ajustar foto</h3>
-      <p>Arraste para posicionar. Use a roda do mouse, o pinça no celular ou o controle abaixo para aproximar.</p>
+      <p>Arraste para posicionar. Use a roda do mouse, a pinça no celular ou o controle abaixo para aproximar.</p>
       <div class="cropm-stage" id="cropStage">
         <canvas id="cropCanvas"></canvas>
         <div class="cropm-mask"></div>
@@ -1059,6 +1095,7 @@
     </div>
   </div>
 
+  <!-- Modal de confirmação -->
   <div class="cmodal" id="cmodal" role="dialog" aria-modal="true">
     <div class="cmodal-card">
       <h3 id="cmTitle">Confirmar</h3>
@@ -1070,16 +1107,14 @@
       </div>
     </div>
   </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
 /* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
 /* version.json fica em ../version.json (mesma pasta da roleta). Verifica a cada 60s
-   e recarrega o painel ao detectar versão nova. Usa só fetch + location.reload.
-   NUNCA recarrega no meio do trabalho do operador: campo em edição, foto
-   recortada ainda não salva ou modal aberto adiam o reload para a próxima
-   checagem (a roleta tem a mesma guarda via __roletaBusy). */
+   e recarrega o painel ao detectar versão nova. NUNCA recarrega no meio do trabalho
+   do operador: campo em edição, foto recortada ainda não salva ou modal aberto
+   adiam o reload para a próxima checagem. */
 (function(){
   var MY_VER = null;
   var ocupado = function(){
@@ -1177,9 +1212,6 @@ let aguardandoListaInicial = false;
     experts = [];                                   // já inicializou antes e storage foi limpo → NÃO recria os 16
   }
 })();
-/* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
-   durante a live. Mantê-la fazia remoções "voltarem" ao recarregar. A lista salva
-   é a fonte única da verdade — remover no painel é definitivo.) */
 let MIGRATED = false;
 let cfg       = Object.assign({}, CFG_DEF, load(LS_CFG, {}));
 let hist      = load(LS_HIST, []);
@@ -1240,14 +1272,7 @@ function syncSend(o){
   try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY, t: authTok }, o) }); return true; } catch { return false; }
 }
 /* ===================== RELOGIO LOGICO + MERGE =====================
-   ANTES: rev = Date.now() e quem mandasse por ultimo sobrescrevia a lista
-   inteira. Isso quebrava com varias maquinas no mesmo login: um notebook que
-   ficou fora do ar voltava com a lista velha, editava qualquer coisa, ganhava
-   um rev maior (relogio de parede sempre cresce) e empurrava o estado antigo
-   por cima do que outra maquina ja tinha corrigido. Pior: relogios
-   desregulados entre maquinas decidiam o vencedor.
-
-   AGORA: rev e um contador logico (Lamport). Toda mensagem recebida empurra o
+   rev e um contador logico (Lamport). Toda mensagem recebida empurra o
    relogio local para frente, entao ninguem "ganha" so por ter o relogio
    adiantado. E a lista nunca e substituida em bloco: ela e MESCLADA por
    expert, campo a campo, com lapides para as remocoes. Resultado: a ordem de
@@ -1438,25 +1463,22 @@ function updateConn(){
          propria, senao um painel recem-aberto ditaria a lista padrao. */
       if (!listaPropria){ syncSend({ type:"reqExperts" }); semearSePrecisar(); }
       flushPendente();
-      /* se a migração acrescentou experts que faltavam, empurra a lista completa para a roleta */
       if (MIGRATED){ sendState(); MIGRATED = false; toast("Experts que faltavam foram adicionados e enviados à roleta."); }
     }
   });
 })();
 setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
 
-/* ================= Cartão AO VIVO ================= */
+/* ================= Estado AO VIVO ================= */
 let live = load(LS_LIVE, { status:"idle" });
 let liveRAF = null;
 const fmt = s => { s = Math.max(0, Math.ceil(s));
   return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
 const escHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 const PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-/* ---- Historico da rodada ----
-   O painel ja recebia, guardava, exportava no backup e ate limpava o
-   historico — so nunca o mostrava. Havia um botao "Limpar historico" para um
-   dado invisivel. Aqui ele finalmente aparece. */
-const histList  = document.getElementById("histList");
+
+/* ---- Histórico da rodada (tabela administrativa) ---- */
+const histBody  = document.getElementById("histBody");
 const histCount = document.getElementById("histCount");
 /* as fotos do historico sao gravadas pela roleta, relativas a /roleta/;
    este painel esta um nivel abaixo */
@@ -1465,31 +1487,35 @@ function fotoHist(p){
   return p.startsWith("../") ? "../" + p : p;
 }
 function renderHist(){
-  if (!histList) return;
-  histList.innerHTML = "";
+  if (!histBody) return;
+  histBody.innerHTML = "";
   const n = Array.isArray(hist) ? hist.length : 0;
   histCount.textContent = n ? (n === 1 ? "1 sorteio" : n + " sorteios") : "";
   if (!n){
-    const v = document.createElement("li");
-    v.className = "hist-vazio";
-    v.textContent = "Nenhum sorteio nesta rodada ainda.";
-    histList.appendChild(v);
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="4"><div class="tbl-empty">Nenhum sorteio nesta rodada ainda.</div></td>';
+    histBody.appendChild(tr);
     return;
   }
   hist.forEach((h, i) => {
-    const li = document.createElement("li");
-    li.className = "hist-item";
-    const pos = document.createElement("span");
-    pos.className = "hist-pos"; pos.textContent = (n - i);   // ordem real do sorteio
+    const tr = document.createElement("tr");
+    const tdPos = document.createElement("td");
+    tdPos.className = "r num"; tdPos.textContent = (n - i);   // ordem real do sorteio
+    const tdNome = document.createElement("td");
+    const cell = document.createElement("div"); cell.className = "cell-nm";
     const im = document.createElement("img");
     im.src = fotoHist(h.photo); im.alt = "";
     im.onerror = () => { im.src = PIXEL; };
     const nm = document.createElement("span");
-    nm.className = "hist-nome"; nm.textContent = h.name || "Expert";
-    const hh = document.createElement("span");
-    hh.className = "hist-hora"; hh.textContent = h.at || "--:--";
-    li.append(pos, im, nm, hh);
-    histList.appendChild(li);
+    nm.className = "nm"; nm.textContent = h.name || "Expert";
+    cell.append(im, nm); tdNome.appendChild(cell);
+    const tdHora = document.createElement("td");
+    tdHora.className = "num"; tdHora.textContent = h.at || "--:--";
+    const tdSt = document.createElement("td");
+    tdSt.innerHTML = i === 0 ? '<span class="tag tag-brand">Mais recente</span>'
+                             : '<span class="tag tag-mut">Concluído</span>';
+    tr.append(tdPos, tdNome, tdHora, tdSt);
+    histBody.appendChild(tr);
   });
 }
 
@@ -1499,16 +1525,18 @@ function renderLive(){
   const main = document.getElementById("liveMain");
   const av = document.getElementById("liveAv");
   const bp = document.getElementById("btnPauseOp");
+  const op = document.getElementById("stOp");
   cancelAnimationFrame(liveRAF);
   if (live && live.status === "running" && live.endsAt){
     card.classList.add("running"); card.classList.remove("paused");
     const ph = live.photo || "";
     av.src = ph.startsWith("../") ? "../" + ph : ph;
-    st.textContent = "EM OPERAÇÃO AGORA";
+    st.textContent = "Em operação";
+    if (op) op.textContent = "Em operação";
     bp.disabled = false; bp.textContent = "Pausar";
     (function tick(){
       const left = (live.endsAt - Date.now())/1000;
-      main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="lc-timer">${fmt(left)}</span> restantes`;
+      main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="op-timer">${fmt(left)}</span> restantes`;
       if (left > 0) liveRAF = requestAnimationFrame(tick);
       else main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · tempo encerrado`;
     })();
@@ -1516,15 +1544,17 @@ function renderLive(){
     card.classList.add("running", "paused");
     const ph = live.photo || "";
     av.src = ph.startsWith("../") ? "../" + ph : ph;
-    st.textContent = "OPERAÇÃO PAUSADA";
+    st.textContent = "Operação pausada";
+    if (op) op.textContent = "Pausada";
     bp.disabled = false; bp.textContent = "Retomar";
-    main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="lc-timer">${fmt(live.left)}</span> restantes`;
+    main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="op-timer">${fmt(live.left)}</span> restantes`;
   } else {
     card.classList.remove("running", "paused");
     /* pixel transparente: sem src (ou com src="") o Chrome ainda desenha o
        glifo de imagem quebrada por cima do avatar neutro do CSS */
     av.src = PIXEL;
-    st.textContent = "AGUARDANDO SORTEIO";
+    st.textContent = "Aguardando sorteio";
+    if (op) op.textContent = "Aguardando";
     main.textContent = "Nenhum expert em operação";
     bp.disabled = true; bp.textContent = "Pausar";
   }
@@ -1534,13 +1564,15 @@ try {
 } catch {}
 
 /* ================= Render ================= */
-const expList = document.getElementById("expList");
+const expBody = document.getElementById("expBody");
+const timesBody = document.getElementById("timesBody");
 const fName = document.getElementById("fName");
 const fPhoto = document.getElementById("fPhoto");
 const fMinutes = document.getElementById("fMinutes");
 const btnSaveExpert = document.getElementById("btnSaveExpert");
 const btnCancelEdit = document.getElementById("btnCancelEdit");
 const formTitle = document.getElementById("formTitle");
+const expForm = document.getElementById("expForm");
 const cfgMinutes = document.getElementById("cfgMinutes");
 const cfgWait = document.getElementById("cfgWait");
 const cfgSpinSec = document.getElementById("cfgSpinSec");
@@ -1559,16 +1591,237 @@ function edicaoTemMudanca(){
          String(fMinutes.value || "") !== String(editBase.minutes || "") ||
          !!fotoRecortada || (fPhoto.files && fPhoto.files.length > 0);
 }
+/* abre/fecha o formulário de cadastro (fica dentro do painel da tabela) */
+function abreForm(aberto){
+  expForm.classList.toggle("show", !!aberto);
+}
+
+const normNome = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 function renderChips(){
   const total = activeExperts().length, left = disponiveis().length, done = total - left;
   document.getElementById("stTotal").textContent = total;
   document.getElementById("stLeft").textContent = left;
   document.getElementById("stDone").textContent = done;
-  /* espelho compacto abaixo da busca */
   document.getElementById("stTotalMini").textContent = total;
   document.getElementById("stLeftMini").textContent = left;
   document.getElementById("stDoneMini").textContent = done;
+  /* resumo da tela Rodada e sorteio */
+  document.getElementById("rdPart").textContent = total;
+  document.getElementById("rdLeft").textContent = left;
+  document.getElementById("rdDone").textContent = done;
+  document.getElementById("rdStatus").textContent =
+    !total ? "Sem experts" : (done === 0 ? "Não iniciada" : (left === 0 ? "Completa" : "Em andamento"));
+}
+
+/* participações e último sorteio vêm do histórico da rodada (casado por nome) */
+function statsDoHistorico(){
+  const parts = new Map(), ultimo = new Map();
+  (Array.isArray(hist) ? hist : []).forEach(h => {
+    const k = normNome(h.name);
+    if (!k) return;
+    parts.set(k, (parts.get(k) || 0) + 1);
+    if (!ultimo.has(k)) ultimo.set(k, h.at || "");   // hist[0] é o mais recente
+  });
+  return { parts, ultimo };
+}
+
+const SVG_CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
+const SVG_EDIT  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+const SVG_DEL   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+function fazSwitchAtivo(e){
+  const sw = document.createElement("label");
+  sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
+  sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${escHTML(e.name)}"><span class="tr"><span class="th"></span></span>`;
+  sw.querySelector("input").addEventListener("change", ev => {
+    e.active = ev.target.checked; persistExperts(e);
+    toast(e.active ? e.name+" ativado." : e.name+" desativado.");
+  });
+  return sw;
+}
+function fazCellNome(e){
+  const cell = document.createElement("div"); cell.className = "cell-nm";
+  const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
+  const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
+  cell.append(im, nm);
+  return cell;
+}
+function editarExpert(e){
+  (async () => {
+    if (editingId && editingId !== e.id && edicaoTemMudanca()){
+      if (!(await confirmModal("Você tem uma edição não salva. Descartar e editar outro expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+    }
+    editingId = e.id;
+    formTitle.textContent = "Editar expert: " + e.name;
+    btnSaveExpert.textContent = "Salvar";
+    fName.value = e.name; fPhoto.value = "";
+    fMinutes.value = e.minutes || "";
+    editBase = { name: e.name, minutes: e.minutes || "" };   // baseline p/ detectar mudança
+    goView("experts");
+    abreForm(true);
+    fName.focus();
+  })();
+}
+function removerExpert(e){
+  (async () => {
+    const ok = await confirmModal('Remover "'+e.name+'" da roleta?', { title:"Remover expert", okText:"Remover", danger:true });
+    if (!ok) return;
+    const removido = e;                                   // guarda para o Desfazer
+    const posicao = experts.findIndex(x => x.id === e.id);
+    const eraSorteado = sorteados.includes(e.id);
+    experts = experts.filter(x => x.id !== e.id);
+    /* lapide: sem ela, uma maquina desatualizada que ainda tenha o expert na
+       lista o traria de volta na proxima mesclagem */
+    tumbas[e.id] = tick(0);
+    if (editingId === e.id) cancelEdit();
+    persistExperts();
+    toastUndo(removido.name + " removido.", () => {
+      // recoloca na mesma posição, com foto e tempo, e restaura o sorteado se era
+      experts.splice(Math.min(posicao, experts.length), 0, removido);
+      delete tumbas[removido.id];            // some a lapide: ele volta a existir
+      if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
+      persistExperts(removido);              // carimbo novo vence a lapide antiga
+      toast(removido.name + " restaurado.");
+    });
+  })();
+}
+function alternaSorteado(e){
+  if (sorteados.includes(e.id)){
+    sorteados = sorteados.filter(id => id !== e.id);
+    toast(e.name + " voltou para o sorteio.");
+  } else {
+    sorteados.push(e.id);
+    toast(e.name + " marcado como já sorteado.");
+  }
+  save(LS_RODADA, sorteados);
+  sendStateR();
+  render();
+}
+
+function renderExpertsTable(){
+  expBody.innerHTML = "";
+  if (!experts.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="7"><div class="tbl-empty">Nenhum expert cadastrado.</div></td>';
+    expBody.appendChild(tr);
+    return;
+  }
+  const { parts, ultimo } = statsDoHistorico();
+  experts.forEach((e, i) => {
+    const drawn = jaSorteado(e);
+    const tr = document.createElement("tr");
+    tr.className = (e.active ? "" : "inactive") + (drawn ? " done" : "");
+    const tdIx = document.createElement("td");
+    tdIx.className = "r num"; tdIx.textContent = (i + 1);
+    const tdNm = document.createElement("td");
+    tdNm.appendChild(fazCellNome(e));
+    const tdSt = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex;align-items:center;gap:8px";
+    wrap.appendChild(fazSwitchAtivo(e));
+    if (drawn){
+      const tg = document.createElement("span");
+      tg.className = "tag tag-ok"; tg.textContent = "Sorteado";
+      wrap.appendChild(tg);
+    } else if (!e.active){
+      const tg = document.createElement("span");
+      tg.className = "tag tag-mut"; tg.textContent = "Inativo";
+      wrap.appendChild(tg);
+    }
+    tdSt.appendChild(wrap);
+    const tdTm = document.createElement("td");
+    tdTm.className = "r num";
+    tdTm.textContent = minutesFor(e) + " min";
+    tdTm.title = e.minutes ? "Tempo próprio deste expert" : "Usando o tempo padrão";
+    if (!e.minutes) tdTm.style.color = "var(--t4)";
+    const k = normNome(e.name);
+    const tdPt = document.createElement("td");
+    tdPt.className = "r num"; tdPt.textContent = parts.get(k) || 0;
+    const tdUl = document.createElement("td");
+    tdUl.className = "num"; tdUl.textContent = ultimo.get(k) || "—";
+    if (!ultimo.get(k)) tdUl.style.color = "var(--t4)";
+    const tdAc = document.createElement("td");
+    const acts = document.createElement("div"); acts.className = "acts";
+    const bT = document.createElement("button");
+    bT.className = "icon-btn" + (drawn ? " on" : ""); bT.type = "button";
+    bT.title = drawn ? "Já sorteado — clique para voltar ao sorteio" : "Marcar como já sorteado";
+    bT.innerHTML = SVG_CHECK;
+    bT.addEventListener("click", () => alternaSorteado(e));
+    const bE = document.createElement("button");
+    bE.className = "icon-btn"; bE.type = "button"; bE.setAttribute("aria-label","Editar "+e.name);
+    bE.title = "Editar";
+    bE.innerHTML = SVG_EDIT;
+    bE.addEventListener("click", () => editarExpert(e));
+    const bD = document.createElement("button");
+    bD.className = "icon-btn del"; bD.type = "button"; bD.setAttribute("aria-label","Remover "+e.name);
+    bD.title = "Remover";
+    bD.innerHTML = SVG_DEL;
+    bD.addEventListener("click", () => removerExpert(e));
+    acts.append(bT, bE, bD);
+    tdAc.appendChild(acts);
+    tr.append(tdIx, tdNm, tdSt, tdTm, tdPt, tdUl, tdAc);
+    expBody.appendChild(tr);
+  });
+}
+
+function renderTimesTable(){
+  if (!timesBody) return;
+  timesBody.innerHTML = "";
+  const tc = document.getElementById("timesCount");
+  if (tc) tc.textContent = experts.length ? experts.length + (experts.length === 1 ? " expert" : " experts") : "";
+  if (!experts.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="4"><div class="tbl-empty">Nenhum expert cadastrado.</div></td>';
+    timesBody.appendChild(tr);
+    return;
+  }
+  experts.forEach(e => {
+    const tr = document.createElement("tr");
+    tr.className = e.active ? "" : "inactive";
+    const tdNm = document.createElement("td");
+    tdNm.appendChild(fazCellNome(e));
+    const tdTm = document.createElement("td");
+    tdTm.className = "r";
+    const inp = document.createElement("input");
+    inp.type = "number"; inp.min = "1"; inp.max = "180"; inp.step = "1";
+    inp.className = "cell-min"; inp.inputMode = "numeric";
+    inp.value = e.minutes || "";
+    inp.placeholder = String(cfg.minutes);
+    inp.title = e.minutes ? "Tempo próprio deste expert" : "Sem tempo próprio — usa o padrão (" + cfg.minutes + " min)";
+    inp.setAttribute("aria-label", "Tempo de " + e.name + " em minutos");
+    inp.addEventListener("change", () => {
+      const raw = inp.value.trim();
+      if (raw === ""){
+        if (e.minutes != null){ e.minutes = null; persistExperts(e); toast(e.name + " voltou ao tempo padrão."); }
+        return;
+      }
+      const m = parseInt(raw, 10);
+      if (!(m >= 1 && m <= 180)){
+        toast("O tempo deve ficar entre 1 e 180 minutos.");
+        inp.value = e.minutes || "";
+        return;
+      }
+      if (m === e.minutes) return;
+      e.minutes = m; persistExperts(e);
+      toast("Tempo de " + e.name + ": " + m + " min.");
+    });
+    tdTm.appendChild(inp);
+    const tdAt = document.createElement("td");
+    tdAt.className = "c";
+    tdAt.appendChild(fazSwitchAtivo(e));
+    const tdAc = document.createElement("td");
+    tdAc.className = "r";
+    if (e.minutes){
+      const b = document.createElement("button");
+      b.className = "btn btn-sm"; b.type = "button"; b.textContent = "Usar padrão";
+      b.title = "Remove o tempo próprio e volta ao padrão";
+      b.addEventListener("click", () => { e.minutes = null; persistExperts(e); toast(e.name + " voltou ao tempo padrão."); });
+      tdAc.appendChild(b);
+    }
+    tr.append(tdNm, tdTm, tdAt, tdAc);
+    timesBody.appendChild(tr);
+  });
 }
 
 function render(){
@@ -1585,10 +1838,8 @@ function render(){
   swConfetti.checked = cfg.confetti;
   swSound.checked = cfg.sfx;
   const cur = fForce.value;
-  fForce.innerHTML = '<option value="">— sorteio aleatório —</option>';
-  /* So oferece quem ainda pode sair. Antes a lista incluia os ja sorteados
-     (marcados "(ja sorteado)"), e a roleta acabava caindo neles — escolha
-     impossivel nao deve nem aparecer. */
+  fForce.innerHTML = '<option value="">Sorteio aleatório</option>';
+  /* So oferece quem ainda pode sair (quem ja foi sorteado nao aparece). */
   activeExperts().forEach(e => {
     if (jaSorteado(e)) return;
     const o = document.createElement("option");
@@ -1599,101 +1850,10 @@ function render(){
   const aindaExiste = [...fForce.options].some(o => o.value === cur);
   fForce.value = aindaExiste ? cur : "";      // se o escolhido saiu, volta pra aleatorio
   if (!aindaExiste && cur) syncSend({ type:"force", id:"" });
-  expList.innerHTML = "";
-  experts.forEach((e, i) => {
-    const drawn = jaSorteado(e);
-    const row = document.createElement("div");
-    row.className = "exp-row" + (e.active ? "" : " inactive") + (drawn ? " done" : "");
-    const ix = document.createElement("span"); ix.className = "idx"; ix.textContent = (i + 1);
-    const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
-    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
-    const dr = drawn ? document.createElement("span") : null;
-    if (dr){
-      dr.className = "drawn";
-      dr.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>Sorteado';
-    }
-    const tm = document.createElement("span");
-    tm.className = "tmin" + (e.minutes ? "" : " std");
-    tm.textContent = minutesFor(e) + " min";
-    tm.title = e.minutes ? "Tempo próprio deste expert" : "Usando o tempo padrão";
-    const sw = document.createElement("label");
-    sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
-    sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
-    sw.querySelector("input").addEventListener("change", ev => {
-      e.active = ev.target.checked; persistExperts(e);
-      toast(e.active ? e.name+" ativado." : e.name+" desativado.");
-    });
-    const done = sorteados.includes(e.id);
-    const bT = document.createElement("button");
-    bT.className = "icon-btn"; bT.type = "button";
-    bT.style.color = done ? "#2ec16b" : "";
-    bT.title = done ? "Já sorteado — clique para voltar ao sorteio" : "Marcar como já sorteado";
-    bT.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
-    bT.addEventListener("click", () => {
-      if (sorteados.includes(e.id)){
-        sorteados = sorteados.filter(id => id !== e.id);
-        toast(e.name + " voltou para o sorteio.");
-      } else {
-        sorteados.push(e.id);
-        toast(e.name + " marcado como já sorteado.");
-      }
-      save(LS_RODADA, sorteados);
-      sendStateR();
-      render();
-    });
-    const bE = document.createElement("button");
-    bE.className = "icon-btn"; bE.type="button"; bE.setAttribute("aria-label","Editar "+e.name);
-    bE.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
-    bE.addEventListener("click", async () => {
-      // se já está editando OUTRO expert com alterações não salvas, confirma antes de trocar
-      if (editingId && editingId !== e.id && edicaoTemMudanca()){
-        if (!(await confirmModal("Você tem uma edição não salva. Descartar e editar outro expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
-      }
-      editingId = e.id;
-      formTitle.textContent = "Editar expert: " + e.name;
-      btnSaveExpert.textContent = "Salvar";
-      btnCancelEdit.style.display = "";
-      fName.value = e.name; fPhoto.value = "";
-      fMinutes.value = e.minutes || "";
-      editBase = { name: e.name, minutes: e.minutes || "" };   // baseline p/ detectar mudança
-      fName.focus();
-      document.getElementById("secExperts").scrollIntoView({ block:"start" });
-    });
-    const bD = document.createElement("button");
-    bD.className = "icon-btn del"; bD.type="button"; bD.setAttribute("aria-label","Remover "+e.name);
-    bD.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-    bD.addEventListener("click", async () => {
-      const ok = await confirmModal('Remover "'+e.name+'" da roleta?', { title:"Remover expert", okText:"Remover", danger:true });
-      if (!ok) return;
-      const removido = e;                                   // guarda para o Desfazer
-      const posicao = experts.findIndex(x => x.id === e.id);
-      const eraSorteado = sorteados.includes(e.id);
-      experts = experts.filter(x => x.id !== e.id);
-      /* lapide: sem ela, uma maquina desatualizada que ainda tenha o expert na
-         lista o traria de volta na proxima mesclagem */
-      tumbas[e.id] = tick(0);
-      if (editingId === e.id) cancelEdit();
-      persistExperts();
-      toastUndo(removido.name + " removido.", () => {
-        // recoloca na mesma posição, com foto e tempo, e restaura o sorteado se era
-        experts.splice(Math.min(posicao, experts.length), 0, removido);
-        delete tumbas[removido.id];            // some a lapide: ele volta a existir
-        if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
-        persistExperts(removido);              // carimbo novo vence a lapide antiga
-        toast(removido.name + " restaurado.");
-      });
-    });
-    row.append(ix, im, nm);
-    if (dr) row.append(dr);
-    /* controles agrupados: no desktop e o mesmo layout de antes (o .nm cresce e
-       empurra o grupo para a direita); no mobile o grupo inteiro desce para uma
-       segunda linha em vez de vazar a viewport */
-    const acts = document.createElement("div"); acts.className = "exp-acts";
-    acts.append(tm, sw, bT, bE, bD);
-    row.append(acts);
-    expList.appendChild(row);
-  });
-  if (typeof aplicarStatFilter === "function") aplicarStatFilter();   // reaplica o filtro dos chips
+  renderExpertsTable();
+  renderTimesTable();
+  if (typeof aplicarStatFilter === "function") aplicarStatFilter();   // reaplica o filtro
+  if (typeof aplicarBusca === "function") aplicarBusca();             // reaplica a busca
 }
 
 /* Remove duplicatas por id E por nome (mantém a 1ª ocorrência). Blindagem contra
@@ -1762,12 +1922,8 @@ function novoIdExpert(){
   while (usados.has(id));
   return id;
 }
-/* ================= Editor de recorte da foto =================
-   Antes a foto era cortada sozinha no centro (cover 240x240) — quem estava
-   fora do quadrado simplesmente sumia. Agora abre um editor: o operador
-   arrasta, aproxima e gira ate enquadrar. Sem biblioteca externa: o CSP so
-   libera script de cdn.jsdelivr.net, e mais dependencia e mais risco. */
-const SAIDA = 240;                                   // lado final da foto, igual ao de antes
+/* ================= Editor de recorte da foto ================= */
+const SAIDA = 240;                                   // lado final da foto
 const cropModal  = document.getElementById("cropModal");
 const cropStage  = document.getElementById("cropStage");
 const cropCanvas = document.getElementById("cropCanvas");
@@ -1993,8 +2149,7 @@ btnSaveExpert.addEventListener("click", async () => {
   const name = fName.value.trim();
   if (!name){ toast("Informe o nome do expert."); return; }
   /* Bloqueia nome repetido (ignorando maiúsculas/acentos comuns e o próprio, se editando) */
-  const norm = s => s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-  const jaExiste = experts.some(e => norm(e.name) === norm(name) && e.id !== editingId);
+  const jaExiste = experts.some(e => normNome(e.name) === normNome(name) && e.id !== editingId);
   if (jaExiste){ toast("Já existe um expert com esse nome na roleta."); fName.focus(); return; }
   let minutes = null;
   if (fMinutes.value.trim() !== ""){
@@ -2009,7 +2164,7 @@ btnSaveExpert.addEventListener("click", async () => {
       photo = fotoRecortada;                          // ja veio pronto do editor de recorte
     } else if (fPhoto.files[0]){
       /* rede de seguranca: se por algum motivo o editor nao rodou, mantem o
-         corte automatico de antes em vez de perder a foto */
+         corte automatico em vez de perder a foto */
       try { photo = await resizePhoto(fPhoto.files[0]); }
       catch { toast("Não foi possível ler a imagem."); return; }
     }
@@ -2029,12 +2184,11 @@ btnSaveExpert.addEventListener("click", async () => {
       render(); return;
     }
     if (criando){
-      fName.value=""; fMinutes.value=""; limpaFoto();
       toast(r.entregue ? "Expert adicionado à roleta." : "Expert adicionado aqui — falta enviar à roleta (sem conexão).");
     } else {
       toast(r.entregue ? "Expert atualizado." : "Expert atualizado aqui — falta enviar à roleta (sem conexão).");
-      cancelEdit();
     }
+    cancelEdit();
   } finally { salvandoExpert = false; btnSaveExpert.disabled = false; }
 });
 /* Enter em Nome ou Tempo aciona Adicionar/Salvar (fluxo mais rápido no teclado). */
@@ -2042,13 +2196,14 @@ btnSaveExpert.addEventListener("click", async () => {
   if (e.key === "Enter"){ e.preventDefault(); btnSaveExpert.click(); }
 }));
 
-/* Filtro rápido pelos chips de status: all / left (no sorteio) / done (já sorteados). */
+/* Filtro rápido: all / left (no sorteio) / done (já sorteados). */
 let statFilter = "all";
-const CHIPS_FILTRO = ".chip[data-filter], .chip-mini[data-filter]";   // chips do topo + espelho da busca
+const CHIPS_FILTRO = ".seg [data-filter]";
 function aplicarStatFilter(){
   document.querySelectorAll(CHIPS_FILTRO).forEach(c =>
     c.setAttribute("aria-pressed", String(c.dataset.filter === statFilter)));
-  document.querySelectorAll("#expList .exp-row").forEach(r => {
+  document.querySelectorAll("#expBody tr").forEach(r => {
+    if (!r.querySelector(".cell-nm")) return;      // linha de "vazio"
     const done = r.classList.contains("done"), inativo = r.classList.contains("inactive");
     let mostra = true;
     if (statFilter === "done") mostra = done;
@@ -2077,14 +2232,41 @@ function cancelEdit(){
   editingId = null; editBase = null;
   formTitle.textContent = "Adicionar expert";
   btnSaveExpert.textContent = "Adicionar";
-  btnCancelEdit.style.display = "none";
   fName.value=""; fMinutes.value="";
   if (typeof limpaFoto === "function") limpaFoto(); else fPhoto.value="";
+  abreForm(false);
 }
 btnCancelEdit.addEventListener("click", async () => {
   if (edicaoTemMudanca() && !(await confirmModal("Descartar as alterações desta edição?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
   cancelEdit();
 });
+/* botão do cabeçalho da tela Experts: abre o formulário em modo "adicionar" */
+document.getElementById("btnAddExpert").addEventListener("click", async () => {
+  if (expForm.classList.contains("show") && !editingId){ abreForm(false); return; }
+  if (editingId && edicaoTemMudanca()){
+    if (!(await confirmModal("Você tem uma edição não salva. Descartar e adicionar um novo expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+  }
+  cancelEdit();
+  abreForm(true);
+  fName.focus();
+});
+/* ações em massa */
+document.getElementById("btnAtivarTodos").addEventListener("click", () => {
+  const alvo = experts.filter(e => !e.active);
+  if (!alvo.length){ toast("Todos os experts já estão ativos."); return; }
+  alvo.forEach(e => { e.active = true; });
+  persistExperts(alvo);
+  toast(alvo.length === 1 ? "1 expert ativado." : alvo.length + " experts ativados.");
+});
+document.getElementById("btnDesativarTodos").addEventListener("click", async () => {
+  const alvo = experts.filter(e => e.active);
+  if (!alvo.length){ toast("Nenhum expert ativo para desativar."); return; }
+  if (!(await confirmModal("Desativar todos os " + alvo.length + " experts ativos? A roleta fica sem participantes até reativar.", { title:"Desativar todos", okText:"Desativar" }))) return;
+  alvo.forEach(e => { e.active = false; });
+  persistExperts(alvo);
+  toast("Todos os experts foram desativados.");
+});
+document.getElementById("btnGoListas").addEventListener("click", () => goView("lists"));
 
 /* Ultimo recurso: ninguem respondeu ao pedido de lista, entao este navegador e
    mesmo a primeira instalacao. Ai sim semeia os 16 padrao. */
@@ -2132,7 +2314,7 @@ if (!Array.isArray(listas)) listas = [];
 
 const fListaNome     = document.getElementById("fListaNome");
 const btnSalvarLista = document.getElementById("btnSalvarLista");
-const listasBox      = document.getElementById("listasBox");
+const listasBody     = document.getElementById("listasBody");
 
 function salvarListas(){
   if (!save(LS_LISTAS, listas)){
@@ -2153,13 +2335,6 @@ function snapshotAtual(nome){
     tumbas: clonar(tumbas)
   };
 }
-function descreveLista(l){
-  const n = (l.experts || []).length;
-  const ativos = (l.experts || []).filter(e => e.active).length;
-  const d = new Date(l.criadoEm);
-  const quando = isNaN(d) ? "" : d.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
-  return n + (n === 1 ? " expert" : " experts") + " · " + ativos + " ativo" + (ativos === 1 ? "" : "s") + (quando ? " · salva em " + quando : "");
-}
 /* true se a lista salva bate exatamente com a formacao que esta no ar agora */
 function ehAtual(l){
   const norm = arr => (arr || []).map(e => e.id).sort().join(",");
@@ -2167,35 +2342,49 @@ function ehAtual(l){
 }
 
 function renderListas(){
-  listasBox.innerHTML = "";
+  if (!listasBody) return;
+  listasBody.innerHTML = "";
+  const lc = document.getElementById("listasCount");
+  if (lc) lc.textContent = listas.length ? listas.length + (listas.length === 1 ? " lista" : " listas") : "";
   if (!listas.length){
-    const v = document.createElement("p");
-    v.className = "lst-vazio";
-    v.textContent = "Nenhuma lista salva ainda. Salve a formacao atual antes de fazer testes.";
-    listasBox.appendChild(v);
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="5"><div class="tbl-empty">Nenhuma lista salva ainda. Salve a formação atual antes de fazer testes.</div></td>';
+    listasBody.appendChild(tr);
     return;
   }
   listas.forEach(l => {
-    const row = document.createElement("div");
-    row.className = "lst-row" + (ehAtual(l) ? " atual" : "");
-    const info = document.createElement("div");
-    info.className = "lst-info";
-    const nm = document.createElement("div");
-    nm.className = "lst-nome";
-    nm.textContent = l.nome + (ehAtual(l) ? "  ✓ no ar" : "");
-    const mt = document.createElement("div");
-    mt.className = "lst-meta"; mt.textContent = descreveLista(l);
-    info.appendChild(nm); info.appendChild(mt);
+    const noAr = ehAtual(l);
+    const n = (l.experts || []).length;
+    const ativos = (l.experts || []).filter(e => e.active).length;
+    const d = new Date(l.criadoEm);
+    const quando = isNaN(d) ? "—" : d.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
 
-    const acts = document.createElement("div");
-    acts.className = "lst-acts";
+    const tr = document.createElement("tr");
+    const tdNm = document.createElement("td");
+    const nm = document.createElement("span");
+    nm.style.cssText = "font-weight:500;color:var(--text)";
+    nm.textContent = l.nome;
+    tdNm.appendChild(nm);
+    const tdQt = document.createElement("td");
+    tdQt.className = "r num";
+    tdQt.textContent = n;
+    tdQt.title = ativos + (ativos === 1 ? " ativo" : " ativos");
+    const tdDt = document.createElement("td");
+    tdDt.className = "num"; tdDt.textContent = quando;
+    const tdSt = document.createElement("td");
+    tdSt.innerHTML = noAr ? '<span class="tag tag-brand">No ar</span>' : '<span class="tag tag-mut">Guardada</span>';
+    const tdAc = document.createElement("td");
+    const acts = document.createElement("div"); acts.className = "acts";
 
     const bAp = document.createElement("button");
-    bAp.className = "lst-btn"; bAp.type = "button"; bAp.textContent = "Aplicar";
+    bAp.className = "btn btn-sm"; bAp.type = "button"; bAp.textContent = "Aplicar";
+    bAp.disabled = noAr;
+    bAp.title = noAr ? "Esta lista já está no ar" : "Colocar esta lista no ar";
     bAp.addEventListener("click", () => aplicarLista(l));
 
     const bUp = document.createElement("button");
-    bUp.className = "lst-btn"; bUp.type = "button"; bUp.textContent = "Atualizar";
+    bUp.className = "btn btn-sm"; bUp.type = "button"; bUp.textContent = "Atualizar";
+    bUp.title = "Regravar com a formação atual";
     bUp.addEventListener("click", async () => {
       if (!await confirmModal('Regravar "' + l.nome + '" com a formacao que esta no ar agora?', { title:"Atualizar lista", okText:"Atualizar" })) return;
       l.experts = clonar(experts); l.tumbas = clonar(tumbas); l.criadoEm = new Date().toISOString();
@@ -2203,7 +2392,7 @@ function renderListas(){
     });
 
     const bRn = document.createElement("button");
-    bRn.className = "lst-btn"; bRn.type = "button"; bRn.textContent = "Renomear";
+    bRn.className = "btn btn-sm"; bRn.type = "button"; bRn.textContent = "Renomear";
     bRn.addEventListener("click", async () => {
       const novo = await promptModal("Novo nome da lista:", l.nome);
       if (novo === null) return;
@@ -2217,7 +2406,7 @@ function renderListas(){
     });
 
     const bDl = document.createElement("button");
-    bDl.className = "lst-btn danger"; bDl.type = "button"; bDl.textContent = "Apagar";
+    bDl.className = "btn btn-sm btn-danger"; bDl.type = "button"; bDl.textContent = "Apagar";
     bDl.addEventListener("click", async () => {
       if (!await confirmModal('Apagar a lista salva "' + l.nome + '"? A roleta nao muda.', { title:"Apagar lista", okText:"Apagar", danger:true })) return;
       const backup = listas;
@@ -2226,9 +2415,10 @@ function renderListas(){
       else { listas = backup; }
     });
 
-    acts.appendChild(bAp); acts.appendChild(bUp); acts.appendChild(bRn); acts.appendChild(bDl);
-    row.appendChild(info); row.appendChild(acts);
-    listasBox.appendChild(row);
+    acts.append(bAp, bUp, bRn, bDl);
+    tdAc.appendChild(acts);
+    tr.append(tdNm, tdQt, tdDt, tdSt, tdAc);
+    listasBody.appendChild(tr);
   });
 }
 
@@ -2279,10 +2469,7 @@ fListaNome.addEventListener("keydown", e => {
 });
 
 /* Rede de seguranca: na primeira vez que este navegador tem uma lista de verdade,
-   guarda sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la.
-   NAO pode rodar so na carga: um painel recem-aberto comeca vazio e so recebe a
-   lista alguns instantes depois — era exatamente o caso em que o backup mais
-   importa. Por isso e chamado do render(), protegido pela flag. */
+   guarda sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la. */
 function backupAutomatico(){
   const FLAG = "cj_listas_auto_v1";
   try {
@@ -2315,7 +2502,7 @@ function numCfg(input, key, min, max, label, nullable){
       return;
     }
     cfg[key] = v; saveCfg(); render();
-    toast(label + " salvo: " + v + ".");
+    toast("Configuração salva.");
   });
 }
 numCfg(cfgMinutes, "minutes", 1, 180, "Tempo padrão (min)", false);
@@ -2358,9 +2545,10 @@ document.getElementById("btnPauseOp").addEventListener("click", () => {
   sendCmd({ type: (live && live.status === "paused") ? "resumeOp" : "pauseOp" });
 });
 
-/* ================= Link da live (botão "Entrar na live" do /corujao) ================= */
+/* ================= Link da transmissão (botão "Entrar na live" do /corujao) ================= */
 const fLiveUrl    = document.getElementById("fLiveUrl");
 const liveUrlNow  = document.getElementById("liveUrlNow");
+const liveUrlTag  = document.getElementById("liveUrlTag");
 function safeLiveUrl(u){
   try { const p = new URL(String(u)); return (p.protocol === "https:" || p.protocol === "http:") ? p.href : null; }
   catch { return null; }
@@ -2368,6 +2556,10 @@ function safeLiveUrl(u){
 function showLiveUrl(){
   const u = localStorage.getItem(LS_LIVE_URL);
   liveUrlNow.textContent = u ? u : "padrão (Google Meet)";
+  if (liveUrlTag){
+    liveUrlTag.textContent = u ? "Personalizado" : "Padrão";
+    liveUrlTag.className = "tag " + (u ? "tag-brand" : "tag-mut");
+  }
   if (u && !fLiveUrl.value) fLiveUrl.value = u;
 }
 /* reenvia o link atual (para a página do Corujão que acabou de conectar) */
@@ -2388,11 +2580,23 @@ document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
   else
     toast("Sincronização offline — o link foi salvo e será enviado ao reconectar.");
 });
+document.getElementById("btnCopyLiveUrl").addEventListener("click", async () => {
+  const u = localStorage.getItem(LS_LIVE_URL);
+  if (!u){ toast("O link em uso é o padrão da página do Corujão — nada para copiar."); return; }
+  try { await navigator.clipboard.writeText(u); toast("Link copiado."); }
+  catch {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = u; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+      toast("Link copiado.");
+    } catch { toast("Não foi possível copiar o link."); }
+  }
+});
 showLiveUrl();
+
 /* Estas duas acoes eram imediatas: um clique acidental durante a live devolvia
-   todo mundo ao sorteio sem aviso, enquanto remover UM expert ja pedia
-   confirmacao. So perguntamos quando ha algo a perder — com a rodada vazia a
-   acao continua instantanea, sem atrapalhar o operador. */
+   todo mundo ao sorteio sem aviso. So perguntamos quando ha algo a perder. */
 async function reiniciarRodada(){
   const n = sorteados.length;
   if (n && !await confirmModal(
@@ -2419,16 +2623,36 @@ document.getElementById("btnClearHist").addEventListener("click", async () => {
 });
 
 /* ================= Backup & reset ================= */
-document.getElementById("btnExport").addEventListener("click", () => {
-  const data = { kind:"cj_roleta_backup", version:2, exportedAt:new Date().toISOString(), experts, cfg, sorteados, hist };
+function baixarJson(data, nomeArquivo){
   const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "roleta-corujao-backup.json";
+  a.download = nomeArquivo;
   a.click();
   URL.revokeObjectURL(a.href);
-  toast("Backup exportado.");
-});
+}
+/* O backup (completo ou parcial) usa sempre o mesmo kind; a importacao aplica
+   somente os campos presentes no arquivo. Backups antigos continuam validos. */
+function exportarBackup(campos, sufixo){
+  const data = { kind:"cj_roleta_backup", version:2, exportedAt:new Date().toISOString() };
+  if (campos.includes("experts"))  data.experts = experts;
+  if (campos.includes("cfg"))      data.cfg = cfg;
+  if (campos.includes("rodada")){  data.sorteados = sorteados; data.hist = hist; }
+  if (campos.includes("listas"))   data.listas = listas;
+  baixarJson(data, "roleta-corujao-" + sufixo + ".json");
+  toast("Arquivo exportado.");
+}
+document.getElementById("btnExport").addEventListener("click", () =>
+  exportarBackup(["experts","cfg","rodada","listas"], "backup"));
+document.getElementById("btnExportExperts").addEventListener("click", () =>
+  exportarBackup(["experts"], "experts"));
+document.getElementById("btnExportCfg").addEventListener("click", () =>
+  exportarBackup(["cfg"], "configuracoes"));
+document.getElementById("btnExportListas").addEventListener("click", () =>
+  exportarBackup(["listas"], "listas"));
+document.getElementById("btnExportRodada").addEventListener("click", () =>
+  exportarBackup(["rodada"], "rodada"));
+
 document.getElementById("fImport").addEventListener("change", ev => {
   const file = ev.target.files[0];
   ev.target.value = "";
@@ -2437,13 +2661,19 @@ document.getElementById("fImport").addEventListener("change", ev => {
   fr.onload = async () => {
     try {
       const data = JSON.parse(fr.result);
-      if (!data || data.kind !== "cj_roleta_backup" || !Array.isArray(data.experts)) throw new Error("formato");
-      if (!(await confirmModal("Isso substitui experts, configurações, rodada e histórico pelos do arquivo.", { title:"Importar backup", okText:"Importar" }))) return;
-      experts = data.experts;
-      cfg = Object.assign({}, CFG_DEF, data.cfg || {});
-      sorteados = Array.isArray(data.sorteados) ? data.sorteados : [];
-      hist = Array.isArray(data.hist) ? data.hist : [];
-      save(LS_EXPERTS, experts); saveCfg(); save(LS_RODADA, sorteados); save(LS_HIST, hist);
+      if (!data || data.kind !== "cj_roleta_backup") throw new Error("formato");
+      const tem = [];
+      if (Array.isArray(data.experts)) tem.push("experts");
+      if (data.cfg) tem.push("configurações");
+      if (Array.isArray(data.sorteados) || Array.isArray(data.hist)) tem.push("rodada e histórico");
+      if (Array.isArray(data.listas)) tem.push("listas salvas");
+      if (!tem.length) throw new Error("vazio");
+      if (!(await confirmModal("O arquivo substitui: " + tem.join(", ") + ". Continuar?", { title:"Importar backup", okText:"Importar" }))) return;
+      if (Array.isArray(data.experts)){ experts = data.experts; save(LS_EXPERTS, experts); listaPropria = true; }
+      if (data.cfg){ cfg = Object.assign({}, CFG_DEF, data.cfg); save(LS_CFG, cfg); }
+      if (Array.isArray(data.sorteados)){ sorteados = data.sorteados; save(LS_RODADA, sorteados); }
+      if (Array.isArray(data.hist)){ hist = data.hist; save(LS_HIST, hist); }
+      if (Array.isArray(data.listas)){ listas = data.listas; salvarListas(); }
       sendState(); sendStateR();
       render();
       toast("Backup importado com sucesso.");
@@ -2453,8 +2683,15 @@ document.getElementById("fImport").addEventListener("change", ev => {
   };
   fr.readAsText(file);
 });
+document.getElementById("btnResetCfg").addEventListener("click", async () => {
+  if (!(await confirmModal("Voltar tempos, giro e efeitos aos valores padrão? Os experts não mudam.", { title:"Resetar configurações", okText:"Resetar", danger:true }))) return;
+  cfg = Object.assign({}, CFG_DEF);
+  saveCfg();
+  render();
+  toast("Configurações restauradas ao padrão.");
+});
 document.getElementById("btnRestoreDefaults").addEventListener("click", async () => {
-  if (!(await confirmModal("Isso apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.", { title:"Restaurar padrão", okText:"Restaurar", danger:true }))) return;
+  if (!(await confirmModal("Isso apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.", { title:"Restaurar estado inicial", okText:"Restaurar", danger:true }))) return;
   experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
   cfg = Object.assign({}, CFG_DEF);
   sorteados = []; hist = [];
@@ -2473,16 +2710,45 @@ window.addEventListener("storage", ev => {
   else if (ev.key === LS_LIVE){ live = load(LS_LIVE, { status:"idle" }); renderLive(); }
 });
 
-/* ================= Sidebar ================= */
+/* ================= Navegação (sidebar → telas) ================= */
+const VIEWS = {
+  live:    { el:"view-live",    titulo:"Ao vivo" },
+  round:   { el:"view-round",   titulo:"Rodada e sorteio" },
+  times:   { el:"view-times",   titulo:"Tempos e giro" },
+  experts: { el:"view-experts", titulo:"Experts" },
+  lists:   { el:"view-lists",   titulo:"Listas salvas" },
+  fx:      { el:"view-fx",      titulo:"Efeitos" },
+  backup:  { el:"view-backup",  titulo:"Backup e reset" },
+};
+let viewAtual = null;
+function goView(nome, semHash){
+  if (!VIEWS[nome]) nome = "live";
+  if (viewAtual === nome) { if (!semHash && location.hash !== "#/" + nome) history.replaceState(null, "", "#/" + nome); return; }
+  viewAtual = nome;
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === VIEWS[nome].el));
+  document.querySelectorAll(".sb-item[data-view]").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === nome));
+  const tb = document.getElementById("tbTitle");
+  if (tb) tb.textContent = VIEWS[nome].titulo;
+  if (!semHash && location.hash !== "#/" + nome) history.replaceState(null, "", "#/" + nome);
+  window.scrollTo({ top:0 });
+  if (MOBILE()) fechaMenuMobile();
+}
+function viewDoHash(){
+  const m = (location.hash || "").match(/^#\/([a-z]+)/);
+  return m && VIEWS[m[1]] ? m[1] : "live";
+}
+window.addEventListener("hashchange", () => goView(viewDoHash(), true));
+document.querySelectorAll(".sb-item[data-view]").forEach(btn => {
+  btn.addEventListener("click", () => goView(btn.dataset.view));
+});
+
+/* ================= Sidebar (recolher/expandir) ================= */
 const MOBILE = () => window.matchMedia("(max-width:900px)").matches;
 if (load(LS_SB, false) && !MOBILE()) document.body.classList.add("sb-min");
 document.getElementById("sbHandle").addEventListener("click", () => {
-  if (MOBILE()){
-    document.body.classList.toggle("sb-open");
-  } else {
-    document.body.classList.toggle("sb-min");
-    save(LS_SB, document.body.classList.contains("sb-min"));
-  }
+  document.body.classList.toggle("sb-min");
+  save(LS_SB, document.body.classList.contains("sb-min"));
 });
 document.getElementById("sbBg").addEventListener("click", () => fechaMenuMobile());
 
@@ -2502,38 +2768,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && document.body.classList.contains("sb-open")) fechaMenuMobile();
 });
 sincronizaAriaMenu();
-document.querySelectorAll(".sb-item[data-goto]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    setActiveNav(btn.dataset.goto);
-    document.getElementById(btn.dataset.goto).scrollIntoView({ block:"start", behavior:"smooth" });
-    if (MOBILE()) fechaMenuMobile();
-  });
-});
-/* Marca no menu qual seção está ativa. */
-function setActiveNav(id){
-  document.querySelectorAll(".sb-item[data-goto]").forEach(b =>
-    b.classList.toggle("active", b.dataset.goto === id));
-}
-/* Scroll-spy: destaca o item cuja seção está mais próxima do topo da viewport.
-   Robusto para seções curtas (usa a posição de cada seção, não interseção). */
-(function(){
-  const itens = [...document.querySelectorAll(".sb-item[data-goto]")];
-  const secoes = itens.map(b => document.getElementById(b.dataset.goto)).filter(Boolean);
-  if (secoes.length < 2) return;
-  let atual = null, tick = false;
-  const marcar = () => {
-    tick = false;
-    const linha = window.scrollY + window.innerHeight * 0.22;   // "linha de leitura" a 22% do topo
-    let ativa = secoes[0];
-    for (const s of secoes){ if (s.offsetTop <= linha) ativa = s; else break; }
-    // se rolou até o fim da página, ativa a última seção
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) ativa = secoes[secoes.length-1];
-    if (ativa.id !== atual){ atual = ativa.id; setActiveNav(atual); }
-  };
-  addEventListener("scroll", () => { if (!tick){ tick = true; requestAnimationFrame(marcar); } }, { passive:true });
-  addEventListener("resize", () => { if (!tick){ tick = true; requestAnimationFrame(marcar); } }, { passive:true });
-  marcar();
-})();
 
 /* ================= Login ================= */
 const loginOverlay = document.getElementById("loginOverlay");
@@ -2644,8 +2878,7 @@ function confirmModal(msg, opts){
 }
 
 /* Igual ao confirmModal, mas com um campo de texto. Resolve com a string
-   digitada, ou null se cancelar. Evita o prompt() nativo, que o resto do painel
-   ja tinha abandonado. */
+   digitada, ou null se cancelar. */
 function promptModal(msg, valorInicial, opts){
   opts = opts || {};
   return new Promise(resolve => {
@@ -2678,29 +2911,35 @@ function promptModal(msg, valorInicial, opts){
   });
 }
 
-/* Busca: filtra visualmente as linhas da lista de experts (não toca em dados). */
+/* Busca: filtra visualmente as linhas da tabela de experts (não toca em dados). */
+let aplicarBusca = null;
 (function(){
   const inp = document.getElementById("expSearch");
   if (!inp) return;
-  const norm = s => (s||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-  inp.addEventListener("input", () => {
-    const q = norm(inp.value);
-    const rows = [...document.querySelectorAll("#expList .exp-row")];
+  aplicarBusca = function(){
+    const q = normNome(inp.value);
+    const rows = [...document.querySelectorAll("#expBody tr")];
     let visiveis = 0;
     rows.forEach(r => {
-      const nome = norm(r.querySelector(".nm") ? r.querySelector(".nm").textContent : "");
-      const hit = !q || nome.includes(q);
+      const cel = r.querySelector(".cell-nm .nm");
+      if (!cel) return;
+      const hit = !q || normNome(cel.textContent).includes(q);
       r.classList.toggle("hiddenByFilter", !hit);
       if (hit) visiveis++;
     });
     let vazio = document.getElementById("expEmpty");
     if (!visiveis && q){
-      if (!vazio){ vazio = document.createElement("div"); vazio.id = "expEmpty"; vazio.className = "exp-empty"; document.getElementById("expList").appendChild(vazio); }
-      vazio.textContent = 'Nenhum expert encontrado para "' + inp.value.trim() + '".';
+      if (!vazio){
+        vazio = document.createElement("tr"); vazio.id = "expEmpty";
+        document.getElementById("expBody").appendChild(vazio);
+      }
+      vazio.innerHTML = '<td colspan="7"><div class="tbl-empty">Nenhum expert encontrado para "' + escHTML(inp.value.trim()) + '".</div></td>';
     } else if (vazio){ vazio.remove(); }
-  });
+  };
+  inp.addEventListener("input", aplicarBusca);
 })();
 
+goView(viewDoHash(), true);
 render(); renderLive();
 </script>
 </body></html>
