@@ -272,11 +272,21 @@
   .lc-status::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--t4); flex:none; }
   .live-card.running .lc-status{ color:var(--brand-2); background:var(--brand-dim); border-color:var(--brand-line); }
   .live-card.running .lc-status::before{ background:var(--brand-2); box-shadow:0 0 8px rgba(0,167,255,.9); }
+  /* operação pausada: o cartao inteiro muda para ambar — inconfundivel */
+  .live-card.paused{ border-color:var(--warn-line); }
+  .live-card.paused::before{
+    background:radial-gradient(420px 200px at 12% 0%, rgba(251,191,36,.16), transparent 70%); }
+  .live-card.paused .lc-status{ color:var(--warn); background:var(--warn-dim); border-color:var(--warn-line); }
+  .live-card.paused .lc-status::before{ background:var(--warn); box-shadow:0 0 8px rgba(251,191,36,.85); }
+  .live-card.paused img{ border-color:var(--warn); box-shadow:0 0 18px rgba(251,191,36,.35); }
+  .live-card.paused .lc-timer{ color:var(--warn); }
   .lc-main{ font-weight:600; font-size:clamp(20px,1.8vw,24px); letter-spacing:-.025em; margin-top:9px;
     line-height:1.2; overflow-wrap:anywhere; }
   .lc-main b{ font-weight:600; }
   .lc-timer{ font-size:15px; color:var(--brand-2); font-weight:600; font-variant-numeric:tabular-nums; }
-  .lc-actions{ display:flex; gap:10px; flex:0 0 auto; margin-left:auto; flex-wrap:wrap; justify-content:flex-end; position:relative; }
+  /* flex 1 1 auto + min-width 0: com 4 acoes a fileira ENCOLHE e quebra linha
+     dentro do cartao, em vez de estourar a borda e cortar o ultimo botao */
+  .lc-actions{ display:flex; gap:10px; flex:1 1 auto; min-width:0; margin-left:auto; flex-wrap:wrap; justify-content:flex-end; position:relative; }
 
   /* ================= CARTOES / SECOES ================= */
   .card{ border-radius:var(--r-lg);
@@ -680,7 +690,8 @@
     .lc-txt{ flex:1 1 calc(100% - 74px); }
     .lc-main{ font-size:19px; }
     .lc-actions{ flex:1 1 100%; justify-content:stretch; }
-    .lc-actions .abtn{ flex:1; }
+    /* 4 acoes: grade 2x2 no toque, cada botao com area confortavel */
+    .lc-actions .abtn{ flex:1 1 45%; padding:12px 10px; }
     .icon-btn{ width:38px; height:38px; }
     .crop-btn{ width:38px; height:38px; }
     .lst-btn{ padding:8px 13px; }
@@ -815,7 +826,9 @@
         </div>
         <div class="lc-actions">
           <button class="abtn" id="btnSpinNow" type="button">Sortear agora</button>
+          <button class="abtn abtn--ghost" id="btnPauseOp" type="button" disabled>Pausar</button>
           <button class="abtn abtn--ghost" id="btnEndOp" type="button">Encerrar operação</button>
+          <button class="abtn abtn--ghost" id="btnResetRoundTop" type="button">Reiniciar rodada</button>
         </div>
       </div>
 
@@ -1357,7 +1370,10 @@ function updateConn(){
           else await recuperarSessaoEReenviar(m.reason);
           break;
         }
-        if (m.ok) toast(m.cmd === "spin" ? "Roleta girando!" : "Comando aplicado na roleta.");
+        if (m.ok) toast(m.cmd === "spin"     ? "Roleta girando!"
+                      : m.cmd === "pauseOp"  ? "Operação pausada."
+                      : m.cmd === "resumeOp" ? "Operação retomada."
+                      : "Comando aplicado na roleta.");
         else toast(m.reason || "A roleta recusou o comando.");
         break;
       case "live":
@@ -1482,25 +1498,35 @@ function renderLive(){
   const st = document.getElementById("liveStatus");
   const main = document.getElementById("liveMain");
   const av = document.getElementById("liveAv");
+  const bp = document.getElementById("btnPauseOp");
   cancelAnimationFrame(liveRAF);
   if (live && live.status === "running" && live.endsAt){
-    card.classList.add("running");
+    card.classList.add("running"); card.classList.remove("paused");
     const ph = live.photo || "";
     av.src = ph.startsWith("../") ? "../" + ph : ph;
     st.textContent = "EM OPERAÇÃO AGORA";
+    bp.disabled = false; bp.textContent = "Pausar";
     (function tick(){
       const left = (live.endsAt - Date.now())/1000;
       main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="lc-timer">${fmt(left)}</span> restantes`;
       if (left > 0) liveRAF = requestAnimationFrame(tick);
       else main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · tempo encerrado`;
     })();
+  } else if (live && live.status === "paused" && live.left > 0){
+    card.classList.add("running", "paused");
+    const ph = live.photo || "";
+    av.src = ph.startsWith("../") ? "../" + ph : ph;
+    st.textContent = "OPERAÇÃO PAUSADA";
+    bp.disabled = false; bp.textContent = "Retomar";
+    main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="lc-timer">${fmt(live.left)}</span> restantes`;
   } else {
-    card.classList.remove("running");
+    card.classList.remove("running", "paused");
     /* pixel transparente: sem src (ou com src="") o Chrome ainda desenha o
        glifo de imagem quebrada por cima do avatar neutro do CSS */
     av.src = PIXEL;
     st.textContent = "AGUARDANDO SORTEIO";
     main.textContent = "Nenhum expert em operação";
+    bp.disabled = true; bp.textContent = "Pausar";
   }
 }
 try {
@@ -2328,6 +2354,9 @@ document.getElementById("btnSpinNow").addEventListener("click", () => {
 document.getElementById("btnEndOp").addEventListener("click", () => {
   sendCmd({ type:"endOp" });
 });
+document.getElementById("btnPauseOp").addEventListener("click", () => {
+  sendCmd({ type: (live && live.status === "paused") ? "resumeOp" : "pauseOp" });
+});
 
 /* ================= Link da live (botão "Entrar na live" do /corujao) ================= */
 const fLiveUrl    = document.getElementById("fLiveUrl");
@@ -2364,7 +2393,7 @@ showLiveUrl();
    todo mundo ao sorteio sem aviso, enquanto remover UM expert ja pedia
    confirmacao. So perguntamos quando ha algo a perder — com a rodada vazia a
    acao continua instantanea, sem atrapalhar o operador. */
-document.getElementById("btnResetRound").addEventListener("click", async () => {
+async function reiniciarRodada(){
   const n = sorteados.length;
   if (n && !await confirmModal(
         n === 1 ? "1 expert já sorteado volta para o sorteio. Reiniciar a rodada?"
@@ -2374,7 +2403,9 @@ document.getElementById("btnResetRound").addEventListener("click", async () => {
   sendStateR();
   render();
   toast(n ? "Rodada reiniciada. Todos voltaram para o sorteio." : "A rodada já estava zerada.");
-});
+}
+document.getElementById("btnResetRound").addEventListener("click", reiniciarRodada);
+document.getElementById("btnResetRoundTop").addEventListener("click", reiniciarRodada);
 document.getElementById("btnClearHist").addEventListener("click", async () => {
   const n = hist.length;
   if (n && !await confirmModal(
@@ -2561,7 +2592,11 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
 })();
 
 /* ================= Toast ================= */
-let toastT = null;
+/* `var` de proposito: toast() e chamado ja na inicializacao (initSync avisa
+   quando o supabase nao carrega). Com `let`, essa chamada acontecia antes da
+   declaracao (TDZ), o ReferenceError matava o script inteiro e o painel
+   ficava morto — inclusive o login. */
+var toastT = null;
 function toast(msg){
   const t = document.getElementById("toast");
   t.textContent = msg;

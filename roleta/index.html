@@ -1082,6 +1082,7 @@ let nextT = null;      // contagem do sorteio automático
 async function spin(){
   if (!isPrimary){ toast("Esta é a roleta reserva — a principal está no ar."); return; }
   if (spinning) return;
+  if (pausedLeft){ toast("Operação pausada — retome ou encerre pelo Painel Admin."); return; }
   clearInterval(nextT); nextT = null;
   const list = activeExperts();
   if (list.length === 0){ toast("Cadastre experts no Painel Admin."); return; }
@@ -1206,10 +1207,11 @@ const CIRC = 2*Math.PI*70;
 timerBar.style.strokeDasharray = CIRC;
 
 let timerRAF = null, timerEndAt = 0, timerTotal = 0;
+let pausedLeft = 0;   // >0 = operação pausada, com este tanto de segundos restantes
 /* Estado "ocupado" para o auto-refresh: true enquanto a roda gira ou um expert
    opera. O verificador de versão (topo do script) só recarrega quando isto é false,
    evitando reload no meio de um sorteio/operação. Lido via getter, sempre atual. */
-Object.defineProperty(window, "__roletaBusy", { get(){ return !!spinning || !!timerRAF; } });
+Object.defineProperty(window, "__roletaBusy", { get(){ return !!spinning || !!timerRAF || !!pausedLeft; } });
 const fmt = s => { s = Math.max(0, Math.ceil(s));
   return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
 
@@ -1356,7 +1358,34 @@ setInterval(() => {
      relogio de parede garante a conclusao do sorteio mesmo assim. */
   if (spinEndAt && Date.now() >= spinEndAt) acabouGiro();
 }, 1000);
+/* ---------- Pausar / retomar a operação (comandos do Painel Admin) ---------- */
+function pauseOp(){
+  if (!timerRAF || pausedLeft) return false;
+  pausedLeft = Math.max(1, (timerEndAt - Date.now()) / 1000);
+  cancelAnimationFrame(timerRAF); timerRAF = null;
+  timerEndAt = 0;                                  // backstop do cronômetro não dispara
+  timerTxt.textContent = fmt(pausedLeft);
+  timerSub.textContent = "Operação pausada";
+  const lv = load(LS_LIVE, {}) || {};
+  setLive({ status:"paused", name: lv.name || winName.textContent, photo: lv.photo || "",
+            left: pausedLeft, total: timerTotal || lv.total || 0 });
+  return true;
+}
+function resumeOp(){
+  if (!pausedLeft) return false;
+  timerEndAt = Date.now() + pausedLeft * 1000;
+  pausedLeft = 0;
+  timerSub.textContent = "Tempo de operação em andamento";
+  const lv = load(LS_LIVE, {}) || {};
+  setLive({ status:"running", name: lv.name || winName.textContent, photo: lv.photo || "",
+            endsAt: timerEndAt, total: timerTotal || lv.total || 0 });
+  document.getElementById("stEnd").textContent = (ms => { const d = new Date(ms);
+    return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); })(timerEndAt);
+  tick();
+  return true;
+}
 function timeUp(){
+  pausedLeft = 0;
   if (timerRAF){ cancelAnimationFrame(timerRAF); timerRAF = null; }
   timerTxt.textContent = "00:00";
   timerBar.style.strokeDashoffset = CIRC;
@@ -1384,7 +1413,7 @@ function timeUp(){
     }, 1000);
   }
 }
-btnEnd.addEventListener("click", () => { if (timerRAF){ timerEndAt = Date.now(); timeUp(); } });
+btnEnd.addEventListener("click", () => { if (timerRAF || pausedLeft){ timerEndAt = Date.now(); timeUp(); } });
 
 function launchConfetti(){
   if (REDUCED || !cfg.confetti) return;
@@ -1756,11 +1785,23 @@ function applyStateR(m){
         if (m.forcedId) forcedId = m.forcedId;
         if (spinning){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"A roleta já está girando." }); break; }
         if (timerRAF){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"Há uma operação em andamento." }); break; }
+        if (pausedLeft){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"Há uma operação pausada — retome ou encerre antes." }); break; }
         spin(); syncSend({ type:"ack", cmd:"spin", ok:true });
+        break;
+      case "pauseOp":
+        if (!isPrimary) break;
+        if (pauseOp()) syncSend({ type:"ack", cmd:"pauseOp", ok:true });
+        else syncSend({ type:"ack", cmd:"pauseOp", ok:false,
+          reason: pausedLeft ? "A operação já está pausada." : "Nenhuma operação em andamento." });
+        break;
+      case "resumeOp":
+        if (!isPrimary) break;
+        if (resumeOp()) syncSend({ type:"ack", cmd:"resumeOp", ok:true });
+        else syncSend({ type:"ack", cmd:"resumeOp", ok:false, reason:"Não há operação pausada." });
         break;
       case "endOp":
         if (!isPrimary) break;
-        if (!timerRAF){ syncSend({ type:"ack", cmd:"endOp", ok:false, reason:"Nenhuma operação em andamento." }); break; }
+        if (!timerRAF && !pausedLeft){ syncSend({ type:"ack", cmd:"endOp", ok:false, reason:"Nenhuma operação em andamento." }); break; }
         /* Antes so ajustava timerEndAt e esperava o tick() perceber. Mas tick()
            roda em requestAnimationFrame, que o navegador PAUSA em aba de fundo:
            com a roleta minimizada o comando respondia "ok" e nada acontecia.
@@ -1829,6 +1870,23 @@ function resumeLive(){
     document.getElementById("stTotal").textContent = Math.round(timerTotal/60) + " min";
     buildWheel(); renderPool();
     tick();
+  }
+  /* operação PAUSADA sobrevive a reload/troca de principal: restaura congelada */
+  else if (lv && lv.status === "paused" && lv.left > 0 && !timerRAF && !pausedLeft){
+    winPhoto.src = lv.photo || "";
+    winPhoto.alt = "Foto de " + (lv.name || "Expert");
+    winName.textContent = lv.name || "Expert";
+    pausedLeft = lv.left;
+    timerTotal = lv.total || lv.left;
+    timerEndAt = 0;
+    timerTxt.textContent = fmt(pausedLeft);
+    timerSub.textContent = "Operação pausada";
+    setLiveCard("live");
+    setCta("Expert operando…", true);
+    const e = experts.find(x => x.name === lv.name);
+    currentOpId = e ? e.id : null;
+    document.getElementById("stTotal").textContent = Math.round(timerTotal/60) + " min";
+    buildWheel(); renderPool();
   }
 }
 (function initRole(){
