@@ -280,3 +280,57 @@ Corrigido na revisao:
 2. o avatar do cartao ao vivo com `src=""` desenhava o glifo de imagem quebrada
 
 Prints: `brand-01` a `brand-15`; referencia do site em `ref-safirion-01/02`.
+
+---
+
+## Historico da rodada (secao nova)
+
+A folga ao lado de "Tempos & giro" foi preenchida com funcao real. O painel ja
+recebia o historico pelo sync, guardava em `cj_hist_v1`, levava no backup e
+tinha um botao "Limpar historico" — mas **nunca o exibia**. Havia uma acao para
+um dado invisivel. Agora ele aparece com ordem do sorteio, foto, nome e horario,
+com o mais recente destacado.
+
+## Rodada de validacao intensa em producao
+
+Feita com ponto de restauracao salvo antes de tudo. 60+ verificacoes.
+
+| Bloco | Cobertura | Resultado |
+|---|---|---|
+| A | Login real, estado, backup automatico, ponto de restauracao | 7/7 |
+| B | Adicionar, duplicado, minutos invalidos, tempo proprio, editar, ativar/desativar, marcar sorteado | 9/9 |
+| C | Busca, sem resultado, filtros nos dois conjuntos, busca+filtro, toggle | 9/9 |
+| D/E | Editor de recorte: abrir, cobrir, zoom, arrasto preso, girar, redefinir, aplicar, cancelar, salvar com o recorte exato | 7/7 |
+| F | Listas: salvar, duplicado, renomear, atualizar, marcar "no ar" | 6/6 |
+| G | **Aplicar lista restaurou 20 -> 16 com os mesmos ids e limpou os experts de teste** | 6/6 |
+| H | Configuracoes: 5 campos + 3 interruptores + valor invalido + restauracao | 10/10 |
+| I | Cota estourada, triplo clique | 2/2 |
+| J | Mesclagem multi-maquina converge nas duas ordens | 3/3 |
+| K | Link da live: 3 tipos de entrada invalida rejeitados, link real preservado | 4/4 |
+| L | Historico: renderiza, contador, estado vazio | 3/3 |
+| M | Remover, desfazer, remocao definitiva | 4/4 |
+| N | Backup: exporta com experts+cfg+rodada+historico+fotos; restaurar padrao pede confirmacao | 7/7 |
+| Q/S/T | Giro real em producao, invariante do sorteio, encerrar, reiniciar | ver abaixo |
+| Responsivo | 390 / 834 / 1920 em producao: zero overflow, menu funcional | ok |
+
+### Tres correcoes que a rodada revelou
+
+1. **`Encerrar operacao` nao funcionava com a roleta em segundo plano.**
+   O comando so ajustava `timerEndAt` e esperava o `tick()` perceber — mas
+   `tick()` roda em `requestAnimationFrame`, que o navegador **pausa em aba de
+   fundo**. Como o operador fica no painel, a roleta quase sempre esta em
+   segundo plano: ela respondia `ack ok:true` e o cronometro seguia correndo.
+   O mesmo afetava o **fim natural do tempo**. Corrigido: `endOp` chama
+   `timeUp()` direto e ha um guarda-costas em `setInterval` de 1s.
+
+2. **`Reiniciar rodada` e `Limpar historico` nao pediam confirmacao.**
+   Remover UM expert ja pedia, mas devolver TODOS ao sorteio nao. Agora
+   perguntam — so quando ha algo a perder, para nao atrapalhar o operador.
+
+3. **Nome de lista salva cortado no mobile.** Passou a quebrar em duas linhas.
+
+### Falsos negativos do teste (nao eram bugs)
+
+- reativar expert: o `render()` recria a linha, e o teste clicava num no obsoleto
+- `abrirCropper()` chamado direto nao seta `fotoRecortada` — isso e feito pelo
+  handler do input; pelo fluxo real do usuario funcionou 7/7
