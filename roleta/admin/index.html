@@ -225,6 +225,7 @@
   .exp-row .tmin{ flex:none; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px;
     color:var(--brand-2); background:rgba(0,167,255,.10); border:1px solid var(--pill-border); }
   .exp-row .tmin.std{ color:#75829f; background:rgba(255,255,255,.04); border-color:var(--line); }
+  .exp-acts{ display:flex; align-items:center; gap:11px; flex:none; margin-left:auto; }
   .icon-btn{ width:32px; height:32px; border-radius:9px; display:grid; place-items:center; flex:none; cursor:pointer;
     background:rgba(0,167,255,.1); border:1px solid rgba(0,167,255,.25); color:var(--brand-2); transition:background .2s; }
   .icon-btn:hover{ background:rgba(0,167,255,.22); }
@@ -257,6 +258,15 @@
   .chip-mini:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
   .chip-mini b{ font-family:'Montserrat',sans-serif; font-size:13px; color:#fff; }
   .exp-row.hiddenByFilter{ display:none; }
+  /* Tela estreita: a linha do expert nao cabe inteira (24 + 38 + selo + pilula +
+     40 + 3x32 + gaps passa de 430px). Antes todos os controles eram flex:none e
+     a linha vazava a viewport — o nome sumia e a PAGINA inteira ganhava scroll
+     horizontal. Agora o grupo de controles desce para a segunda linha. */
+  @media (max-width: 560px){
+    .exp-row{ flex-wrap:wrap; row-gap:10px; }
+    .exp-row .nm{ flex:1 1 110px; }
+    .exp-acts{ flex:1 1 100%; margin-left:0; justify-content:flex-end; }
+  }
   .cm-input{ width:100%; margin:10px 0 2px; padding:10px 12px; border-radius:9px; font:inherit; font-size:14px;
     color:#fff; background:rgba(255,255,255,.05); border:1px solid var(--pill-border); }
   .cm-input:focus{ border-color:var(--brand); outline:none; }
@@ -293,6 +303,34 @@
   .cm-ok{ background:var(--brand); color:#04121f; }
   .cm-ok:hover{ filter:brightness(1.08); }
   .cm-ok.danger{ background:#e2556a; color:#fff; }
+
+  /* ---------- editor de recorte da foto ---------- */
+  .cropm-card{ max-width:420px; }
+  .cropm-stage{ position:relative; width:100%; aspect-ratio:1/1; margin:0 auto 16px; border-radius:14px;
+    overflow:hidden; background:#0a0f1c; border:1px solid var(--pill-border); touch-action:none; cursor:grab; }
+  .cropm-stage:active{ cursor:grabbing; }
+  .cropm-stage canvas{ display:block; width:100%; height:100%; }
+  /* mascara circular: o avatar aparece redondo na roleta, entao o recorte mostra isso */
+  .cropm-mask{ position:absolute; inset:0; pointer-events:none;
+    box-shadow:0 0 0 9999px rgba(4,7,14,.6); border-radius:50%;
+    border:2px solid rgba(255,255,255,.55); }
+  .cropm-tools{ display:flex; align-items:center; gap:9px; margin-bottom:16px; }
+  .cropm-tools input[type=range]{ flex:1; accent-color:var(--brand); cursor:pointer; min-width:0; }
+  .crop-btn{ flex:none; width:34px; height:34px; border-radius:9px; display:grid; place-items:center; cursor:pointer;
+    background:rgba(0,167,255,.12); border:1px solid rgba(0,167,255,.3); color:#cfe8ff;
+    font-size:15px; font-weight:800; line-height:1; }
+  .crop-btn:hover{ background:rgba(0,167,255,.22); }
+  .crop-btn:active{ transform:scale(.96); }
+  .crop-btn.wide{ width:auto; padding:0 12px; font-size:11.5px; text-transform:uppercase; letter-spacing:.3px; }
+  /* miniatura do resultado ao lado do campo de arquivo */
+  .foto-previa{ display:none; align-items:center; gap:10px; margin-top:10px; }
+  .foto-previa.show{ display:flex; }
+  .foto-previa img{ width:44px; height:44px; border-radius:50%; object-fit:cover; border:1px solid var(--pill-border); }
+  .foto-previa .fp-txt{ flex:1; min-width:0; font-size:12.5px; color:var(--muted-2); }
+  .foto-previa button{ flex:none; padding:6px 10px; border-radius:8px; font:inherit; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.3px; cursor:pointer;
+    background:rgba(0,167,255,.12); border:1px solid rgba(0,167,255,.3); color:#cfe8ff; }
+  .foto-previa button:hover{ background:rgba(0,167,255,.22); }
 
   /* ================= LOGIN ================= */
   body.locked .sidebar, body.locked .main{ filter:blur(6px); pointer-events:none; user-select:none; }
@@ -512,7 +550,13 @@
           <div class="field">
             <label for="fPhoto">Foto (opcional)</label>
             <input type="file" id="fPhoto" accept="image/*" />
-            <p class="sub">A imagem é redimensionada automaticamente. Sem foto, usamos as iniciais.</p>
+            <p class="sub">Ao escolher a imagem abre o editor para recortar do jeito que quiser. Sem foto, usamos as iniciais.</p>
+            <div class="foto-previa" id="fotoPrevia">
+              <img id="fotoPreviaImg" src="" alt="Prévia da foto recortada" />
+              <span class="fp-txt">Foto recortada e pronta.</span>
+              <button type="button" id="btnReeditarFoto">Reajustar</button>
+              <button type="button" id="btnRemoverFoto">Remover</button>
+            </div>
           </div>
           <div class="btn-row">
             <button class="abtn" id="btnSaveExpert" type="button">Adicionar</button>
@@ -615,6 +659,29 @@
   <div class="toast" id="toast" role="status"></div>
 
   <!-- Modal de confirmação (substitui o confirm nativo) -->
+  <!-- editor de recorte da foto -->
+  <div class="cmodal" id="cropModal" role="dialog" aria-modal="true" aria-label="Ajustar foto">
+    <div class="cmodal-card cropm-card">
+      <h3>Ajustar foto</h3>
+      <p>Arraste para posicionar. Use a roda do mouse, o pinça no celular ou o controle abaixo para aproximar.</p>
+      <div class="cropm-stage" id="cropStage">
+        <canvas id="cropCanvas"></canvas>
+        <div class="cropm-mask"></div>
+      </div>
+      <div class="cropm-tools">
+        <button class="crop-btn" type="button" id="cropMenos" aria-label="Afastar">&minus;</button>
+        <input type="range" id="cropZoom" min="1" max="6" step="0.01" value="1" aria-label="Aproximação" />
+        <button class="crop-btn" type="button" id="cropMais" aria-label="Aproximar">+</button>
+        <button class="crop-btn" type="button" id="cropGirar" aria-label="Girar 90 graus" title="Girar 90°">&#8635;</button>
+        <button class="crop-btn wide" type="button" id="cropReset">Redefinir</button>
+      </div>
+      <div class="cmodal-row">
+        <button class="cm-cancel" type="button" id="cropCancel">Cancelar</button>
+        <button class="cm-ok" type="button" id="cropOk">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="cmodal" id="cmodal" role="dialog" aria-modal="true">
     <div class="cmodal-card">
       <h3 id="cmTitle">Confirmar</h3>
@@ -1037,7 +1104,7 @@ function edicaoTemMudanca(){
   if (!editingId || !editBase) return false;
   return fName.value.trim() !== editBase.name ||
          String(fMinutes.value || "") !== String(editBase.minutes || "") ||
-         (fPhoto.files && fPhoto.files.length > 0);
+         !!fotoRecortada || (fPhoto.files && fPhoto.files.length > 0);
 }
 
 function renderChips(){
@@ -1164,7 +1231,12 @@ function render(){
     });
     row.append(ix, im, nm);
     if (dr) row.append(dr);
-    row.append(tm, sw, bT, bE, bD);
+    /* controles agrupados: no desktop e o mesmo layout de antes (o .nm cresce e
+       empurra o grupo para a direita); no mobile o grupo inteiro desce para uma
+       segunda linha em vez de vazar a viewport */
+    const acts = document.createElement("div"); acts.className = "exp-acts";
+    acts.append(tm, sw, bT, bE, bD);
+    row.append(acts);
     expList.appendChild(row);
   });
   if (typeof aplicarStatFilter === "function") aplicarStatFilter();   // reaplica o filtro dos chips
@@ -1236,6 +1308,211 @@ function novoIdExpert(){
   while (usados.has(id));
   return id;
 }
+/* ================= Editor de recorte da foto =================
+   Antes a foto era cortada sozinha no centro (cover 240x240) — quem estava
+   fora do quadrado simplesmente sumia. Agora abre um editor: o operador
+   arrasta, aproxima e gira ate enquadrar. Sem biblioteca externa: o CSP so
+   libera script de cdn.jsdelivr.net, e mais dependencia e mais risco. */
+const SAIDA = 240;                                   // lado final da foto, igual ao de antes
+const cropModal  = document.getElementById("cropModal");
+const cropStage  = document.getElementById("cropStage");
+const cropCanvas = document.getElementById("cropCanvas");
+const cropZoom   = document.getElementById("cropZoom");
+
+let cropImg = null, cropEscala = 1, cropBase = 1, cropX = 0, cropY = 0, cropGiro = 0;
+let cropResolve = null, cropArrastando = false, cropUltimo = null, cropPinca = null;
+
+/* dimensoes da imagem considerando o giro atual */
+function cropDims(){
+  const girado = cropGiro % 180 !== 0;
+  return { w: girado ? cropImg.naturalHeight : cropImg.naturalWidth,
+           h: girado ? cropImg.naturalWidth  : cropImg.naturalHeight };
+}
+/* escala minima: a imagem precisa COBRIR o quadrado, nunca sobrar buraco */
+function cropEscalaBase(lado){
+  const d = cropDims();
+  return Math.max(lado / d.w, lado / d.h);
+}
+/* prende o deslocamento para que o quadrado fique sempre preenchido */
+function cropPrende(lado){
+  const d = cropDims();
+  const lw = d.w * cropEscala, lh = d.h * cropEscala;
+  const maxX = Math.max(0, (lw - lado) / 2), maxY = Math.max(0, (lh - lado) / 2);
+  cropX = Math.min(maxX, Math.max(-maxX, cropX));
+  cropY = Math.min(maxY, Math.max(-maxY, cropY));
+}
+/* desenha no canvas informado, com o lado pedido (tela ou exportacao) */
+function cropDesenhaEm(ctx, lado, escala, dx, dy){
+  ctx.clearRect(0, 0, lado, lado);
+  ctx.save();
+  ctx.translate(lado/2 + dx, lado/2 + dy);
+  ctx.rotate(cropGiro * Math.PI / 180);
+  ctx.scale(escala, escala);
+  ctx.drawImage(cropImg, -cropImg.naturalWidth/2, -cropImg.naturalHeight/2);
+  ctx.restore();
+}
+function cropRender(){
+  if (!cropImg) return;
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (cropCanvas.width !== lado * dpr){ cropCanvas.width = lado * dpr; cropCanvas.height = lado * dpr; }
+  const ctx = cropCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cropPrende(lado);
+  cropDesenhaEm(ctx, lado, cropEscala, cropX, cropY);
+}
+function cropAplicaZoom(novo, ancoraX, ancoraY){
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  const base = cropEscalaBase(lado);
+  const antes = cropEscala;
+  cropEscala = Math.min(base * 6, Math.max(base, novo));
+  /* mantem o ponto sob o cursor no lugar ao aproximar */
+  if (ancoraX != null){
+    const k = cropEscala / antes;
+    cropX = ancoraX + (cropX - ancoraX) * k;
+    cropY = ancoraY + (cropY - ancoraY) * k;
+  }
+  cropZoom.value = String(cropEscala / base);
+  cropRender();
+}
+function cropRedefine(){
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropGiro = 0;
+  cropBase = cropEscalaBase(lado);
+  cropEscala = cropBase; cropX = 0; cropY = 0;
+  cropZoom.value = "1";
+  cropRender();
+}
+
+/* Abre o editor. Resolve com o dataURL recortado, ou null se cancelar. */
+function abrirCropper(file){
+  return new Promise(resolve => {
+    const fr = new FileReader();
+    fr.onerror = () => { toast("Não foi possível ler a imagem."); resolve(null); };
+    fr.onload = () => {
+      const im = new Image();
+      im.onerror = () => { toast("Arquivo de imagem inválido."); resolve(null); };
+      im.onload = () => {
+        cropImg = im; cropResolve = resolve;
+        cropModal.classList.add("show");
+        /* espera o modal existir na tela para medir o palco */
+        requestAnimationFrame(() => { cropRedefine(); });
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function fecharCropper(valor){
+  cropModal.classList.remove("show");
+  const r = cropResolve; cropResolve = null; cropImg = null;
+  if (r) r(valor);
+}
+function cropExporta(){
+  const ladoTela = Math.max(1, Math.round(cropStage.clientWidth));
+  const k = SAIDA / ladoTela;                       // mesma transformacao, em escala de saida
+  const c = document.createElement("canvas");
+  c.width = c.height = SAIDA;
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+  cropDesenhaEm(ctx, SAIDA, cropEscala * k, cropX * k, cropY * k);
+  return c.toDataURL("image/jpeg", .88);
+}
+
+/* ---- interacoes ---- */
+cropStage.addEventListener("pointerdown", e => {
+  if (!cropImg) return;
+  cropStage.setPointerCapture(e.pointerId);
+  cropArrastando = true; cropUltimo = { x:e.clientX, y:e.clientY };
+});
+cropStage.addEventListener("pointermove", e => {
+  if (!cropArrastando || !cropUltimo) return;
+  cropX += e.clientX - cropUltimo.x;
+  cropY += e.clientY - cropUltimo.y;
+  cropUltimo = { x:e.clientX, y:e.clientY };
+  cropRender();
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev =>
+  cropStage.addEventListener(ev, () => { cropArrastando = false; cropUltimo = null; }));
+cropStage.addEventListener("wheel", e => {
+  if (!cropImg) return;
+  e.preventDefault();
+  const r = cropStage.getBoundingClientRect();
+  const ax = e.clientX - r.left - r.width/2, ay = e.clientY - r.top - r.height/2;
+  cropAplicaZoom(cropEscala * (e.deltaY < 0 ? 1.12 : 1/1.12), ax, ay);
+}, { passive:false });
+/* pinca no celular */
+cropStage.addEventListener("touchmove", e => {
+  if (e.touches.length !== 2 || !cropImg) return;
+  e.preventDefault();
+  const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                       e.touches[0].clientY - e.touches[1].clientY);
+  if (cropPinca) cropAplicaZoom(cropEscala * (d / cropPinca), 0, 0);
+  cropPinca = d;
+}, { passive:false });
+cropStage.addEventListener("touchend", () => { cropPinca = null; });
+
+cropZoom.addEventListener("input", () => {
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropAplicaZoom(cropEscalaBase(lado) * parseFloat(cropZoom.value || "1"), 0, 0);
+});
+document.getElementById("cropMais").addEventListener("click", () => cropAplicaZoom(cropEscala * 1.2, 0, 0));
+document.getElementById("cropMenos").addEventListener("click", () => cropAplicaZoom(cropEscala / 1.2, 0, 0));
+document.getElementById("cropGirar").addEventListener("click", () => {
+  if (!cropImg) return;
+  cropGiro = (cropGiro + 90) % 360;
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropBase = cropEscalaBase(lado);
+  if (cropEscala < cropBase) cropEscala = cropBase;   // o giro pode exigir mais escala para cobrir
+  cropZoom.value = String(cropEscala / cropBase);
+  cropRender();
+});
+document.getElementById("cropReset").addEventListener("click", cropRedefine);
+document.getElementById("cropCancel").addEventListener("click", () => fecharCropper(null));
+document.getElementById("cropOk").addEventListener("click", () => {
+  let out = null;
+  try { out = cropExporta(); } catch { toast("Não foi possível recortar a imagem."); }
+  fecharCropper(out);
+});
+document.addEventListener("keydown", e => {
+  if (!cropModal.classList.contains("show")) return;
+  if (e.key === "Escape"){ e.preventDefault(); fecharCropper(null); }
+  if (e.key === "Enter"){ e.preventDefault(); document.getElementById("cropOk").click(); }
+});
+window.addEventListener("resize", () => { if (cropModal.classList.contains("show")) cropRender(); });
+
+/* ---- ligacao com o campo de arquivo ---- */
+const fotoPrevia = document.getElementById("fotoPrevia");
+const fotoPreviaImg = document.getElementById("fotoPreviaImg");
+let fotoRecortada = null;      // dataURL pronto, definido pelo editor
+let fotoArquivo = null;        // ultimo arquivo escolhido, para o "Reajustar"
+
+function mostraPrevia(dataURL){
+  fotoRecortada = dataURL;
+  if (dataURL){ fotoPreviaImg.src = dataURL; fotoPrevia.classList.add("show"); }
+  else { fotoPreviaImg.removeAttribute("src"); fotoPrevia.classList.remove("show"); }
+}
+function limpaFoto(){
+  fotoRecortada = null; fotoArquivo = null;
+  fPhoto.value = "";
+  mostraPrevia(null);
+}
+fPhoto.addEventListener("change", async () => {
+  const f = fPhoto.files && fPhoto.files[0];
+  if (!f){ limpaFoto(); return; }
+  if (!/^image\//.test(f.type)){ toast("Escolha um arquivo de imagem."); limpaFoto(); return; }
+  fotoArquivo = f;
+  const out = await abrirCropper(f);
+  if (out) mostraPrevia(out);
+  else limpaFoto();                                  // cancelou: nao fica foto pela metade
+});
+document.getElementById("btnReeditarFoto").addEventListener("click", async () => {
+  if (!fotoArquivo) return;
+  const out = await abrirCropper(fotoArquivo);
+  if (out) mostraPrevia(out);
+});
+document.getElementById("btnRemoverFoto").addEventListener("click", limpaFoto);
+
 function resizePhoto(file){
   return new Promise((res, rej) => {
     const fr = new FileReader();
@@ -1274,7 +1551,11 @@ btnSaveExpert.addEventListener("click", async () => {
   let photo = null;
   salvandoExpert = true; btnSaveExpert.disabled = true;
   try {
-    if (fPhoto.files[0]){
+    if (fotoRecortada){
+      photo = fotoRecortada;                          // ja veio pronto do editor de recorte
+    } else if (fPhoto.files[0]){
+      /* rede de seguranca: se por algum motivo o editor nao rodou, mantem o
+         corte automatico de antes em vez de perder a foto */
       try { photo = await resizePhoto(fPhoto.files[0]); }
       catch { toast("Não foi possível ler a imagem."); return; }
     }
@@ -1294,7 +1575,7 @@ btnSaveExpert.addEventListener("click", async () => {
       render(); return;
     }
     if (criando){
-      fName.value=""; fPhoto.value=""; fMinutes.value="";
+      fName.value=""; fMinutes.value=""; limpaFoto();
       toast(r.entregue ? "Expert adicionado à roleta." : "Expert adicionado aqui — falta enviar à roleta (sem conexão).");
     } else {
       toast(r.entregue ? "Expert atualizado." : "Expert atualizado aqui — falta enviar à roleta (sem conexão).");
@@ -1343,7 +1624,8 @@ function cancelEdit(){
   formTitle.textContent = "Adicionar expert";
   btnSaveExpert.textContent = "Adicionar";
   btnCancelEdit.style.display = "none";
-  fName.value=""; fPhoto.value=""; fMinutes.value="";
+  fName.value=""; fMinutes.value="";
+  if (typeof limpaFoto === "function") limpaFoto(); else fPhoto.value="";
 }
 btnCancelEdit.addEventListener("click", async () => {
   if (edicaoTemMudanca() && !(await confirmModal("Descartar as alterações desta edição?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
