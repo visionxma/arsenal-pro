@@ -2598,15 +2598,22 @@ showLiveUrl();
 /* Estas duas acoes eram imediatas: um clique acidental durante a live devolvia
    todo mundo ao sorteio sem aviso. So perguntamos quando ha algo a perder. */
 async function reiniciarRodada(){
-  const n = sorteados.length;
-  if (n && !await confirmModal(
-        n === 1 ? "1 expert já sorteado volta para o sorteio. Reiniciar a rodada?"
-                : n + " experts já sorteados voltam para o sorteio. Reiniciar a rodada?",
+  /* Rodada nova = tudo zerado: quem já saiu volta ao sorteio E a lista de
+     últimos sorteados some da tela da roleta. Antes o histórico ficava e
+     parecia que o reinício não tinha funcionado. */
+  const n = sorteados.length, h = hist.length;
+  const partes = [];
+  if (n) partes.push(n === 1 ? "1 expert já sorteado volta para o sorteio"
+                             : n + " experts já sorteados voltam para o sorteio");
+  if (h) partes.push("a lista de últimos sorteados sai da tela da roleta");
+  if (partes.length && !await confirmModal(
+        partes.join(" e ") + ". Reiniciar a rodada?",
         { title:"Reiniciar rodada", okText:"Reiniciar" })) return;
   sorteados = []; save(LS_RODADA, sorteados);
+  hist = []; save(LS_HIST, hist);
   sendStateR();
   render();
-  toast(n ? "Rodada reiniciada. Todos voltaram para o sorteio." : "A rodada já estava zerada.");
+  toast(partes.length ? "Rodada reiniciada do zero." : "A rodada já estava zerada.");
 }
 document.getElementById("btnResetRound").addEventListener("click", reiniciarRodada);
 document.getElementById("btnResetRoundTop").addEventListener("click", reiniciarRodada);
