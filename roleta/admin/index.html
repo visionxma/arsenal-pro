@@ -257,6 +257,25 @@
   .chip-mini:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
   .chip-mini b{ font-family:'Montserrat',sans-serif; font-size:13px; color:#fff; }
   .exp-row.hiddenByFilter{ display:none; }
+  .cm-input{ width:100%; margin:10px 0 2px; padding:10px 12px; border-radius:9px; font:inherit; font-size:14px;
+    color:#fff; background:rgba(255,255,255,.05); border:1px solid var(--pill-border); }
+  .cm-input:focus{ border-color:var(--brand); outline:none; }
+  /* listas salvas */
+  .lst-row{ display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:11px; margin-bottom:8px;
+    background:rgba(255,255,255,.03); border:1px solid var(--pill-border); }
+  .lst-row.atual{ border-color:var(--brand); background:rgba(0,167,255,.09); }
+  .lst-info{ flex:1; min-width:0; }
+  .lst-nome{ font-weight:700; font-size:14px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lst-meta{ font-size:11px; color:var(--muted-2); margin-top:2px; }
+  .lst-acts{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .lst-btn{ padding:6px 10px; border-radius:8px; font:inherit; font-size:11.5px; font-weight:700; cursor:pointer;
+    background:rgba(0,167,255,.12); border:1px solid rgba(0,167,255,.3); color:#cfe8ff;
+    text-transform:uppercase; letter-spacing:.3px; transition:background .15s, transform .1s; }
+  .lst-btn:hover{ background:rgba(0,167,255,.22); }
+  .lst-btn:active{ transform:scale(.97); }
+  .lst-btn.danger{ background:rgba(255,90,110,.1); border-color:rgba(255,90,110,.32); color:#ffb3bd; }
+  .lst-btn.danger:hover{ background:rgba(255,90,110,.2); }
+  .lst-vazio{ padding:14px; text-align:center; font-size:12.5px; color:var(--muted-2); }
   .exp-empty{ padding:16px; text-align:center; font-size:13px; color:var(--muted-2); }
   /* modal de confirmação (substitui o confirm nativo) */
   .cmodal{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center; padding:20px;
@@ -351,6 +370,10 @@
       <button class="sb-item" data-goto="secExperts" type="button">
         <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <span class="lbl">Experts</span>
+      </button>
+      <button class="sb-item" data-goto="secListas" type="button">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v4H4z"/><path d="M9 20h11"/></svg></span>
+        <span class="lbl">Listas salvas</span>
       </button>
       <button class="sb-item" data-goto="secRound" type="button">
         <span class="ni"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></span>
@@ -506,6 +529,22 @@
         </div>
       </section>
 
+      <!-- LISTAS SALVAS -->
+      <section class="card" id="secListas">
+        <h2><span class="hi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v4H4z"/><path d="M9 20h11"/></svg></span> Listas salvas</h2>
+        <div class="card-body">
+          <div class="field">
+            <label for="fListaNome">Salvar a lista de experts atual com um nome</label>
+            <input type="text" id="fListaNome" placeholder="Ex.: Night Challenge — noite 1" autocomplete="off" maxlength="60">
+          </div>
+          <div class="btn-row">
+            <button class="abtn" id="btnSalvarLista" type="button">Salvar lista atual</button>
+          </div>
+          <div id="listasBox"></div>
+          <p class="sub">Guarde a formação atual antes de testar qualquer coisa. <b>Aplicar</b> troca a roleta para a lista escolhida · <b>Atualizar</b> regrava a lista salva com a formação de agora · <b>Apagar</b> descarta só o registro salvo, sem mexer na roleta.</p>
+        </div>
+      </section>
+
       <!-- RODADA & SORTEIO -->
       <section class="card" id="secRound">
         <h2><span class="hi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></span> Rodada &amp; sorteio</h2>
@@ -580,6 +619,7 @@
     <div class="cmodal-card">
       <h3 id="cmTitle">Confirmar</h3>
       <p id="cmMsg"></p>
+      <input type="text" id="cmInput" class="cm-input" style="display:none" autocomplete="off" maxlength="60">
       <div class="cmodal-row">
         <button class="cm-cancel" id="cmCancel" type="button">Cancelar</button>
         <button class="cm-ok" id="cmOk" type="button">Confirmar</button>
@@ -643,21 +683,38 @@ const DEFAULT_EXPERTS = [
 }));
 
 const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? f; } catch { return f; } };
-const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+/* Devolve true/false. localStorage TEM cota (fotos viram data URI e pesam), e
+   estourar lancava excecao no meio do fluxo: o operador via "adicionado" e o
+   dado sumia no reload. Quem grava dado critico checa o retorno e desfaz. */
+const save = (k,v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+  catch (err){ console.error("Falha ao gravar", k, err); return false; }
+};
 
 /* O painel é a AUTORIDADE da lista. Semeia os 16 padrão só na PRIMEIRÍSSIMA
    abertura (flag). Depois disso, a lista salva é a verdade: se o operador
    removeu alguém, um reload NUNCA regenera os 16 por cima da lista editada. */
 let experts;
+/* false = este navegador nunca teve lista propria (1o acesso). Nesse estado o
+   painel PERGUNTA a lista a roleta antes de mandar a sua, senao um painel novo
+   ditaria uma lista padrao por cima da lista real que ja esta no ar. */
+let listaPropria = false;
+/* true enquanto esperamos a lista de quem ja esta no ar (ver semearSePrecisar) */
+let aguardandoListaInicial = false;
 (function(){
   const INIT = "cj_experts_init_v1";
   const raw = localStorage.getItem(LS_EXPERTS);
   if (raw != null){
     experts = load(LS_EXPERTS, []);                 // já existe lista salva → usa ela, seja qual for o tamanho
+    listaPropria = true;
   } else if (!localStorage.getItem(INIT)){
-    experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));  // 1ª vez de todas → semeia os 16
-    save(LS_EXPERTS, experts);
-    try { localStorage.setItem(INIT, "1"); } catch {}
+    /* Navegador sem lista NAO semeia na hora: ele nasce vazio, PERGUNTA a lista
+       a roleta e adota a resposta. Semear de cara e depois mesclar ressuscitava
+       quem ja tinha sido excluido (a uniao trazia os 16 padrao de volta).
+       Se ninguem responder em alguns segundos, ai sim assume que e a primeira
+       instalacao de todas e semeia. */
+    experts = [];
+    aguardandoListaInicial = true;
   } else {
     experts = [];                                   // já inicializou antes e storage foi limpo → NÃO recria os 16
   }
@@ -706,16 +763,93 @@ if (SB){
   SB.auth.getSession().then(({ data }) => { authTok = data && data.session ? data.session.access_token : null; });
   SB.auth.onAuthStateChange((_ev, session) => { authTok = session ? session.access_token : null; });
 }
+/* A roleta so aceita comando com sessao valida. Se o token expirou, renova e
+   reenvia uma unica vez; se ainda assim falhar, avisa em vez de deixar o
+   operador achar que salvou. */
+async function recuperarSessaoEReenviar(motivo){
+  marcarPendente();
+  try {
+    const { data } = await SB.auth.refreshSession();
+    if (data && data.session){
+      authTok = data.session.access_token;
+      if (sendState()){ sendStateR(); limparPendente(); toast("Sessão renovada — lista enviada à roleta."); return; }
+    }
+  } catch {}
+  toast(motivo || "A roleta recusou a lista. Faça login novamente.");
+}
 function syncSend(o){
   if (!syncCh || !syncOn) return false;
   try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY, t: authTok }, o) }); return true; } catch { return false; }
 }
-/* rev = carimbo de tempo da última edição da lista. Serve para resolver conflito
-   entre painéis: a lista mais recente vence. Persiste para sobreviver a reload. */
-let expertsRev = parseInt(localStorage.getItem("cj_experts_rev") || "0", 10) || 0;
-function bumpRev(){ expertsRev = Date.now(); try { localStorage.setItem("cj_experts_rev", String(expertsRev)); } catch {} }
-function sendState(){ syncSend({ type:"state", experts, cfg, rev: expertsRev }); }
-function sendStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
+/* ===================== RELOGIO LOGICO + MERGE =====================
+   ANTES: rev = Date.now() e quem mandasse por ultimo sobrescrevia a lista
+   inteira. Isso quebrava com varias maquinas no mesmo login: um notebook que
+   ficou fora do ar voltava com a lista velha, editava qualquer coisa, ganhava
+   um rev maior (relogio de parede sempre cresce) e empurrava o estado antigo
+   por cima do que outra maquina ja tinha corrigido. Pior: relogios
+   desregulados entre maquinas decidiam o vencedor.
+
+   AGORA: rev e um contador logico (Lamport). Toda mensagem recebida empurra o
+   relogio local para frente, entao ninguem "ganha" so por ter o relogio
+   adiantado. E a lista nunca e substituida em bloco: ela e MESCLADA por
+   expert, campo a campo, com lapides para as remocoes. Resultado: a ordem de
+   chegada deixa de importar e o estado converge igual em todas as maquinas,
+   com quantos painies estiverem abertos. */
+let relogio = parseInt(localStorage.getItem("cj_experts_rev") || "0", 10) || 0;
+const LS_TUMBAS = "cj_experts_tumbas_v1";
+/* lapides: { id: valorDoRelogio } — lembram QUE alguem foi removido e QUANDO.
+   Sem isso, uma maquina desatualizada re-adicionaria quem ja foi excluido. */
+let tumbas = load(LS_TUMBAS, {});
+if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
+
+/* Avanca o relogio local. Recebe o maior valor ja visto para nunca regredir. */
+function tick(vistoFora){
+  relogio = Math.max(relogio, parseInt(vistoFora, 10) || 0) + 1;
+  try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+  return relogio;
+}
+/* Absorve o relogio de quem mandou, sem contar como edicao local. */
+function absorverRelogio(vistoFora){
+  const v = parseInt(vistoFora, 10) || 0;
+  if (v > relogio){ relogio = v; try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {} }
+}
+const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
+
+/* Mescla duas visoes da lista. Determinista e comutativa: mesclar A com B da o
+   mesmo resultado que mesclar B com A, entao a ordem de chegada nao importa.
+   - mesmo expert nos dois lados -> fica a versao de carimbo maior
+   - expert so de um lado        -> entra (uniao)
+   - lapide com carimbo maior    -> o expert sai e fica fora
+   Mensagem de painel antigo (sem updatedAt/tumbas) entra com carimbo 0: nunca
+   sobrescreve dado mais novo, mas ainda consegue acrescentar gente nova. */
+function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
+  const porId = new Map();
+  const põe = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
+    if (!e || !e.id) return;
+    const atual = porId.get(e.id);
+    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+  });
+  põe(listaA); põe(listaB);
+
+  const tum = Object.assign({}, tumbasA || {}, {});
+  Object.entries(tumbasB || {}).forEach(([id, q]) => {
+    const v = parseInt(q, 10) || 0;
+    if (v > (parseInt(tum[id], 10) || 0)) tum[id] = v;
+  });
+  /* lapide so mata se for MAIS NOVA que a ultima alteracao do expert; assim um
+     re-cadastro proposital depois da exclusao continua valendo */
+  const vivos = [];
+  porId.forEach((e, id) => { if ((parseInt(tum[id], 10) || 0) <= carimbo(e)) vivos.push(e); });
+  return { experts: dedupeExperts(vivos), tumbas: tum };
+}
+function salvarTumbas(){ return save(LS_TUMBAS, tumbas); }
+function sendState(){
+  /* Sem base real ainda: publicar aqui empurraria uma lista vazia/padrao por
+     cima de quem esta no ar. Fica quieto ate adotar. */
+  if (!listaPropria) return false;
+  return syncSend({ type:"state", experts, tumbas, cfg, rev: relogio });
+}
+function sendStateR(){ return syncSend({ type:"state-r", sorteados, hist }); }
 const connected = () => Date.now() - lastPongPrim < 6000;
 const stbAlive  = () => Date.now() - lastPongStb < 6000;
 function sendCmd(msg){
@@ -732,6 +866,11 @@ function sendCmd(msg){
 function updateConn(){
   const el = document.getElementById("conn");
   const tx = document.getElementById("connTxt");
+  if (typeof envioPendente !== "undefined" && envioPendente){
+    el.classList.remove("on");
+    tx.textContent = "Alterações não enviadas — reenviando…";
+    return;
+  }
   if (!syncOn){ el.classList.remove("on"); tx.textContent = "Conectando à sincronização…"; return; }
   if (connected()){
     el.classList.add("on");
@@ -747,7 +886,7 @@ function updateConn(){
 (function initSync(){
   if (!SB){ toast("Falha ao carregar a sincronização."); return; }
   syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
-  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+  syncCh.on("broadcast", { event:"msg" }, async ({ payload }) => {
     const m = payload || {};
     if (m.k !== SYNC_KEY) return;
     switch (m.type){
@@ -757,6 +896,13 @@ function updateConn(){
         updateConn();
         break;
       case "ack":
+        /* 'state' recusado era o pior caso: o operador via "salvo" e a roleta
+           tinha ignorado por sessao expirada. Agora renova e reenvia sozinho. */
+        if (m.cmd === "state"){
+          if (m.ok) limparPendente();
+          else await recuperarSessaoEReenviar(m.reason);
+          break;
+        }
         if (m.ok) toast(m.cmd === "spin" ? "Roleta girando!" : "Comando aplicado na roleta.");
         else toast(m.reason || "A roleta recusou o comando.");
         break;
@@ -764,14 +910,26 @@ function updateConn(){
         live = m; renderLive();
         break;
       case "state": {
-        /* OUTRO painel admin mudou a lista. Canal usa self:false, então 'state'
-           vem SEMPRE de outro painel. Adotamos a lista dele SE for mais recente
-           (rev maior) — assim a última ação de qualquer painel vence e nenhum
-           desfaz o outro. Empate/ausência de rev: adota mesmo assim (compat). */
-        const incomingRev = typeof m.rev === "number" ? m.rev : 0;
-        if (incomingRev >= expertsRev && Array.isArray(m.experts)){
-          experts = dedupeExperts(m.experts); save(LS_EXPERTS, experts);
-          expertsRev = incomingRev; try { localStorage.setItem("cj_experts_rev", String(expertsRev)); } catch {}
+        /* Chegou a visao de OUTRO painel (self:false garante que nao e a nossa).
+           NUNCA substituimos a lista em bloco: mesclamos. Assim duas maquinas no
+           mesmo login convergem para o mesmo estado independente da ordem de
+           chegada, e uma maquina que estava desatualizada nao apaga o trabalho
+           da outra — no maximo acrescenta o que ela tem de novo. */
+        if (Array.isArray(m.experts)){
+          if (!listaPropria){
+            /* PRIMEIRA lista que chega neste navegador: adota inteira. Mesclar
+               aqui seria errado — o que temos localmente nao vale nada ainda. */
+            experts = dedupeExperts(m.experts);
+            tumbas  = (m.tumbas && typeof m.tumbas === "object") ? Object.assign({}, m.tumbas) : {};
+            aguardandoListaInicial = false;
+            try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+          } else {
+            const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
+            experts = r.experts; tumbas = r.tumbas;
+          }
+          save(LS_EXPERTS, experts); salvarTumbas();
+          absorverRelogio(m.rev);
+          listaPropria = true;                 // ja temos base real: podemos publicar
           const ids = experts.map(e => e.id);
           sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
           if (m.cfg){ cfg = Object.assign({}, CFG_DEF, m.cfg); save(LS_CFG, cfg); }
@@ -779,6 +937,10 @@ function updateConn(){
         }
         break;
       }
+      case "reqExperts":
+        /* Um painel recem-aberto pediu a lista. So responde quem tem base real. */
+        if (listaPropria) sendState();
+        break;
       case "state-r":
         if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
         if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); }
@@ -802,12 +964,16 @@ function updateConn(){
     updateConn();
     if (syncOn){
       syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+      /* Sem base real neste navegador: PERGUNTA a lista antes de publicar a
+         propria, senao um painel recem-aberto ditaria a lista padrao. */
+      if (!listaPropria){ syncSend({ type:"reqExperts" }); semearSePrecisar(); }
+      flushPendente();
       /* se a migração acrescentou experts que faltavam, empurra a lista completa para a roleta */
       if (MIGRATED){ sendState(); MIGRATED = false; toast("Experts que faltavam foram adicionados e enviados à roleta."); }
     }
   });
 })();
-setInterval(() => { syncSend({ type:"ping" }); updateConn(); }, 2500);
+setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
 
 /* ================= Cartão AO VIVO ================= */
 let live = load(LS_LIVE, { status:"idle" });
@@ -882,6 +1048,7 @@ function renderChips(){
 
 function render(){
   renderChips();
+  if (typeof renderListas === "function") renderListas();   // mantem o "no ar" das listas em dia
   cfgMinutes.value = cfg.minutes;
   cfgWait.value = cfg.waitSec;
   cfgSpinSec.value = cfg.spinSec ?? "";
@@ -892,13 +1059,19 @@ function render(){
   swSound.checked = cfg.sfx;
   const cur = fForce.value;
   fForce.innerHTML = '<option value="">— sorteio aleatório —</option>';
+  /* So oferece quem ainda pode sair. Antes a lista incluia os ja sorteados
+     (marcados "(ja sorteado)"), e a roleta acabava caindo neles — escolha
+     impossivel nao deve nem aparecer. */
   activeExperts().forEach(e => {
+    if (jaSorteado(e)) return;
     const o = document.createElement("option");
     o.value = e.id;
-    o.textContent = e.name + (jaSorteado(e) ? " (já sorteado)" : "");
+    o.textContent = e.name;
     fForce.appendChild(o);
   });
-  fForce.value = cur;
+  const aindaExiste = [...fForce.options].some(o => o.value === cur);
+  fForce.value = aindaExiste ? cur : "";      // se o escolhido saiu, volta pra aleatorio
+  if (!aindaExiste && cur) syncSend({ type:"force", id:"" });
   expList.innerHTML = "";
   experts.forEach((e, i) => {
     const drawn = jaSorteado(e);
@@ -920,7 +1093,7 @@ function render(){
     sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
     sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${e.name}"><span class="tr"><span class="th"></span></span>`;
     sw.querySelector("input").addEventListener("change", ev => {
-      e.active = ev.target.checked; persistExperts();
+      e.active = ev.target.checked; persistExperts(e);
       toast(e.active ? e.name+" ativado." : e.name+" desativado.");
     });
     const done = sorteados.includes(e.id);
@@ -969,13 +1142,17 @@ function render(){
       const posicao = experts.findIndex(x => x.id === e.id);
       const eraSorteado = sorteados.includes(e.id);
       experts = experts.filter(x => x.id !== e.id);
+      /* lapide: sem ela, uma maquina desatualizada que ainda tenha o expert na
+         lista o traria de volta na proxima mesclagem */
+      tumbas[e.id] = tick(0);
       if (editingId === e.id) cancelEdit();
       persistExperts();
       toastUndo(removido.name + " removido.", () => {
         // recoloca na mesma posição, com foto e tempo, e restaura o sorteado se era
         experts.splice(Math.min(posicao, experts.length), 0, removido);
+        delete tumbas[removido.id];            // some a lapide: ele volta a existir
         if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
-        persistExperts();
+        persistExperts(removido);              // carimbo novo vence a lapide antiga
         toast(removido.name + " restaurado.");
       });
     });
@@ -999,15 +1176,59 @@ function dedupeExperts(list){
   }
   return out;
 }
-function persistExperts(){
+/* Grava a lista e propaga. Devolve { ok, entregue }:
+     ok=false      -> o localStorage recusou (cota estourada). Desfaz tudo e
+                      avisa, em vez de mostrar "salvo" e perder no reload.
+     entregue=false-> gravou aqui, mas a roleta nao recebeu agora; fica na fila
+                      e sai sozinho quando a conexao voltar.
+   `alterados` recebe os experts tocados nesta acao para carimbar o relogio. */
+function persistExperts(alterados){
+  const backExperts = JSON.stringify(experts);
+  const backTumbas  = JSON.stringify(tumbas);
+  const backSort    = JSON.stringify(sorteados);
+  const backRelogio = relogio;
+
+  const agora = tick(0);
+  (Array.isArray(alterados) ? alterados : (alterados ? [alterados] : []))
+    .forEach(e => { if (e) e.updatedAt = agora; });
+
   experts = dedupeExperts(experts);
-  bumpRev();                       // esta edição local passa a ser a versão mais recente
-  save(LS_EXPERTS, experts);
+  if (!save(LS_EXPERTS, experts) || !salvarTumbas()){
+    experts   = JSON.parse(backExperts);       // desfaz: memoria volta ao gravado
+    tumbas    = JSON.parse(backTumbas);
+    sorteados = JSON.parse(backSort);
+    relogio   = backRelogio;
+    try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+    render();
+    toast("Sem espaço no navegador para salvar. Remova fotos antigas e tente de novo.");
+    return { ok:false, entregue:false };
+  }
   const ids = experts.map(e => e.id);
   sorteados = sorteados.filter(id => ids.includes(id));
   save(LS_RODADA, sorteados);
-  sendState(); sendStateR();
+
+  const entregue = sendState(); sendStateR();
+  if (!entregue) marcarPendente(); else limparPendente();
   render();
+  return { ok:true, entregue };
+}
+
+/* ---- fila de reenvio: nada se perde se a sincronizacao cair no meio ---- */
+let envioPendente = false;
+function marcarPendente(){ envioPendente = true; updateConn(); }
+function limparPendente(){ if (envioPendente){ envioPendente = false; updateConn(); } }
+function flushPendente(){
+  if (!envioPendente || !syncOn) return;
+  if (sendState()){ sendStateR(); limparPendente(); toast("Alterações pendentes enviadas à roleta."); }
+}
+/* Date.now() sozinho colide: duas maquinas adicionando no mesmo milissegundo
+   geravam o MESMO id e o dedupe descartava um dos dois experts. */
+function novoIdExpert(){
+  const usados = new Set(experts.map(e => e.id).concat(Object.keys(tumbas)));
+  let id;
+  do { id = "e" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  while (usados.has(id));
+  return id;
 }
 function resizePhoto(file){
   return new Promise((res, rej) => {
@@ -1029,7 +1250,9 @@ function resizePhoto(file){
     fr.readAsDataURL(file);
   });
 }
+let salvandoExpert = false;
 btnSaveExpert.addEventListener("click", async () => {
+  if (salvandoExpert) return;            // o resize da foto e async: sem trava, 2 cliques = 2 experts
   const name = fName.value.trim();
   if (!name){ toast("Informe o nome do expert."); return; }
   /* Bloqueia nome repetido (ignorando maiúsculas/acentos comuns e o próprio, se editando) */
@@ -1043,20 +1266,35 @@ btnSaveExpert.addEventListener("click", async () => {
     minutes = m;
   }
   let photo = null;
-  if (fPhoto.files[0]){
-    try { photo = await resizePhoto(fPhoto.files[0]); }
-    catch { toast("Não foi possível ler a imagem."); return; }
-  }
-  if (editingId){
-    const e = experts.find(x => x.id === editingId);
-    if (e){ e.name = name; e.minutes = minutes; if (photo) e.photo = photo; }
-    toast("Expert atualizado."); cancelEdit();
-  } else {
-    experts.push({ id:"e"+Date.now().toString(36), name, photo, active:true, minutes });
-    toast("Expert adicionado à roleta.");
-    fName.value=""; fPhoto.value=""; fMinutes.value="";
-  }
-  persistExperts();
+  salvandoExpert = true; btnSaveExpert.disabled = true;
+  try {
+    if (fPhoto.files[0]){
+      try { photo = await resizePhoto(fPhoto.files[0]); }
+      catch { toast("Não foi possível ler a imagem."); return; }
+    }
+    let tocado = null, criando = false;
+    if (editingId){
+      const e = experts.find(x => x.id === editingId);
+      if (!e){ toast("Este expert não existe mais — a lista foi atualizada."); cancelEdit(); render(); return; }
+      e.name = name; e.minutes = minutes; if (photo) e.photo = photo;
+      tocado = e;
+    } else {
+      tocado = { id: novoIdExpert(), name, photo, active:true, minutes };
+      experts.push(tocado); criando = true;
+    }
+    const r = persistExperts(tocado);
+    if (!r.ok){                                // cota estourou: persistExperts ja desfez e avisou
+      if (criando) experts = experts.filter(x => x.id !== tocado.id);
+      render(); return;
+    }
+    if (criando){
+      fName.value=""; fPhoto.value=""; fMinutes.value="";
+      toast(r.entregue ? "Expert adicionado à roleta." : "Expert adicionado aqui — falta enviar à roleta (sem conexão).");
+    } else {
+      toast(r.entregue ? "Expert atualizado." : "Expert atualizado aqui — falta enviar à roleta (sem conexão).");
+      cancelEdit();
+    }
+  } finally { salvandoExpert = false; btnSaveExpert.disabled = false; }
 });
 /* Enter em Nome ou Tempo aciona Adicionar/Salvar (fluxo mais rápido no teclado). */
 [fName, fMinutes].forEach(inp => inp.addEventListener("keydown", e => {
@@ -1105,6 +1343,210 @@ btnCancelEdit.addEventListener("click", async () => {
   if (edicaoTemMudanca() && !(await confirmModal("Descartar as alterações desta edição?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
   cancelEdit();
 });
+
+/* Ultimo recurso: ninguem respondeu ao pedido de lista, entao este navegador e
+   mesmo a primeira instalacao. Ai sim semeia os 16 padrao. */
+let timerSemear = null, jaPerguntouSemear = false;
+function semearSePrecisar(){
+  if (timerSemear || !aguardandoListaInicial) return;
+  timerSemear = setTimeout(async () => {
+    timerSemear = null;
+    if (!aguardandoListaInicial || listaPropria) return;   // alguem respondeu no meio tempo
+    if (jaPerguntouSemear) return;
+    jaPerguntouSemear = true;
+    /* NUNCA semear e publicar sozinho: se a roleta so estiver demorando a
+       responder, uma lista padrao criada aqui iria para o ar por cima da real.
+       Quem decide e o operador. */
+    const ok = await confirmModal(
+      "Nenhuma roleta ou painel respondeu com a lista atual. Isso costuma ser conexão: " +
+      "se você sabe que já existe uma lista no ar, cancele e recarregue. " +
+      "Criar a lista inicial padrão (16 experts) e publicar?",
+      { title:"Nenhuma lista encontrada", okText:"Criar lista inicial" });
+    if (!ok){
+      toast("Nada foi criado. Recarregue quando a roleta estiver no ar.");
+      jaPerguntouSemear = false;                 // permite tentar de novo numa proxima conexao
+      return;
+    }
+    if (listaPropria) return;                    // chegou lista enquanto o modal estava aberto
+    experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
+    aguardandoListaInicial = false;
+    listaPropria = true;
+    try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+    save(LS_EXPERTS, experts);
+    render();
+    sendState();
+    toast("Lista inicial criada e publicada.");
+  }, 5000);
+}
+
+/* ================= Listas salvas de experts =================
+   Guardam formacoes inteiras para poder testar a vontade e voltar exatamente ao
+   que estava. Aplicar uma lista NAO e uma substituicao cega: ela e traduzida em
+   carimbos e lapides com o relogio atual, senao a mesclagem de outra maquina
+   desfaria a troca. */
+const LS_LISTAS = "cj_listas_v1";
+let listas = load(LS_LISTAS, []);
+if (!Array.isArray(listas)) listas = [];
+
+const fListaNome     = document.getElementById("fListaNome");
+const btnSalvarLista = document.getElementById("btnSalvarLista");
+const listasBox      = document.getElementById("listasBox");
+
+function salvarListas(){
+  if (!save(LS_LISTAS, listas)){
+    toast("Sem espaco no navegador para guardar a lista. Apague uma lista antiga.");
+    return false;
+  }
+  return true;
+}
+/* Copia profunda: a lista salva nao pode mudar junto com a lista viva. */
+const clonar = v => JSON.parse(JSON.stringify(v));
+
+function snapshotAtual(nome){
+  return {
+    id: "L" + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    nome: nome,
+    criadoEm: new Date().toISOString(),
+    experts: clonar(experts),
+    tumbas: clonar(tumbas)
+  };
+}
+function descreveLista(l){
+  const n = (l.experts || []).length;
+  const ativos = (l.experts || []).filter(e => e.active).length;
+  const d = new Date(l.criadoEm);
+  const quando = isNaN(d) ? "" : d.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  return n + (n === 1 ? " expert" : " experts") + " · " + ativos + " ativo" + (ativos === 1 ? "" : "s") + (quando ? " · salva em " + quando : "");
+}
+/* true se a lista salva bate exatamente com a formacao que esta no ar agora */
+function ehAtual(l){
+  const norm = arr => (arr || []).map(e => e.id).sort().join(",");
+  return norm(l.experts) === norm(experts);
+}
+
+function renderListas(){
+  listasBox.innerHTML = "";
+  if (!listas.length){
+    const v = document.createElement("p");
+    v.className = "lst-vazio";
+    v.textContent = "Nenhuma lista salva ainda. Salve a formacao atual antes de fazer testes.";
+    listasBox.appendChild(v);
+    return;
+  }
+  listas.forEach(l => {
+    const row = document.createElement("div");
+    row.className = "lst-row" + (ehAtual(l) ? " atual" : "");
+    const info = document.createElement("div");
+    info.className = "lst-info";
+    const nm = document.createElement("div");
+    nm.className = "lst-nome";
+    nm.textContent = l.nome + (ehAtual(l) ? "  ✓ no ar" : "");
+    const mt = document.createElement("div");
+    mt.className = "lst-meta"; mt.textContent = descreveLista(l);
+    info.appendChild(nm); info.appendChild(mt);
+
+    const acts = document.createElement("div");
+    acts.className = "lst-acts";
+
+    const bAp = document.createElement("button");
+    bAp.className = "lst-btn"; bAp.type = "button"; bAp.textContent = "Aplicar";
+    bAp.addEventListener("click", () => aplicarLista(l));
+
+    const bUp = document.createElement("button");
+    bUp.className = "lst-btn"; bUp.type = "button"; bUp.textContent = "Atualizar";
+    bUp.addEventListener("click", async () => {
+      if (!await confirmModal('Regravar "' + l.nome + '" com a formacao que esta no ar agora?', { title:"Atualizar lista", okText:"Atualizar" })) return;
+      l.experts = clonar(experts); l.tumbas = clonar(tumbas); l.criadoEm = new Date().toISOString();
+      if (salvarListas()){ toast("Lista atualizada."); renderListas(); }
+    });
+
+    const bRn = document.createElement("button");
+    bRn.className = "lst-btn"; bRn.type = "button"; bRn.textContent = "Renomear";
+    bRn.addEventListener("click", async () => {
+      const novo = await promptModal("Novo nome da lista:", l.nome);
+      if (novo === null) return;
+      const nome = novo.trim();
+      if (!nome){ toast("O nome nao pode ficar vazio."); return; }
+      if (listas.some(x => x.id !== l.id && x.nome.toLowerCase() === nome.toLowerCase())){
+        toast("Ja existe uma lista com esse nome."); return;
+      }
+      l.nome = nome.slice(0,60);
+      if (salvarListas()){ toast("Lista renomeada."); renderListas(); }
+    });
+
+    const bDl = document.createElement("button");
+    bDl.className = "lst-btn danger"; bDl.type = "button"; bDl.textContent = "Apagar";
+    bDl.addEventListener("click", async () => {
+      if (!await confirmModal('Apagar a lista salva "' + l.nome + '"? A roleta nao muda.', { title:"Apagar lista", okText:"Apagar", danger:true })) return;
+      const backup = listas;
+      listas = listas.filter(x => x.id !== l.id);
+      if (salvarListas()){ toast("Lista apagada."); renderListas(); }
+      else { listas = backup; }
+    });
+
+    acts.appendChild(bAp); acts.appendChild(bUp); acts.appendChild(bRn); acts.appendChild(bDl);
+    row.appendChild(info); row.appendChild(acts);
+    listasBox.appendChild(row);
+  });
+}
+
+/* Troca a formacao no ar pela lista escolhida, de um jeito que sobrevive a
+   mesclagem: todo mundo que sai ganha lapide com o relogio de agora, e todo
+   mundo que entra ganha carimbo de agora (vence qualquer versao antiga que
+   outra maquina ainda tenha). */
+async function aplicarLista(l){
+  const qtd = (l.experts || []).length;
+  if (!await confirmModal(
+        'Colocar a lista "' + l.nome + '" no ar? A roleta passa a ter ' + qtd + (qtd === 1 ? " expert" : " experts") + ".",
+        { title:"Aplicar lista", okText:"Aplicar" })) return;
+
+  const backExperts = clonar(experts), backTumbas = clonar(tumbas);
+  const agora = tick(0);
+  const novos = clonar(l.experts || []).map(e => Object.assign({}, e, { updatedAt: agora }));
+  const idsNovos = new Set(novos.map(e => e.id));
+
+  experts.forEach(e => { if (!idsNovos.has(e.id)) tumbas[e.id] = agora; });  // quem sai, sai de verdade
+  novos.forEach(e => { delete tumbas[e.id]; });                             // quem entra, some a lapide
+  experts = dedupeExperts(novos);
+
+  const r = persistExperts();
+  if (!r.ok){ experts = backExperts; tumbas = backTumbas; render(); renderListas(); return; }
+  toast(r.entregue ? 'Lista "' + l.nome + '" aplicada na roleta.'
+                   : "Lista aplicada aqui - falta enviar a roleta (sem conexao).");
+  renderListas();
+}
+
+btnSalvarLista.addEventListener("click", () => {
+  const nome = (fListaNome.value || "").trim();
+  if (!nome){ toast("De um nome para a lista."); fListaNome.focus(); return; }
+  if (listas.some(l => l.nome.toLowerCase() === nome.toLowerCase())){
+    toast("Ja existe uma lista com esse nome."); fListaNome.focus(); return;
+  }
+  if (!experts.length){ toast("A roleta esta sem experts - nao ha o que salvar."); return; }
+  listas.unshift(snapshotAtual(nome.slice(0,60)));
+  if (salvarListas()){
+    fListaNome.value = "";
+    toast('Lista "' + nome + '" salva.');
+    renderListas();
+  } else {
+    listas.shift();
+  }
+});
+fListaNome.addEventListener("keydown", e => {
+  if (e.key === "Enter"){ e.preventDefault(); btnSalvarLista.click(); }
+});
+
+/* Rede de seguranca: na primeira vez que o painel roda com esta versao, guarda
+   sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la. */
+(function backupAutomatico(){
+  const FLAG = "cj_listas_auto_v1";
+  try {
+    if (localStorage.getItem(FLAG)) return;
+    if (!experts.length) return;
+    listas.unshift(snapshotAtual("Backup automatico (antes das listas salvas)"));
+    if (salvarListas()) localStorage.setItem(FLAG, "1");
+  } catch {}
+})();
 
 /* ================= Configurações (auto-save) ================= */
 function numCfg(input, key, min, max, label, nullable){
@@ -1391,6 +1833,8 @@ function confirmModal(msg, opts){
     document.getElementById("cmTitle").textContent = opts.title || "Confirmar";
     document.getElementById("cmMsg").textContent = msg;
     const ok = document.getElementById("cmOk"), cancel = document.getElementById("cmCancel");
+    const inp = document.getElementById("cmInput");
+    if (inp) inp.style.display = "none";        // confirm nunca mostra campo de texto
     ok.textContent = opts.okText || "Confirmar";
     ok.classList.toggle("danger", !!opts.danger);
     m.classList.add("show");
@@ -1402,6 +1846,41 @@ function confirmModal(msg, opts){
     };
     const onOk = () => close(true), onCancel = () => close(false);
     const onKey = e => { if (e.key === "Escape") close(false); if (e.key === "Enter") close(true); };
+    ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+/* Igual ao confirmModal, mas com um campo de texto. Resolve com a string
+   digitada, ou null se cancelar. Evita o prompt() nativo, que o resto do painel
+   ja tinha abandonado. */
+function promptModal(msg, valorInicial, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    const m = document.getElementById("cmodal");
+    const inp = document.getElementById("cmInput");
+    document.getElementById("cmTitle").textContent = opts.title || "Renomear";
+    document.getElementById("cmMsg").textContent = msg;
+    const ok = document.getElementById("cmOk"), cancel = document.getElementById("cmCancel");
+    ok.textContent = opts.okText || "Salvar";
+    ok.classList.remove("danger");
+    inp.style.display = "";
+    inp.value = valorInicial == null ? "" : String(valorInicial);
+    m.classList.add("show");
+    setTimeout(() => { inp.focus(); inp.select(); }, 30);
+    const close = val => {
+      m.classList.remove("show");
+      inp.style.display = "none";
+      ok.removeEventListener("click", onOk); cancel.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+      resolve(val);
+    };
+    const onOk = () => close(inp.value);
+    const onCancel = () => close(null);
+    const onKey = e => {
+      if (e.key === "Escape") close(null);
+      if (e.key === "Enter" && document.activeElement === inp){ e.preventDefault(); close(inp.value); }
+    };
     ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
     document.addEventListener("keydown", onKey);
   });

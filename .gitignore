@@ -7,3 +7,18 @@ Thumbs.db
 *.jpeg
 *.jpg
 *.psd
+
+# Sistema de analise visual (tools/visual-recon)
+.venv-visual/
+__pycache__/
+*.pyc
+# Frames brutos: pesados e sempre regeneraveis a partir do video.
+# O conhecimento util (analysis.json, REPORT.md, tokens) fica versionado.
+visual-memory/videos/*/frames/
+visual-memory/index.db
+
+# QA da roleta: o sandbox e copia regeneravel de roleta/ (ver testes-roleta/README.md)
+testes-roleta/sandbox/
+# ...mas os prints de evidencia ficam versionados, apesar do "*.png" acima
+!testes-roleta/prints/
+!testes-roleta/prints/*.png

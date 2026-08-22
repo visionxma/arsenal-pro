@@ -1103,12 +1103,21 @@ async function spin(){
     if (pool.length > 1) pool = pool.filter(e => e.id !== ultimo);
     novoCiclo = true;
   }
+  /* REGRA DURA: enquanto a rodada nao reiniciar, a roleta NUNCA pode parar em
+     quem ja foi sorteado. O "forcar proximo" tambem obedece — antes ele era
+     procurado em activeExperts() (a lista toda) e conseguia cair em alguem ja
+     sorteado. Agora so vale se a pessoa ainda estiver no pool disponivel. */
   let escolhido = null;
   if (forcedId){
-    escolhido = list.find(e => e.id === forcedId) || null;
+    escolhido = pool.find(e => e.id === forcedId) || null;
+    if (!escolhido){
+      const forcadoJaSaiu = list.find(e => e.id === forcedId);
+      if (forcadoJaSaiu) toast(forcadoJaSaiu.name + " já foi sorteado nesta rodada — sorteio segue aleatório.");
+    }
     forcedId = null;
   }
   if (!escolhido) escolhido = pool[randInt(pool.length)];
+  if (!escolhido){ spinning = false; document.body.classList.remove("spinning"); setCta("Sortear Expert", false); setIdleText(false); toast("Ninguém disponível para sortear."); return; }
   const idx = list.findIndex(e => e.id === escolhido.id);
   pendingIdx = idx;
   pendingId = escolhido.id;   // guarda o ID do escolhido: se a lista mudar durante o
@@ -1157,7 +1166,13 @@ function acabouGiro(){
   const list = activeExperts();
   // Ganhador SEMPRE pelo ID guardado no início do giro (imune a mudanças na lista
   // durante o giro por sincronização). Índice só como fallback se o expert sumiu.
-  const winner = list.find(e => e.id === pendingId) || list[pendingIdx];
+  /* Ganhador pelo ID guardado no inicio do giro. O fallback por indice so pode
+     cair em quem AINDA nao foi sorteado: se a lista mudou durante o giro, um
+     indice solto podia apontar para alguem ja sorteado. */
+  const winner = list.find(e => e.id === pendingId)
+              || (list[pendingIdx] && !sorteados.includes(list[pendingIdx].id) ? list[pendingIdx] : null)
+              || list.find(e => !sorteados.includes(e.id))
+              || null;
   pendingIdx = -1; pendingId = null;
   document.body.classList.remove("spinning");
   SFX.stop();                       // corta qualquer tique restante
@@ -1581,12 +1596,49 @@ function safeRebuild(){
   if (spinning){ pendingRebuild = true; return; }
   buildWheel(); renderPool();
 }
+/* Lapides e relogio logico: a roleta guarda os mesmos metadados do painel para
+   poder MESCLAR em vez de substituir. Antes ela adotava a lista de qualquer
+   painel em bloco, entao o ultimo a falar vencia — com varias maquinas no mesmo
+   login, uma desatualizada apagava o que a outra tinha acabado de corrigir. */
+const LS_TUMBAS = "cj_experts_tumbas_v1";
+/* Maior relogio logico ja visto. A roleta nao edita nada, mas precisa guardar
+   isso para entregar a um painel recem-aberto: sem esse numero ele comecaria do
+   zero e TODA edicao dele perderia para as outras maquinas. */
+const LS_REV_VISTO = "cj_rev_visto_v1";
+let revVisto = parseInt(localStorage.getItem(LS_REV_VISTO) || "0", 10) || 0;
+function anotarRev(v){
+  const n = parseInt(v, 10) || 0;
+  if (n > revVisto){ revVisto = n; try { localStorage.setItem(LS_REV_VISTO, String(revVisto)); } catch {} }
+}
+let tumbas = load(LS_TUMBAS, {});
+if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
+const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
+function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
+  const porId = new Map();
+  const absorve = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
+    if (!e || !e.id) return;
+    const atual = porId.get(e.id);
+    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+  });
+  absorve(listaA); absorve(listaB);
+  const tum = Object.assign({}, tumbasA || {});
+  Object.entries(tumbasB || {}).forEach(([id, q]) => {
+    const v = parseInt(q, 10) || 0;
+    if (v > (parseInt(tum[id], 10) || 0)) tum[id] = v;
+  });
+  const vivos = [];
+  porId.forEach((e, id) => { if ((parseInt(tum[id], 10) || 0) <= carimbo(e)) vivos.push(e); });
+  return { experts: dedupeExperts(vivos), tumbas: tum };
+}
 function applyAdminState(m){
-  /* O PAINEL É A AUTORIDADE da lista de experts. Sempre que ele manda a lista,
-     a roleta adota EXATAMENTE essa lista — inclusive quando alguém foi removido
-     (a lista chega menor). Só ignoramos o caso degenerado de lista ausente. */
+  anotarRev(m.rev);
+  /* O painel continua sendo a autoridade, mas a adocao agora e por MESCLAGEM:
+     o resultado independe da ordem de chegada e nenhuma maquina apaga o que
+     nao conhece. */
   if (Array.isArray(m.experts)){
-    experts = dedupeExperts(m.experts); save(LS_EXPERTS, experts);
+    const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
+    experts = r.experts; tumbas = r.tumbas;
+    save(LS_EXPERTS, experts); save(LS_TUMBAS, tumbas);
     const ids = experts.map(e => e.id);
     sorteados = sorteados.filter(id => ids.includes(id));
     save(LS_RODADA, sorteados);
@@ -1624,6 +1676,13 @@ function applyStateR(m){
       }
       return;
     }
+    /* painel sem lista propria pediu a atual: a roleta devolve a que esta no ar,
+       para ele adotar em vez de publicar uma lista padrao por cima */
+    if (m.type === "reqExperts"){
+      if (isPrimary && Array.isArray(experts) && experts.length)
+        syncSend({ type:"state", experts, tumbas, cfg, rev: revVisto, deRoleta:true });
+      return;
+    }
     // a página do Corujão pediu o link atual da live — a roleta reencaminha o último
     // link que recebeu de um admin autenticado (guarda o token junto para o Corujão validar)
     if (m.type === "getLiveUrl"){
@@ -1633,12 +1692,15 @@ function applyStateR(m){
     }
     // daqui em diante, só com sessão válida do painel
     if (!(await verifyAdmin(m.t))){
-      if (m.type === "spin" || m.type === "endOp")
+      if (m.type === "spin" || m.type === "endOp" || m.type === "state")
         syncSend({ type:"ack", cmd:m.type, ok:false, reason:"Sessão do painel inválida — faça login novamente." });
       return;
     }
     switch (m.type){
-      case "state":   applyAdminState(m); break;
+      case "state":
+        applyAdminState(m);
+        syncSend({ type:"ack", cmd:"state", ok:true });   // painel limpa a fila de pendencia
+        break;
       case "state-r": applyStateR(m); break;
       case "liveUrl": {
         // guarda o link + o token que o autenticou, para reencaminhar ao Corujão

@@ -15,15 +15,43 @@ de qualquer dispositivo/navegador — não depende mais de mesma origem.
 
 > ⚠️ **INVARIANTE — NÃO REMOVER (sincronização de experts):** apagar/editar/adicionar
 > um expert em **qualquer** Painel Admin deve refletir **em todos os painéis abertos e
-> na roleta**, e o expert removido **não pode voltar** ao recarregar nenhuma tela.
-> Isso depende de: (1) o painel tratar `case "state"` de outro painel adotando a lista
-> pelo maior `rev` (last-write-wins, `bumpRev` em cada edição); (2) canal com
-> `broadcast:{self:false}`; (3) a roleta **nunca** regenerar `DEFAULT_EXPERTS` — usa
-> `load(LS_EXPERTS, [])`, e o painel só semeia os 16 na 1ª abertura (flag
-> `cj_experts_init_v1`); (4) `dedupeExperts` (por id **e** nome) nos dois. Ao mexer,
-> testar com **2 painéis + 1 roleta** conectados: remover em um reflete nos outros e
-> não volta ao recarregar. A tela da roleta atualiza sozinha (auto-refresh via
-> `roleta/version.json`, só quando ociosa — nunca no meio de um sorteio).
+> na roleta**, e o expert removido **não pode voltar** ao recarregar nenhuma tela —
+> com **qualquer número de máquinas no mesmo login**, inclusive uma que estava offline.
+>
+> Isso depende de:
+> 1. **Relógio lógico (Lamport)**, não `Date.now()`. `tick()` faz
+>    `relogio = max(relogio, revRecebido) + 1`. Usar relógio de parede fazia a máquina
+>    com o relógio adiantado (ou simplesmente a que editou por último) sobrescrever o
+>    trabalho da outra.
+> 2. **Mesclagem, nunca substituição.** `mesclarExperts()` une por id; para cada id
+>    vence o maior `updatedAt`. É comutativa: a ordem de chegada não importa.
+> 3. **Lápides** (`cj_experts_tumbas_v1`): remover grava `tumbas[id] = tick()`. Sem
+>    isso, uma máquina desatualizada ressuscitava quem já tinha sido excluído.
+>    A lápide só mata se for mais nova que o `updatedAt` do expert — assim um
+>    recadastro proposital depois da exclusão continua valendo.
+> 4. Canal com `broadcast:{self:false}` e `dedupeExperts` (por id **e** nome) nos dois.
+> 5. **Painel sem lista nasce vazio** e pede a lista (`reqExperts`) antes de publicar
+>    qualquer coisa (`sendState()` retorna `false` enquanto `listaPropria` for falso).
+>    Semear os 16 padrão de cara e mesclar depois ressuscitava os excluídos.
+>    Se ninguém responder, o painel **pergunta ao operador** — nunca semeia sozinho.
+> 6. A roleta guarda o maior relógio já visto (`cj_rev_visto_v1`) e o entrega ao painel
+>    recém-aberto. Sem esse número o painel novo começaria do zero e **toda edição dele
+>    perderia** para as outras máquinas.
+>
+> ⚠️ **INVARIANTE — SORTEIO:** enquanto a rodada não reiniciar, a roleta **nunca** pode
+> parar em quem já foi sorteado. Isso inclui o "forçar próximo sorteado", que é
+> procurado no **pool disponível** (não em `activeExperts()`), e o fallback por índice
+> em `acabouGiro`, que só aceita quem ainda não saiu. O select do painel não oferece
+> quem já foi sorteado. Quando todos passam, um novo ciclo reabre a rodada.
+>
+> Ao mexer, testar com **2 painéis + 1 roleta** conectados: remover em um reflete nos
+> outros e não volta ao recarregar; e uma rodada completa não pode repetir ninguém.
+> A tela da roleta atualiza sozinha (auto-refresh via `roleta/version.json`, só quando
+> ociosa — nunca no meio de um sorteio), então **bump `version.json` ao alterar
+> `roleta/index.html`**.
+>
+> Ambiente de teste isolado e suíte Playwright: `testes-roleta/` (ver README de lá).
+
 Todas as páginas são estáticas (`index.html` por pasta) e **todos os links internos são
 relativos** — o site funciona igual na raiz de um domínio, em um subdiretório ou no
 GitHub Pages, sem nenhuma configuração de servidor.
