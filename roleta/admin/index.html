@@ -2291,16 +2291,31 @@ document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
     toast("Sincronização offline — o link foi salvo e será enviado ao reconectar.");
 });
 showLiveUrl();
-document.getElementById("btnResetRound").addEventListener("click", () => {
+/* Estas duas acoes eram imediatas: um clique acidental durante a live devolvia
+   todo mundo ao sorteio sem aviso, enquanto remover UM expert ja pedia
+   confirmacao. So perguntamos quando ha algo a perder — com a rodada vazia a
+   acao continua instantanea, sem atrapalhar o operador. */
+document.getElementById("btnResetRound").addEventListener("click", async () => {
+  const n = sorteados.length;
+  if (n && !await confirmModal(
+        n === 1 ? "1 expert já sorteado volta para o sorteio. Reiniciar a rodada?"
+                : n + " experts já sorteados voltam para o sorteio. Reiniciar a rodada?",
+        { title:"Reiniciar rodada", okText:"Reiniciar" })) return;
   sorteados = []; save(LS_RODADA, sorteados);
   sendStateR();
   render();
-  toast("Rodada reiniciada. Todos voltaram para o sorteio.");
+  toast(n ? "Rodada reiniciada. Todos voltaram para o sorteio." : "A rodada já estava zerada.");
 });
-document.getElementById("btnClearHist").addEventListener("click", () => {
+document.getElementById("btnClearHist").addEventListener("click", async () => {
+  const n = hist.length;
+  if (n && !await confirmModal(
+        n === 1 ? "O histórico tem 1 sorteio registrado. Apagar?"
+                : "O histórico tem " + n + " sorteios registrados. Apagar?",
+        { title:"Limpar histórico", okText:"Limpar", danger:true })) return;
   hist = []; save(LS_HIST, hist);
   sendStateR();
-  toast("Histórico limpo.");
+  render();
+  toast(n ? "Histórico limpo." : "O histórico já estava vazio.");
 });
 
 /* ================= Backup & reset ================= */
