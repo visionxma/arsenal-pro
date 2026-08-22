@@ -1634,8 +1634,16 @@ function fazSwitchAtivo(e){
   const sw = document.createElement("label");
   sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
   sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${escHTML(e.name)}"><span class="tr"><span class="th"></span></span>`;
-  sw.querySelector("input").addEventListener("change", ev => {
-    e.active = ev.target.checked; persistExperts(e);
+  sw.querySelector("input").addEventListener("change", async ev => {
+    const ligar = ev.target.checked;
+    /* desativar quem está em operação deixava o cronômetro rodando na roleta */
+    if (!ligar && emOperacao(e)){
+      const ok = await confirmModal('"' + e.name + '" está em operação agora. Desativar também encerra a operação na roleta. Continuar?',
+        { title:"Expert em operação", okText:"Desativar e encerrar", danger:true });
+      if (!ok){ ev.target.checked = true; return; }
+      sendCmd({ type:"endOp" });
+    }
+    e.active = ligar; persistExperts(e);
     toast(e.active ? e.name+" ativado." : e.name+" desativado.");
   });
   return sw;
@@ -1665,8 +1673,12 @@ function editarExpert(e){
 }
 function removerExpert(e){
   (async () => {
-    const ok = await confirmModal('Remover "'+e.name+'" da roleta?', { title:"Remover expert", okText:"Remover", danger:true });
+    const opera = emOperacao(e);
+    const ok = await confirmModal('Remover "'+e.name+'" da roleta?' +
+        (opera ? ' Ele está em operação agora — a operação será encerrada.' : ''),
+      { title:"Remover expert", okText:"Remover", danger:true });
     if (!ok) return;
+    if (opera) sendCmd({ type:"endOp" });
     const removido = e;                                   // guarda para o Desfazer
     const posicao = experts.findIndex(x => x.id === e.id);
     const eraSorteado = sorteados.includes(e.id);
@@ -1686,20 +1698,36 @@ function removerExpert(e){
     });
   })();
 }
+/* true se o expert é o que está em operação (rodando ou pausado) na roleta */
+function emOperacao(e){
+  return !!(live && (live.status === "running" || live.status === "paused") &&
+    live.name && normNome(live.name) === normNome(e.name));
+}
 async function alternaSorteado(e){
-  /* Mexe direto no pool do sorteio da rodada ao vivo — sempre confirma. */
+  /* Mexe direto no pool do sorteio da rodada ao vivo — sempre confirma.
+     E mantém a lista "Últimos sorteados" coerente: marcar entra na lista,
+     desmarcar sai (mesmo formato/limite de 6 que a roleta usa). */
   const desfazer = sorteados.includes(e.id);
   const ok = await confirmModal(
-    desfazer ? '"' + e.name + '" volta a participar do sorteio desta rodada. Continuar?'
-             : '"' + e.name + '" sai do sorteio como já sorteado, até a rodada reiniciar. Continuar?',
+    desfazer ? '"' + e.name + '" volta a participar do sorteio e sai da lista de últimos sorteados. Continuar?'
+             : '"' + e.name + '" sai do sorteio como já sorteado e entra na lista de últimos sorteados. Continuar?',
     { title: desfazer ? "Voltar ao sorteio" : "Marcar como sorteado",
       okText: desfazer ? "Voltar ao sorteio" : "Marcar" });
   if (!ok) return;
   if (desfazer){
     sorteados = sorteados.filter(id => id !== e.id);
+    const i = hist.findIndex(h => normNome(h.name) === normNome(e.name));
+    if (i !== -1) hist.splice(i, 1);
+    save(LS_HIST, hist);
     toast(e.name + " voltou para o sorteio.");
   } else {
     sorteados.push(e.id);
+    const d = new Date();
+    /* foto no formato da roleta (caminho relativo a /roleta/ ou data URI) */
+    hist.unshift({ name: e.name, photo: e.photo || avatarURI(e.name),
+      at: String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0") });
+    hist = hist.slice(0, 6);
+    save(LS_HIST, hist);
     toast(e.name + " marcado como já sorteado.");
   }
   save(LS_RODADA, sorteados);
@@ -2269,7 +2297,11 @@ document.getElementById("btnAtivarTodos").addEventListener("click", () => {
 document.getElementById("btnDesativarTodos").addEventListener("click", async () => {
   const alvo = experts.filter(e => e.active);
   if (!alvo.length){ toast("Nenhum expert ativo para desativar."); return; }
-  if (!(await confirmModal("Desativar todos os " + alvo.length + " experts ativos? A roleta fica sem participantes até reativar.", { title:"Desativar todos", okText:"Desativar" }))) return;
+  const temAoVivo = alvo.some(emOperacao);
+  if (!(await confirmModal("Desativar todos os " + alvo.length + " experts ativos? A roleta fica sem participantes até reativar."
+        + (temAoVivo ? " A operação em andamento também será encerrada." : ""),
+        { title:"Desativar todos", okText:"Desativar" }))) return;
+  if (temAoVivo) sendCmd({ type:"endOp" });
   alvo.forEach(e => { e.active = false; });
   persistExperts(alvo);
   toast("Todos os experts foram desativados.");
@@ -2437,10 +2469,16 @@ function renderListas(){
 async function aplicarLista(l){
   const qtd = (l.experts || []).length;
   if (!await confirmModal(
-        'Colocar a lista "' + l.nome + '" no ar? A roleta passa a ter ' + qtd + (qtd === 1 ? " expert" : " experts") + ".",
+        'Colocar a lista "' + l.nome + '" no ar? A roleta passa a ter ' + qtd + (qtd === 1 ? " expert" : " experts") +
+        " e a rodada reinicia do zero (sorteados e últimos sorteados são limpos).",
         { title:"Aplicar lista", okText:"Aplicar" })) return;
 
   const backExperts = clonar(experts), backTumbas = clonar(tumbas);
+  const backSorteados = clonar(sorteados), backHist = clonar(hist);
+  /* formação nova = rodada nova: sem isso os "últimos sorteados" da formação
+     anterior continuavam na tela da roleta (mesma surpresa do Reiniciar). */
+  sorteados = [];
+  hist = []; save(LS_HIST, hist);
   const agora = tick(0);
   const novos = clonar(l.experts || []).map(e => Object.assign({}, e, { updatedAt: agora }));
   const idsNovos = new Set(novos.map(e => e.id));
@@ -2450,8 +2488,13 @@ async function aplicarLista(l){
   experts = dedupeExperts(novos);
 
   const r = persistExperts();
-  if (!r.ok){ experts = backExperts; tumbas = backTumbas; render(); renderListas(); return; }
-  toast(r.entregue ? 'Lista "' + l.nome + '" aplicada na roleta.'
+  if (!r.ok){
+    experts = backExperts; tumbas = backTumbas;
+    sorteados = backSorteados; save(LS_RODADA, sorteados);
+    hist = backHist; save(LS_HIST, hist);
+    render(); renderListas(); return;
+  }
+  toast(r.entregue ? 'Lista "' + l.nome + '" aplicada na roleta. Rodada zerada.'
                    : "Lista aplicada aqui - falta enviar a roleta (sem conexao).");
   renderListas();
 }
