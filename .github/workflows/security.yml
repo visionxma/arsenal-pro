@@ -46,8 +46,16 @@ jobs:
         run: |
           set -e
           URL="https://safiriontradingbrasil.com/arsenal-pro/"
-          H=$(curl -s -I --max-time 20 "$URL")
+          H=$(curl -s -I --max-time 20 --retry 2 "$URL")
           echo "$H"
+          # O Cloudflare às vezes desafia os IPs dos runners do GitHub (403 +
+          # cf-mitigated: challenge). Nesse caso a resposta é a página de
+          # desafio do próprio Cloudflare — não os headers do site — e a
+          # checagem fica inconclusiva, não reprovada.
+          if echo "$H" | grep -iq "^cf-mitigated: challenge"; then
+            echo "::warning::Cloudflare desafiou o runner — headers reais não conferidos nesta execução (inconclusivo, não é falha do site)."
+            exit 0
+          fi
           for header in "content-security-policy" "strict-transport-security" "x-frame-options" "x-content-type-options" "referrer-policy" "permissions-policy"; do
             echo "$H" | grep -iq "$header" || { echo "::error::Header ausente: $header"; exit 1; }
           done
