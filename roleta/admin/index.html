@@ -1686,8 +1686,16 @@ function removerExpert(e){
     });
   })();
 }
-function alternaSorteado(e){
-  if (sorteados.includes(e.id)){
+async function alternaSorteado(e){
+  /* Mexe direto no pool do sorteio da rodada ao vivo — sempre confirma. */
+  const desfazer = sorteados.includes(e.id);
+  const ok = await confirmModal(
+    desfazer ? '"' + e.name + '" volta a participar do sorteio desta rodada. Continuar?'
+             : '"' + e.name + '" sai do sorteio como já sorteado, até a rodada reiniciar. Continuar?',
+    { title: desfazer ? "Voltar ao sorteio" : "Marcar como sorteado",
+      okText: desfazer ? "Voltar ao sorteio" : "Marcar" });
+  if (!ok) return;
+  if (desfazer){
     sorteados = sorteados.filter(id => id !== e.id);
     toast(e.name + " voltou para o sorteio.");
   } else {
