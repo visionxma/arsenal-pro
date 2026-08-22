@@ -634,8 +634,10 @@
     .exp-row{ flex-wrap:wrap; row-gap:10px; }
     .exp-row .nm{ flex:1 1 100px; }
     .exp-acts{ flex:1 1 100%; margin-left:0; justify-content:flex-end; }
-    /* listas salvas empilham */
+    /* listas salvas empilham; o nome quebra em vez de ser cortado, porque
+       nomes descritivos ("Backup automatico (formacao...)") nao cabem numa linha */
     .lst-row{ flex-wrap:wrap; row-gap:10px; }
+    .lst-nome{ white-space:normal; overflow:visible; text-overflow:clip; line-height:1.35; }
     .lst-info{ flex:1 1 100%; }
     .lst-acts{ flex:1 1 100%; justify-content:flex-start; }
     .btn-row .abtn{ flex:1; }
