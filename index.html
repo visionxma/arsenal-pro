@@ -113,8 +113,8 @@ h3{font-size:20px;line-height:1.3}
 .hero-conteudo .sub{margin-left:auto;margin-right:auto}
 
 /* --- buraco negro --- */
-.bh{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:1440px;height:1300px;pointer-events:none;z-index:1;-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 61%,transparent 100%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 61%,transparent 100%)}
-.bh-vortex{position:absolute;left:50%;top:50%;width:1440px;height:810px;transform:translate(-50%,-50%);object-fit:cover;filter:hue-rotate(-46deg) saturate(1.15);-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 55%,transparent 82%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 55%,transparent 82%)}
+.bh{position:absolute;left:50%;top:140px;transform:translateX(-50%);width:1860px;height:1300px;pointer-events:none;z-index:1;-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 72%,transparent 98%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 72%,transparent 98%)}
+.bh-vortex{position:absolute;left:50%;top:50%;width:1860px;height:1046px;transform:translate(-50%,-50%);object-fit:cover;filter:hue-rotate(-46deg) saturate(1.2) brightness(1.08);-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#fff 60%,transparent 88%);mask-image:radial-gradient(50% 50% at 50% 50%,#fff 60%,transparent 88%)}
 /* anel de estrelas orbitando */
 .bh-stars{position:absolute;left:50%;top:50%;width:700px;height:700px;transform:translateZ(0) translate(-50%,-50%);animation:bhStarsGira 70s linear infinite;-webkit-mask-image:radial-gradient(50% 50% at 50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,rgba(217,217,217,0) 100%);mask-image:radial-gradient(50% 50% at 50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,rgba(217,217,217,0) 100%)}
 .bh-stars i{position:absolute;width:2px;height:2px;border-radius:5px;background:rgba(255,255,255,0);animation:bhTwinkle linear infinite}
@@ -141,7 +141,7 @@ h3{font-size:20px;line-height:1.3}
 .bh-dot:nth-child(7){right:14.2%;bottom:14.2%}
 .bh-dot:nth-child(8){right:-4px;top:50%;transform:translateY(-50%)}
 /* zona do painel: emerge da luz do horizonte */
-.painel-zona{position:relative;z-index:3;margin-top:44px;display:flex;justify-content:center}
+.painel-zona{position:relative;z-index:3;margin-top:156px;display:flex;justify-content:center}
 /* black hole do CTA final (reflect repete o efeito no fechamento) */
 .bh-final{top:auto;bottom:-430px;height:900px}
 .bh-final .bh-vortex{top:50%}
@@ -166,10 +166,10 @@ h3{font-size:20px;line-height:1.3}
 .micro{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--txt-4);letter-spacing:.04em}
 
 /* janela de app estilo reflect: vidro escuro, borda superior acesa pelo horizonte */
-.painel-wrap{position:relative;z-index:3;width:100%;max-width:1000px}
-.painel{position:relative;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(15,23,44,.82) 0%,rgba(8,13,26,.94) 40%,rgba(5,9,20,.97) 100%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(124,192,255,.16);box-shadow:0 -24px 90px -24px rgba(80,160,255,.4),0 34px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(190,225,255,.22)}
-.painel::before{content:'';position:absolute;inset:0 0 auto 0;height:120px;background:radial-gradient(60% 100% at 50% 0%,rgba(120,190,255,.14),transparent 75%);pointer-events:none}
-.painel-chrome{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}
+.painel-wrap{position:relative;z-index:3;width:100%;max-width:1352px}
+.painel{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,rgba(12,19,38,.34) 0%,rgba(9,14,28,.72) 26%,rgba(6,10,22,.93) 55%,rgba(4,8,18,.97) 100%);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(124,192,255,.2);box-shadow:0 -30px 110px -26px rgba(90,170,255,.5),0 40px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(200,230,255,.3)}
+.painel::before{content:'';position:absolute;inset:0 0 auto 0;height:220px;background:radial-gradient(70% 100% at 50% 0%,rgba(130,195,255,.22),transparent 78%);pointer-events:none}
+.painel-chrome{display:flex;align-items:center;gap:14px;padding:15px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}
 .painel-chrome .bolas{display:flex;gap:7px}
 .painel-chrome .bolas i{width:11px;height:11px;border-radius:50%}
 .painel-chrome .bolas i:nth-child(1){background:#ff5f57}
@@ -178,16 +178,16 @@ h3{font-size:20px;line-height:1.3}
 .painel-chrome .url{flex:0 1 460px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:#8fa5b1;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);border-radius:100px;padding:6px 16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .painel-chrome .url svg{width:11px;height:11px;stroke:#8fa5b1;flex:0 0 auto}
 .painel-chrome::after{content:'';width:47px}
-.painel-top{display:flex;align-items:center;justify-content:space-between;padding:17px 26px;border-bottom:1px solid rgba(255,255,255,.08)}
+.painel-top{display:flex;align-items:center;justify-content:space-between;padding:19px 34px;border-bottom:1px solid rgba(255,255,255,.08)}
 .painel-top .tt{font-family:var(--mono);letter-spacing:.22em;font-size:13px;font-weight:600;color:var(--azul-glow);text-shadow:0 0 18px rgba(75,163,240,.8)}
 .painel-top .st{font-size:12.5px;color:var(--txt-3)}
-.painel-lista{display:grid;grid-template-columns:1fr 1fr;column-gap:52px;padding:10px 26px 14px}
-.painel-item{display:flex;align-items:center;gap:12px;padding:10.5px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:13.5px}
+.painel-lista{display:grid;grid-template-columns:1fr 1fr;column-gap:72px;padding:12px 34px 16px}
+.painel-item{display:flex;align-items:center;gap:13px;padding:12.5px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:14.5px}
 .painel-item .ponto{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:var(--azul-claro);box-shadow:0 0 10px rgba(75,163,240,.9),0 0 3px rgba(255,255,255,.6)}
 .painel-item .nm{color:#d6edf8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .painel-item .fio{flex:1;border-bottom:1px dotted rgba(255,255,255,.12);transform:translateY(4px)}
 .painel-item .pv{font-family:var(--mono);font-size:12.5px;color:#8fa5b1;white-space:nowrap}
-.painel-foot{padding:17px 26px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;gap:18px;background:linear-gradient(90deg,rgba(35,137,230,.13),rgba(35,137,230,.03))}
+.painel-foot{padding:19px 34px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;gap:18px;background:linear-gradient(90deg,rgba(35,137,230,.13),rgba(35,137,230,.03))}
 .painel-foot .lbl{font-size:13px;color:var(--txt-3)}
 .painel-foot .lbl .riscado{text-decoration:line-through;color:var(--txt-4)}
 .painel-foot .hoje{display:flex;align-items:baseline;gap:14px}
