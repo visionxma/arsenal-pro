@@ -378,6 +378,26 @@ h3{font-size:20px;line-height:1.3}
 .rodape-legal .copy{font-size:12.5px;color:var(--txt-3);margin-top:12px}
 
 /* ============ RESPONSIVO ============ */
+
+/* ============ SEÇÃO PLANETA (efeito "features" da reflect, em azul Safirion) ============ */
+.sec-planeta{position:relative;padding:96px 0 0;overflow:clip;background:var(--bg);min-height:730px}
+.planeta{position:absolute;left:50%;top:150px;transform:translateX(-50%);width:min(1040px,135vw);aspect-ratio:1/1;border-radius:50%;background:radial-gradient(64% 64% at 50% 24%,rgba(96,178,255,.55) 0%,rgba(38,94,175,.44) 28%,rgba(12,26,54,.92) 56%,#04070f 78%);box-shadow:inset 0 5px 130px rgba(150,205,255,.42),inset 0 -170px 280px rgba(2,5,12,.95),0 -34px 150px -22px rgba(56,144,240,.62);pointer-events:none}
+.planeta::before{content:'';position:absolute;inset:-1px;border-radius:50%;padding:1.5px;background:conic-gradient(from 0deg,transparent 0 66%,rgba(170,215,255,.85) 78%,transparent 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:kvGlobo 26s linear infinite}
+.planeta::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 2px 0 rgba(235,248,255,.75),inset 0 4px 18px rgba(200,232,255,.5),inset 0 14px 60px rgba(120,190,255,.25)}
+@keyframes kvGlobo{to{transform:rotate(360deg)}}
+.planeta .meridianos{position:absolute;inset:0;width:100%;height:100%;opacity:.36;animation:kvGlobo 70s linear infinite reverse}
+.planeta .meridianos ellipse{fill:none;stroke:rgba(170,215,255,.5);stroke-width:.18}
+.veu-planeta{position:absolute;left:0;right:0;bottom:0;height:340px;background:linear-gradient(180deg,transparent,var(--bg) 82%);z-index:1;pointer-events:none}
+.p-conteudo{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center}
+.p-lista{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 60px;margin:150px 0 56px}
+.p-item{display:flex;align-items:center;gap:14px;font-size:clamp(16px,1.4vw,19px);color:#eaf4ff;font-weight:500}
+.p-item b{color:#fff;font-weight:600}
+.p-item .faisca{width:32px;height:32px;flex:0 0 auto;border-radius:50%;background:rgba(120,190,255,.12);border:1px solid rgba(150,205,255,.32);display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(75,163,240,.4)}
+.p-item .faisca svg{width:13px;height:13px;fill:#cfe6ff}
+.rise{position:absolute;inset:0;z-index:0;pointer-events:none}
+.rise i{position:absolute;bottom:-8px;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;animation:kvRise linear infinite}
+@keyframes kvRise{0%{transform:translateY(0);opacity:0}12%{opacity:.7}100%{transform:translateY(-860px);opacity:0}}
+
 @media (max-width:1080px){
   .dores{grid-template-columns:repeat(2,1fr)}
 }
@@ -398,6 +418,9 @@ h3{font-size:20px;line-height:1.3}
 }
 @media (max-width:680px){
   .hero{padding-top:120px}
+  .sec-planeta{min-height:560px}
+  .planeta{width:min(720px,190vw);top:170px}
+  .p-lista{flex-direction:column;align-items:flex-start;gap:16px;margin:120px 0 40px}
   .selos-confia{grid-template-columns:1fr}
   .rodape-grid{grid-template-columns:1fr;gap:36px}
   .cta.cta-mini{width:auto;font-size:13px;padding:10px 16px}
@@ -533,13 +556,30 @@ h3{font-size:20px;line-height:1.3}
   </div>
 </header>
 
-<!-- ============================== STATS ============================== -->
-<section class="stats">
-  <div class="wrap">
-    <div class="stat rev"><div class="v grad-blue">11</div><div class="l">Traders ao vivo</div></div>
-    <div class="stat rev rev-d1"><div class="v grad-blue">R$ 10.000</div><div class="l">Em entregáveis</div></div>
-    <div class="stat rev rev-d2"><div class="v grad-blue">7 dias</div><div class="l">De garantia</div></div>
+<!-- ============================== PLANETA (stats) ============================== -->
+<section class="sec-planeta">
+  <div class="rise" id="riseStars" aria-hidden="true"></div>
+  <div class="planeta" aria-hidden="true">
+    <svg class="meridianos" viewBox="0 0 100 100" aria-hidden="true">
+      <ellipse cx="50" cy="50" rx="49" ry="49"/>
+      <ellipse cx="50" cy="50" rx="38" ry="49"/>
+      <ellipse cx="50" cy="50" rx="26" ry="49"/>
+      <ellipse cx="50" cy="50" rx="13" ry="49"/>
+      <ellipse cx="50" cy="50" rx="49" ry="36"/>
+      <ellipse cx="50" cy="50" rx="49" ry="22"/>
+    </svg>
   </div>
+  <div class="wrap p-conteudo">
+    <div class="p-lista">
+      <div class="p-item rev"><span class="faisca"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2 2-8z"/></svg></span><span><b>11</b> traders ao vivo</span></div>
+      <div class="p-item rev rev-d1"><span class="faisca"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2 2-8z"/></svg></span><span><b>R$ 10.000</b> em entregáveis</span></div>
+      <div class="p-item rev rev-d2"><span class="faisca"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2 2-8z"/></svg></span><span><b>7 dias</b> de garantia</span></div>
+    </div>
+    <a class="cta rev" data-checkout href="#">Quero o Arsenal Pro por R$ 997
+      <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    </a>
+  </div>
+  <div class="veu-planeta" aria-hidden="true"></div>
 </section>
 
 <!-- ============================== POR QUE ============================== -->
@@ -951,6 +991,22 @@ document.querySelectorAll("[data-checkout]").forEach(a => a.href = CHECKOUT_URL)
   mede();
   addEventListener('resize',mede,{passive:true});
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(mede);
+})();
+
+/* ============ ESTRELAS SUBINDO (risingStars da reflect) ============ */
+(function(){
+  const campo=document.getElementById('riseStars');
+  if(!campo) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const n=innerWidth<680?18:36;
+  let html='';
+  for(let i=0;i<n;i++){
+    const x=(Math.random()*100).toFixed(2);
+    const dur=(7+Math.random()*9).toFixed(2), del=(-Math.random()*16).toFixed(2);
+    const sz=Math.random()<.8?2:3;
+    html+=`<i style="left:${x}%;width:${sz}px;height:${sz}px;animation-duration:${dur}s;animation-delay:${del}s"></i>`;
+  }
+  campo.innerHTML=html;
 })();
 
 /* ============ MURAL: sparklines decorativas + duplicação p/ loop ============ */
