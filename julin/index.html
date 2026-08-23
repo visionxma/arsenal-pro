@@ -64,10 +64,12 @@ a{color:inherit}
 /* headline "shine" do clone: bordas esmaecem no fundo, destaque azul sólido */
 .sh{background-image:linear-gradient(90deg,rgb(10,17,32) -4%,rgb(255,255,255) 50%,rgb(10,17,32) 108%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 h2 em,.titulo-azul{font-style:normal;color:var(--azul);-webkit-text-fill-color:var(--azul)}
-h1,h2,h3{font-weight:600;line-height:1.12;letter-spacing:-.015em}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em}
+h1{line-height:1.2}
+h2,h3{line-height:1.08}
 h2{font-size:clamp(30px,4.6vw,52px);margin-bottom:22px}
 h3{font-size:20px;line-height:1.3}
-.lead{color:var(--txt-2);font-size:clamp(16px,1.35vw,18.5px);max-width:760px}
+.lead{color:var(--txt-2);font-size:clamp(15px,1.5vw,18px);line-height:1.6;max-width:760px}
 .lead + .lead{margin-top:18px}
 .num-chip{font-family:var(--mono);font-size:12px;color:var(--azul-claro);background:var(--chip-bg);border:1px solid rgba(35,137,230,.3);border-radius:100px;padding:4px 12px;letter-spacing:.08em}
 .grad-blue{background:linear-gradient(100deg,#fff 10%,var(--azul-glow) 55%,var(--azul) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -161,9 +163,9 @@ h3{font-size:20px;line-height:1.3}
 .badge-noite{display:inline-flex;align-items:center;gap:9px;padding:8px 18px;border-radius:100px;border:1px solid var(--borda-azul);background:var(--chip-bg);font-size:13.5px;color:var(--azul-glow);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-bottom:26px}
 .badge-noite .viva{width:8px;height:8px;border-radius:50%;background:var(--azul-claro);animation:kv-pulsa 1.8s ease-out infinite}
 @keyframes kv-pulsa{0%{box-shadow:0 0 0 0 rgba(35,137,230,.5)}70%{box-shadow:0 0 0 9px rgba(35,137,230,0)}100%{box-shadow:0 0 0 0 rgba(35,137,230,0)}}
-.hero h1{font-size:clamp(40px,5.6vw,72px);margin-bottom:24px}
+.hero h1{font-size:clamp(36px,3.9vw,56px);margin-bottom:24px}
 .hero h1 .grad-blue{display:inline}
-.hero .sub{color:var(--txt-2);font-size:clamp(16.5px,1.4vw,19px);max-width:560px;margin-bottom:34px}
+.hero .sub{color:var(--txt-2);font-size:clamp(15px,1.5vw,18px);line-height:1.6;max-width:560px;margin-bottom:34px}
 /* CTA no padrão exato do clone: azul sólido, texto escuro, círculo escuro com seta azul */
 .cta{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:999px;background:var(--azul);color:#060b18;font-family:var(--sans);font-weight:700;font-size:16px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 0 26px rgba(35,137,230,.32);transition:transform .28s ease,box-shadow .28s ease,filter .28s ease;position:relative}
 .cta:hover{transform:translateY(-3px);filter:brightness(1.07);box-shadow:0 0 44px rgba(35,137,230,.55)}
