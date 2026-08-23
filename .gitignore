@@ -22,3 +22,7 @@ testes-roleta/sandbox/
 # ...mas os prints de evidencia ficam versionados, apesar do "*.png" acima
 !testes-roleta/prints/
 !testes-roleta/prints/*.png
+
+# Icones do site (excecao ao *.png acima)
+!assets/favicon-32.png
+!assets/apple-touch-icon.png
