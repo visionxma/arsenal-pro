@@ -48,11 +48,19 @@ a{color:inherit}
 /* ============ UTILITÁRIOS ============ */
 .wrap{max-width:1200px;width:100%;min-width:0;margin:0 auto;padding:0 24px;position:relative;z-index:2}
 .marquee{max-width:100%;contain:inline-size}
-.sec{position:relative;padding:110px 0;overflow:hidden}
-.kicker{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px}
-.kicker .dot-chip{width:38px;height:38px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--borda-azul);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(35,137,230,.35)}
-.kicker .dot-chip svg{width:16px;height:16px;stroke:var(--azul-claro)}
-.kicker .pill{padding:8px 16px;border-radius:100px;border:1px solid var(--borda);background:rgba(255,255,255,.04);font-size:13px;color:var(--txt-2);letter-spacing:.02em}
+.sec{position:relative;padding:clamp(64px,8vw,120px) 0;overflow:hidden}
+/* glow radial de fundo por seção (padrão ::before do clone) */
+.glow-dir::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(760px 460px at 78% 45%,rgba(35,137,230,.1),transparent 68%)}
+.glow-esq::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(760px 460px at 22% 42%,rgba(35,137,230,.09),transparent 68%)}
+.glow-centro::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(820px 460px at 50% 58%,rgba(35,137,230,.08),transparent 70%)}
+/* eyebrow no padrão do clone: quadrado azul sólido + pill gradiente */
+.kicker{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
+.kicker .dot-chip{width:38px;height:38px;flex:0 0 auto;border-radius:11px;background:var(--azul);display:flex;align-items:center;justify-content:center}
+.kicker .dot-chip svg{width:18px;height:18px;stroke:#060b18}
+.kicker .pill{padding:9px 18px;border-radius:100px;border:1px solid var(--borda);background:linear-gradient(43deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.06) 100%);font-size:14px;font-weight:500;color:#d6edf8;line-height:1}
+/* headline "shine" do clone: bordas esmaecem no fundo, destaque azul sólido */
+.sh{background-image:linear-gradient(90deg,rgb(10,17,32) -4%,rgb(255,255,255) 50%,rgb(10,17,32) 108%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+h2 em,.titulo-azul{font-style:normal;color:var(--azul);-webkit-text-fill-color:var(--azul)}
 h1,h2,h3{font-weight:600;line-height:1.12;letter-spacing:-.015em}
 h2{font-size:clamp(30px,4.6vw,52px);margin-bottom:22px}
 h3{font-size:20px;line-height:1.3}
@@ -146,10 +154,11 @@ h3{font-size:20px;line-height:1.3}
 .hero h1{font-size:clamp(40px,5.6vw,72px);margin-bottom:24px}
 .hero h1 .grad-blue{display:inline}
 .hero .sub{color:var(--txt-2);font-size:clamp(16.5px,1.4vw,19px);max-width:560px;margin-bottom:34px}
-.cta{display:inline-flex;align-items:center;gap:12px;padding:17px 30px;border-radius:100px;background:linear-gradient(180deg,var(--azul-claro),var(--azul));color:#fff;font-family:var(--sans);font-weight:600;font-size:17px;text-decoration:none;border:none;cursor:pointer;box-shadow:var(--glow-cta);transition:transform .25s ease,box-shadow .25s ease;position:relative}
-.cta:hover{transform:translateY(-2px) scale(1.02);box-shadow:var(--glow-cta),0 18px 60px -8px rgba(35,137,230,.55)}
-.cta .seta{width:30px;height:30px;border-radius:50%;background:rgba(3,6,15,.85);display:flex;align-items:center;justify-content:center;flex:none}
-.cta .seta svg{width:13px;height:13px;stroke:#fff}
+/* CTA no padrão exato do clone: azul sólido, texto escuro, círculo escuro com seta azul */
+.cta{display:inline-flex;align-items:center;gap:10px;padding:16px 28px;border-radius:999px;background:var(--azul);color:#060b18;font-family:var(--sans);font-weight:700;font-size:16px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 0 26px rgba(35,137,230,.32);transition:transform .28s ease,box-shadow .28s ease,filter .28s ease;position:relative}
+.cta:hover{transform:translateY(-3px);filter:brightness(1.07);box-shadow:0 0 44px rgba(35,137,230,.55)}
+.cta .seta{width:26px;height:26px;border-radius:50%;background:#060b18;display:flex;align-items:center;justify-content:center;flex:none}
+.cta .seta svg{width:13px;height:13px;stroke:var(--azul)}
 .ancora{margin-top:22px;font-size:14.5px;color:var(--txt-3);text-shadow:0 1px 14px rgba(3,6,15,.9),0 0 4px rgba(3,6,15,.8)}
 .micro{text-shadow:0 1px 14px rgba(3,6,15,.9),0 0 4px rgba(3,6,15,.8)}
 .ancora .riscado{text-decoration:line-through;color:var(--txt-4)}
@@ -205,39 +214,50 @@ h3{font-size:20px;line-height:1.3}
 .peca:nth-child(3){transform:rotate(-1deg)}
 
 /* ============ CARDS GENÉRICOS ============ */
-.card{position:relative;background:linear-gradient(165deg,rgba(20,31,54,.75),rgba(8,13,26,.9));border:1px solid var(--borda);border-radius:var(--r);padding:26px;transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease}
-.card:hover{transform:translateY(-4px);border-color:var(--borda-azul);box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 40px -12px rgba(35,137,230,.4)}
-/* borda gradiente cônica no hover (toque estilo Linear) */
-.card::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:conic-gradient(from 210deg,transparent 0%,rgba(124,192,255,.55) 12%,transparent 32%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s ease;pointer-events:none}
-.card:hover::before{opacity:1}
-.icone-chip{width:46px;height:46px;border-radius:12px;background:var(--chip-bg);border:1px solid rgba(35,137,230,.35);display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 0 22px rgba(35,137,230,.28)}
-.icone-chip svg{width:20px;height:20px;stroke:var(--azul-claro)}
+/* card no padrão exato .kvc do clone */
+.card{position:relative;display:flex;flex-direction:column;min-width:0;background:linear-gradient(155deg,#111a2b 0%,#0a1120 60%,#060b18 100%);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:clamp(22px,1.8vw,30px);transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s ease,box-shadow .3s ease}
+.card::after{content:'';position:absolute;inset:0;border-radius:20px;pointer-events:none;opacity:0;background:radial-gradient(120% 90% at 50% 120%,rgba(35,137,230,.16),transparent 62%);transition:opacity .35s ease}
+.card:hover{transform:translateY(-6px);border-color:rgba(35,137,230,.42);box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.card:hover::after{opacity:1}
+.icone-chip{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:rgba(35,137,230,.08);border:1px solid rgba(35,137,230,.22);display:flex;align-items:center;justify-content:center;margin-bottom:20px;padding:12px}
+.icone-chip svg{width:100%;height:100%;stroke:var(--azul)}
+/* pill numérica de rodapé dos cards (.kvc-n) */
+.num-rodape{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;min-width:44px;height:30px;padding:0 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#7a8f9b;font-size:13px;font-weight:600;margin-top:auto}
 
-/* dores 001–005 */
-.dores{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:46px}
-.dor{display:flex;flex-direction:column;gap:16px}
-.dor p{color:var(--txt-2);font-size:15.5px}
-.dor .num{align-self:flex-start}
-.dor-resumo{grid-column:1/-1;background:linear-gradient(120deg,rgba(35,137,230,.14),rgba(8,13,26,.9));border-color:var(--borda-azul)}
+/* dores 001–005: grid .kvc-grid do clone, carrossel scroll-snap no mobile */
+.dores{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.3vw,20px);margin-top:46px;padding-top:14px}
+.dor p{color:#a1b8c3;font-size:clamp(13.5px,1vw,15px);line-height:1.6;margin-bottom:26px;flex:1}
+.dores-dots{display:none}
+.dor-resumo{grid-column:1/-1;background:linear-gradient(120deg,rgba(35,137,230,.14),#0a1120 55%,#060b18 100%);border-color:rgba(35,137,230,.4)}
 .dor-resumo h3{font-size:clamp(20px,2.2vw,26px);margin-bottom:12px}
 .dor-resumo p{color:var(--txt-2)}
 
-/* dimensões */
-.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-.dim .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--azul-glow);margin-bottom:10px}
-.dim h3{margin-bottom:10px;font-size:22px}
-.dim p{font-size:14.5px;color:var(--txt-2)}
+/* dimensões: anatomia .kvp-selo do clone (card centrado) */
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.2vw,32px);margin-top:44px}
+.dim{align-items:center;text-align:center;gap:10px;padding:clamp(24px,2.6vw,36px) clamp(16px,1.8vw,24px);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.dim .icone-chip{width:56px;height:56px;border-radius:15px;margin:0 0 4px;padding:14px}
+.dim .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--azul-glow)}
+.dim h3{font-size:clamp(16px,1.5vw,19px);letter-spacing:-.01em;line-height:1.25;margin-bottom:2px}
+.dim p{font-size:clamp(13px,1.15vw,14.5px);color:#a1b8c3;line-height:1.45}
 
-/* ============ ENTREGÁVEIS ============ */
-.entregas{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
-.entrega{display:flex;flex-direction:column}
-.entrega .topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.entrega .trader{font-family:var(--mono);font-size:12px;color:var(--azul-glow);letter-spacing:.08em}
-.entrega h3{font-size:18.5px;margin-bottom:10px}
-.entrega p{font-size:14px;color:var(--txt-3);flex:1}
-.entrega .valor{margin-top:18px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
-.entrega .valor .l{font-size:12px;color:var(--txt-4)}
-.entrega .valor .v{font-family:var(--mono);font-size:15px;font-weight:600;color:#fff}
+/* ============ ENTREGÁVEIS: split + lista .kvcd-passos do clone ============ */
+.recebe-wrap{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(34px,5vw,72px);align-items:start;margin-top:10px}
+.recebe-esq{position:sticky;top:110px}
+.recebe-esq .lead{margin-bottom:22px}
+.recebe-label{margin:0 0 18px;color:#8fa5b1;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.itens-passos{list-style:none;counter-reset:passo;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.itens-passos li{counter-increment:passo;display:flex;flex-direction:column;padding:16px 16px 17px;border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.022);color:#a8bcc8;font-size:13.5px;line-height:1.5;transition:border-color .25s ease,background .25s ease,transform .25s ease}
+.itens-passos li:hover{transform:translateY(-2px);border-color:rgba(35,137,230,.34);background:rgba(35,137,230,.05)}
+.itens-passos .li-topo{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.itens-passos .ic{width:32px;height:32px;flex:0 0 auto;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(35,137,230,.1);border:1px solid rgba(35,137,230,.22);color:var(--azul-claro)}
+.itens-passos .ic svg{width:17px;height:17px;stroke:var(--azul-claro)}
+.itens-passos .li-topo::after{content:counter(passo,decimal-leading-zero);color:var(--azul-claro);font-size:11px;font-weight:700;letter-spacing:.09em;font-variant-numeric:tabular-nums;margin-left:auto}
+.itens-passos .trader{font-family:var(--mono);font-size:11px;color:var(--azul-glow);letter-spacing:.08em}
+.itens-passos b{display:block;color:#fff;font-weight:600;font-size:14.5px;line-height:1.3;margin-bottom:7px}
+.itens-passos p{margin:0 0 14px;flex:1}
+.itens-passos .valor{display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px dashed rgba(255,255,255,.08)}
+.itens-passos .valor .l{font-size:11px;color:var(--txt-4)}
+.itens-passos .valor .v{font-family:var(--mono);font-size:13.5px;font-weight:600;color:#fff}
 
 /* value stack */
 .stack{margin-top:54px;text-align:center;background:linear-gradient(180deg,rgba(35,137,230,.16),rgba(8,13,26,.92));border:1px solid var(--borda-azul);border-radius:20px;padding:52px 30px;position:relative;overflow:hidden}
@@ -247,8 +267,23 @@ h3{font-size:20px;line-height:1.3}
 .stack .apenas{font-family:var(--mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--azul-glow)}
 .stack .cta{margin-top:30px}
 
-/* ============ PARA VOCÊ / NÃO É ============ */
-.pra-quem{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:44px}
+/* ============ PARA VOCÊ / NÃO É: tabela comparativa .kvcmp do clone ============ */
+.pra-quem{margin-top:44px;border:1px solid rgba(255,255,255,.1);border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#111a2b 0%,#0a1120 62%,#060b18 100%);box-shadow:0 22px 46px rgba(0,0,0,.5)}
+.pra-quem .th{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center}
+.pra-quem .th--nao{color:#7a8f9b}
+.pra-quem .th--sim{color:var(--azul-claro);background:rgba(35,137,230,.1);border-left:1px solid rgba(35,137,230,.32)}
+.pra-quem .corpo{display:grid;grid-template-columns:1fr 1fr}
+.pra-quem .col{display:flex;flex-direction:column}
+.pra-quem .col--sim{background:rgba(35,137,230,.07);border-left:1px solid rgba(35,137,230,.32)}
+.pra-quem .cel{display:flex;align-items:flex-start;gap:11px;padding:16px 20px;font-size:14px;line-height:1.5;color:#a1b8c3}
+.pra-quem .cel:not(:last-child){border-bottom:1px solid rgba(255,255,255,.08)}
+.pra-quem .col--nao .cel{color:#7a8f9b}
+.pra-quem .cel strong,.pra-quem .cel b{color:#fff;font-weight:600}
+.pra-quem .mk{flex:0 0 auto;width:14px;margin-top:1px;font-style:normal;font-size:13px;line-height:1.45}
+.pra-quem .mk--x{color:var(--vermelho)}
+.pra-quem .mk--v{color:var(--verde)}
+
+/* checklist simples (seção final) */
 .lista-check{list-style:none;display:flex;flex-direction:column;gap:16px;margin-top:20px}
 .lista-check li{display:flex;gap:13px;font-size:15px;color:var(--txt-2);align-items:flex-start}
 .lista-check .ic{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:2px}
@@ -256,7 +291,25 @@ h3{font-size:20px;line-height:1.3}
 .lista-check .sim svg{width:11px;height:11px;stroke:var(--verde)}
 .lista-check .nao{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4)}
 .lista-check .nao svg{width:11px;height:11px;stroke:var(--vermelho)}
-.pra-quem h3{font-size:clamp(20px,2vw,24px)}
+
+/* ============ MURAL QUE SOBE (seção "ao vivo" do clone) ============ */
+.mural-wrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(34px,5vw,76px);align-items:center}
+.mural{position:relative;width:min(100%,560px);height:clamp(330px,52vh,470px);display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 14%,#000 86%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 14%,#000 86%,transparent 100%)}
+.mural-col{display:grid;gap:10px;align-content:start;animation:kvMuralSobe 34s linear infinite;will-change:transform}
+.mural-col--rev{animation-direction:reverse}
+.mural:hover .mural-col{animation-play-state:paused}
+@keyframes kvMuralSobe{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+.mcard{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 13px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:linear-gradient(160deg,#111a2b 0%,#0a1120 100%)}
+.mcard .nm{font-size:12px;color:#d6edf8;line-height:1.3;min-width:0}
+.mcard .spark{width:54px;height:26px;grid-column:1;margin-top:4px}
+.mcard .spark path{fill:none;stroke-width:1.6;stroke-linecap:round}
+.mcard .spark--up path{stroke:var(--verde)}
+.mcard .spark--down path{stroke:var(--vermelho)}
+.mcard .num{text-align:right;line-height:1.25;font-family:var(--mono);grid-row:span 2}
+.mcard .preco{display:block;font-size:12.5px;color:#fff;font-weight:600}
+.mcard .var{display:block;font-size:11.5px}
+.mcard .var.down{color:var(--vermelho)}
+.mcard .var.up{color:var(--verde)}
 
 /* ============ ESCASSEZ / GARANTIA / FINAL ============ */
 .escassez p,.garantia p{margin-top:18px}
@@ -264,13 +317,18 @@ h3{font-size:20px;line-height:1.3}
 .split-head{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:start;margin-bottom:30px}
 .split-head h2{margin-bottom:0}
 .split-head .lead{margin-top:10px}
-/* seção clara de contraste (interlúdio branco da safirion) */
-.sec-clara{background:#eef4fb;color:#0d1b2e}
+/* seção clara: padrão exato do "comparativo" branco do clone (centrado + 2 colunas + callout) */
+.sec-clara{background:#fff;color:#0d1b2e;text-align:center}
 .sec-clara h2{color:#071120}
-.sec-clara .lead{color:#41566e}
+.sec-clara .lead{color:#41566e;margin-left:auto;margin-right:auto}
 .sec-clara .lead em,.sec-clara .lead strong{color:#071120}
 .sec-clara .grad-blue{background:linear-gradient(100deg,#0d5aa8 10%,#2389e6 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sec-clara .selo7{background:rgba(11,138,96,.08);border-color:rgba(11,138,96,.35);color:#0b8a60}
+.clara-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,64px);margin:34px auto 0;max-width:980px;text-align:left}
+.clara-cols .lead{font-size:15.5px;margin:0}
+.clara-callout{margin:36px auto 0;max-width:980px;text-align:left;padding:22px 28px;border-left:3px solid var(--azul);background:linear-gradient(90deg,rgba(35,137,230,.09),rgba(35,137,230,.02));color:#22384f;font-size:16px;line-height:1.6}
+.clara-callout strong{color:#071120}
+.sec-clara .cta{margin-top:38px}
 .selos-confia{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
 .selo-card{background:#fff;border:1px solid #dbe6f2;border-radius:var(--r);padding:24px 20px;text-align:center;box-shadow:0 10px 30px rgba(13,27,46,.06);transition:transform .3s,box-shadow .3s}
 .selo-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(13,27,46,.1)}
@@ -301,19 +359,25 @@ h3{font-size:20px;line-height:1.3}
 .rodape-legal .copy{font-size:12.5px;color:var(--txt-3);margin-top:12px}
 
 /* ============ RESPONSIVO ============ */
+@media (max-width:1080px){
+  .dores{grid-template-columns:repeat(2,1fr)}
+}
 @media (max-width:1020px){
   .hero-grid{grid-template-columns:1fr;gap:48px}
   .bh-circulos{display:none}
   .bh,.bh-vortex{width:1028px}
-  .entregas{grid-template-columns:repeat(2,1fr)}
   .dims{grid-template-columns:1fr}
   .split-head{grid-template-columns:1fr;gap:20px}
   .selos-confia{grid-template-columns:repeat(2,1fr)}
   .topo-links{display:none}
   .rodape-grid{grid-template-columns:1fr 1fr}
+  .recebe-wrap{grid-template-columns:1fr;gap:36px}
+  .recebe-esq{position:static}
+  .mural-wrap{grid-template-columns:1fr;gap:36px}
+  .mural{width:min(100%,340px);grid-template-columns:1fr;height:clamp(300px,44vh,380px);margin:0 auto}
+  .mural-col--rev{display:none}
 }
 @media (max-width:680px){
-  .sec{padding:78px 0}
   .hero{padding-top:120px}
   .selos-confia{grid-template-columns:1fr}
   .rodape-grid{grid-template-columns:1fr;gap:36px}
@@ -325,9 +389,19 @@ h3{font-size:20px;line-height:1.3}
   .bh-stars{width:460px;height:460px}
   .painel{animation:none;transform:none}
   .painel-zona{margin-top:40px}
-  .dores{grid-template-columns:1fr}
-  .entregas{grid-template-columns:1fr}
-  .pra-quem{grid-template-columns:1fr}
+  /* carrossel scroll-snap das dores, como o .kvc-grid mobile do clone */
+  .dores{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:2px 4px 10px;margin:0 -4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dores::-webkit-scrollbar{display:none}
+  .dores .card{flex:0 0 85%;min-width:85%;scroll-snap-align:center}
+  .dores .dor-resumo{flex:0 0 92%;min-width:92%}
+  .dores-dots{display:flex;justify-content:center;gap:7px;margin-top:18px}
+  .dores-dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);transition:width .3s ease,background .3s ease}
+  .dores-dots span.on{background:var(--azul);width:22px;border-radius:4px}
+  .itens-passos{grid-template-columns:1fr}
+  .pra-quem .corpo{grid-template-columns:1fr}
+  .pra-quem .col--sim{border-left:0}
+  .pra-quem .col--nao{border-top:1px solid rgba(255,255,255,.08)}
+  .clara-cols{grid-template-columns:1fr}
   .stats .wrap{grid-template-columns:1fr;gap:20px}
   .cta{width:100%;justify-content:center;font-size:16px;padding:16px 22px}
   .aurora{filter:blur(60px)}
@@ -412,18 +486,18 @@ h3{font-size:20px;line-height:1.3}
     </div>
     <div class="marquee" aria-hidden="true">
       <div class="marquee-trilho" id="marqueeTrilho">
-        <span class="ativo"><img src="assets/mercado/bitcoin.svg" alt=""/>BTC/USD <span class="var up">▲ +2,41%</span></span>
-        <span class="ativo"><img src="assets/mercado/ethereum.svg" alt=""/>ETH/USD <span class="var up">▲ +1,87%</span></span>
-        <span class="ativo"><img src="assets/mercado/ouro.svg" alt=""/>OURO <span class="var down">▼ −0,32%</span></span>
-        <span class="ativo"><img src="assets/mercado/nvidia.svg" alt=""/>NVIDIA <span class="var up">▲ +3,12%</span></span>
-        <span class="ativo"><img src="assets/mercado/solana.svg" alt=""/>SOL/USD <span class="var up">▲ +4,05%</span></span>
-        <span class="ativo"><img src="assets/mercado/petroleo.svg" alt=""/>PETRÓLEO <span class="var down">▼ −1,10%</span></span>
-        <span class="ativo"><img src="assets/mercado/tesla.svg" alt=""/>TESLA <span class="var up">▲ +1,54%</span></span>
-        <span class="ativo"><img src="assets/mercado/apple.svg" alt=""/>APPLE <span class="var up">▲ +0,89%</span></span>
-        <span class="ativo"><img src="assets/mercado/indice.svg" alt=""/>S&amp;P 500 <span class="var up">▲ +0,64%</span></span>
-        <span class="ativo"><img src="assets/mercado/xrp.svg" alt=""/>XRP/USD <span class="var down">▼ −0,73%</span></span>
-        <span class="ativo"><img src="assets/mercado/netflix.svg" alt=""/>NETFLIX <span class="var up">▲ +1,22%</span></span>
-        <span class="ativo"><img src="assets/mercado/meta.svg" alt=""/>META <span class="var up">▲ +0,97%</span></span>
+        <span class="ativo"><img src="assets/mercado/bitcoin.svg" alt=""/>BTC/USD </span>
+        <span class="ativo"><img src="assets/mercado/ethereum.svg" alt=""/>ETH/USD </span>
+        <span class="ativo"><img src="assets/mercado/ouro.svg" alt=""/>OURO </span>
+        <span class="ativo"><img src="assets/mercado/nvidia.svg" alt=""/>NVIDIA </span>
+        <span class="ativo"><img src="assets/mercado/solana.svg" alt=""/>SOL/USD </span>
+        <span class="ativo"><img src="assets/mercado/petroleo.svg" alt=""/>PETRÓLEO </span>
+        <span class="ativo"><img src="assets/mercado/tesla.svg" alt=""/>TESLA </span>
+        <span class="ativo"><img src="assets/mercado/apple.svg" alt=""/>APPLE </span>
+        <span class="ativo"><img src="assets/mercado/indice.svg" alt=""/>S&amp;P 500 </span>
+        <span class="ativo"><img src="assets/mercado/xrp.svg" alt=""/>XRP/USD </span>
+        <span class="ativo"><img src="assets/mercado/netflix.svg" alt=""/>NETFLIX </span>
+        <span class="ativo"><img src="assets/mercado/meta.svg" alt=""/>META </span>
       </div>
     </div>
   </div>
@@ -459,30 +533,51 @@ h3{font-size:20px;line-height:1.3}
 </section>
 
 <!-- ============================== DORES ============================== -->
-<section class="sec" id="problema">
+<section class="sec glow-esq" id="problema">
   <div class="wrap">
     <div class="kicker rev">
       <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></span>
       <span class="pill">O problema real</span>
     </div>
     <h2 class="fill-words">Você Já Passou por <span data-destaque>Alguma Dessas Situações?</span></h2>
-    <div class="dores">
-      <div class="card dor rev"><span class="num-chip num">001</span><p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p></div>
-      <div class="card dor rev rev-d1"><span class="num-chip num">002</span><p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p></div>
-      <div class="card dor rev rev-d2"><span class="num-chip num">003</span><p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p></div>
-      <div class="card dor rev rev-d3"><span class="num-chip num">004</span><p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p></div>
-      <div class="card dor rev rev-d4"><span class="num-chip num">005</span><p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p></div>
+    <div class="dores" id="doresGrid">
+      <div class="card dor rev">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg></span>
+        <p>Aprendeu uma estratégia que funcionava no papel — mas na hora de operar ao vivo, <strong>o mercado não se comportou como deveria</strong>.</p>
+        <span class="num-rodape">001</span>
+      </div>
+      <div class="card dor rev rev-d1">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <p>Comprou indicadores que prometiam entradas precisas — e ficou olhando para o gráfico <strong>sem saber quando confiar no sinal</strong>.</p>
+        <span class="num-rodape">002</span>
+      </div>
+      <div class="card dor rev rev-d2">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8M14 17h7v-7"/></svg></span>
+        <p>Teve uma sequência boa, achou que tinha descoberto o caminho — e na semana seguinte <strong>perdeu tudo que tinha conquistado</strong>.</p>
+        <span class="num-rodape">003</span>
+      </div>
+      <div class="card dor rev">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <p>Viu traders postando resultado todo dia e ainda não entendeu <strong>o que eles enxergam que você não enxerga</strong>.</p>
+        <span class="num-rodape">004</span>
+      </div>
+      <div class="card dor rev rev-d1">
+        <span class="icone-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 13a8.5 8.5 0 11-9.4-9.4M14 3.5V10h6.5"/></svg></span>
+        <p>Sentiu que falta uma peça. Mais disciplina. Um indicador melhor. Uma estratégia diferente. Mas <strong>a peça certa nunca aparece</strong>.</p>
+        <span class="num-rodape">005</span>
+      </div>
       <div class="card dor-resumo rev">
         <h3>O problema não é você. E não é falta de conhecimento — você já sabe mais do que imagina.</h3>
         <p>O problema é que você está operando com <strong>pedaços de um sistema que nunca foi montado por completo</strong>.</p>
         <p style="margin-top:10px">É exatamente isso que o <em>Arsenal Pro</em> resolve.</p>
       </div>
     </div>
+    <div class="dores-dots" id="doresDots" aria-hidden="true"></div>
   </div>
 </section>
 
 <!-- ============================== 3 DIMENSÕES ============================== -->
-<section class="sec" id="sistema" style="background:var(--bg-2)">
+<section class="sec glow-centro" id="sistema" style="background:var(--bg-2)">
   <div class="wrap">
     <div class="kicker rev">
       <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
@@ -515,27 +610,91 @@ h3{font-size:20px;line-height:1.3}
 </section>
 
 <!-- ============================== ENTREGÁVEIS ============================== -->
-<section class="sec" id="recebe">
+<section class="sec glow-dir" id="recebe">
   <div class="aurora b" style="top:20%" aria-hidden="true"></div>
   <div class="wrap">
     <div class="kicker rev">
       <span class="dot-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg></span>
       <span class="pill">O que você recebe</span>
     </div>
-    <h2 class="fill-words">O Que Está <span data-destaque>Dentro do Arsenal Pro</span></h2>
-    <p class="lead rev">Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam <em>o sistema mais completo disponível nessa noite</em>.</p>
-    <div class="entregas">
-      <div class="card entrega rev"><div class="topo"><span class="trader">— Taylon</span><span class="num-chip">01</span></div><h3>Método PHIZ 5K</h3><p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></div></div>
-      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Patrick</span><span class="num-chip">02</span></div><h3>Mestre do Price Action</h3><p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
-      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Miriele</span><span class="num-chip">03</span></div><h3>Ultra Sniper + Aula Especializada</h3><p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></div></div>
-      <div class="card entrega rev"><div class="topo"><span class="trader">— Julin</span><span class="num-chip">04</span></div><h3>Mentoria Completa — Do Zero ao Avançado</h3><p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
-      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Thon Carvalho</span><span class="num-chip">05</span></div><h3>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</h3><p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
-      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Ed Trader</span><span class="num-chip">06</span></div><h3>Método VPA — Leitura de Velas e Controle Emocional</h3><p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></div></div>
-      <div class="card entrega rev"><div class="topo"><span class="trader">— Vitor Lela</span><span class="num-chip">07</span></div><h3>Estratégia Validada em 6 Anos + Indicador Exclusivo</h3><p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 397</span></div></div>
-      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Eduardo Bastos</span><span class="num-chip">08</span></div><h3>MACD Sniper</h3><p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 197</span></div></div>
-      <div class="card entrega rev rev-d2"><div class="topo"><span class="trader">— Tio Vitão</span><span class="num-chip">09</span></div><h3>Olho de Deus — IA Integrada com a Safirion</h3><p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></div></div>
-      <div class="card entrega rev"><div class="topo"><span class="trader">— Molina</span><span class="num-chip">10</span></div><h3>Indicador LEAD + Aula Fluxo Ultra</h3><p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
-      <div class="card entrega rev rev-d1"><div class="topo"><span class="trader">— Suzana</span><span class="num-chip">11</span></div><h3>Retração ST + Treinamento Completo</h3><p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p><div class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></div></div>
+    <div class="recebe-wrap">
+      <div class="recebe-esq">
+        <h2 class="fill-words">O Que Está <span data-destaque>Dentro do Arsenal Pro</span></h2>
+        <p class="lead rev">Cada entregável foi construído por um trader que opera ao vivo. Cada um tem valor próprio. Juntos, formam <em>o sistema mais completo disponível nessa noite</em>.</p>
+        <p class="recebe-label rev">Tudo que está incluso</p>
+        <a class="cta rev" data-checkout href="#">Quero o Arsenal Pro — R$ 997
+          <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+        <p class="ancora rev">Valor total: <span class="riscado">R$ 10.000</span> em entregáveis<br/>Arsenal Pro — apenas essa noite: <span class="forte">R$ 997</span></p>
+      </div>
+      <ol class="itens-passos">
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg></span><span class="trader">— Taylon</span></span>
+          <b>Método PHIZ 5K</b>
+          <p>Estratégia estruturada para conduzir o aluno do zero até um operacional consistente no mercado financeiro. Você recebe 7 módulos e 18 aulas completas, Grupo VIP exclusivo e acompanhamento ao vivo com Taylon — análises em tempo real, correção de operações e orientação prática para acelerar resultados.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v18M7 7h4v10H7M17 6v12M15 9h4v6h-4"/></svg></span><span class="trader">— Patrick</span></span>
+          <b>Mestre do Price Action</b>
+          <p>10 anos de mercado em 10 aulas. Os 7 padrões que Patrick usa para encadear de 3 a 7 gains consecutivos — simetria de mercado, movimentações de vela, ciclo completo do mercado e os segredos que fazem você ter gain onde a maioria perde.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 109 9M12 7a5 5 0 105 5M12 12h.01"/></svg></span><span class="trader">— Miriele</span></span>
+          <b>Ultra Sniper + Aula Especializada</b>
+          <p>O indicador Ultra Sniper identifica o momento exato da entrada — sempre no início da próxima vela. Com o indicador, você recebe 1 hora de aula com Miriele ensinando os padrões de confluência que ativam o gatilho de entrada e os filtros para ignorar sinais que não valem a operação, como o mercado lateralizado.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z"/></svg></span><span class="trader">— Julin</span></span>
+          <b>Mentoria Completa — Do Zero ao Avançado</b>
+          <p>De como abrir uma conta até operar OTC — análise gráfica, Order Block, suporte e resistência, Fibonacci, pullback, gatilhos e gerenciamento de risco. Tudo em vídeo aulas completas, na sequência certa para construir uma base sólida do começo ao fim.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg></span><span class="trader">— Thon Carvalho</span></span>
+          <b>Kit Zero Loss + Trader WIN Manual + Indicador Price Action Pro</b>
+          <p>Três entregáveis em um: o Aulão Zero Loss com a estratégia para operar sem quebrar banca, o manual Trader WIN e o Indicador Price Action Pro — leitura precisa do Price Action diretamente no gráfico para entradas mais assertivas.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></span><span class="trader">— Ed Trader</span></span>
+          <b>Método VPA — Leitura de Velas e Controle Emocional</b>
+          <p>Para quem quebra banca por emoção: o Método VPA ensina a ler o que as velas realmente dizem sobre o mercado e a construir o controle emocional que separa o trader amador do profissional que opera com consistência.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 297</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4"/></svg></span><span class="trader">— Vitor Lela</span></span>
+          <b>Estratégia Validada em 6 Anos + Indicador Exclusivo</b>
+          <p>A estratégia que Vitor usa há 6 anos no mercado real — e o indicador exclusivo que ele desenvolveu para potencializar as entradas. Não é teoria. É o operacional ao vivo de um trader que vive disso.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 397</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><span class="trader">— Eduardo Bastos</span></span>
+          <b>MACD Sniper</b>
+          <p>Aula completa ensinando como interpretar os sinais do MACD para identificar mudanças de direção do mercado — antes que a maioria dos traders perceba o que está acontecendo.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 197</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7zM12 9a3 3 0 100 6 3 3 0 000-6z"/></svg></span><span class="trader">— Tio Vitão</span></span>
+          <b>Olho de Deus — IA Integrada com a Safirion</b>
+          <p>9 anos de metodologia transformados em inteligência artificial — integrada diretamente na plataforma Safirion. A IA analisa o gráfico, lê o mercado e potencializa cada decisão de operação em tempo real. Você já está na Safirion. Agora ela trabalha por você.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 997</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></span><span class="trader">— Molina</span></span>
+          <b>Indicador LEAD + Aula Fluxo Ultra</b>
+          <p>O indicador LEAD revela a manipulação de mercado antes que ela se complete — mostrando como o fluxo se forma, onde estão as zonas de liquidez e qual o momento certo de entrar com assertividade. Acompanha aula de 10 minutos com Molina explicando cada sinal na prática.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></span>
+        </li>
+        <li class="rev">
+          <span class="li-topo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg></span><span class="trader">— Suzana</span></span>
+          <b>Retração ST + Treinamento Completo</b>
+          <p>O script Retração ST identifica automaticamente as principais regiões de retração do mercado — sem precisar marcar nada manualmente. Você recebe o indicador e um treinamento completo que ensina do zero: como instalar, interpretar cada marcação, identificar retrações de alta e de baixa, encontrar os melhores pontos de entrada e confirmar a operação com leitura de velas. Inclui suporte, comunidade exclusiva e atualizações futuras.</p>
+          <span class="valor"><span class="l">Valor individual</span><span class="v">R$ 497</span></span>
+        </li>
+      </ol>
     </div>
 
     <div class="stack rev">
@@ -555,40 +714,57 @@ h3{font-size:20px;line-height:1.3}
 <!-- ============================== PARA QUEM ============================== -->
 <section class="sec" style="background:var(--bg-2)">
   <div class="wrap">
-    <div class="pra-quem">
-      <div class="card rev">
-        <h3>O Arsenal Pro É Para Você Se...</h3>
-        <ul class="lista-check">
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</li>
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já opera mas não tem consistência — boa semana, semana ruim — e quer entender o que está faltando no seu operacional.</li>
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você tem estratégia mas não tem ferramenta — opera no achismo, sem indicadores confiáveis para embasar as entradas.</li>
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já tem indicadores mas não tem estratégia — os sinais aparecem e você não sabe exatamente como agir com eles.</li>
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você quer parar de depender de uma única metodologia e construir um operacional sólido e diversificado.</li>
-          <li><span class="ic sim"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</li>
-        </ul>
-      </div>
-      <div class="card rev rev-d1" style="border-color:rgba(248,113,113,.25)">
-        <h3>O Arsenal Pro Não É Para Você Se...</h3>
-        <ul class="lista-check">
-          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</li>
-          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você acredita que vai lucrar no mercado sem estudar o que vai receber e sem aplicar o que aprender.</li>
-          <li><span class="ic nao"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></span>Você está procurando um atalho que funcione sem nenhum esforço da sua parte.</li>
-        </ul>
+    <div class="pra-quem rev">
+      <div class="corpo">
+        <div class="col col--nao">
+          <div class="th th--nao">O Arsenal Pro Não É Para Você Se...</div>
+          <div class="cel"><i class="mk mk--x">✗</i><span>Você quer mais uma estratégia para adicionar à pilha sem nunca colocar em prática.</span></div>
+          <div class="cel"><i class="mk mk--x">✗</i><span>Você acredita que vai lucrar no mercado sem estudar o que vai receber e sem aplicar o que aprender.</span></div>
+          <div class="cel"><i class="mk mk--x">✗</i><span>Você está procurando um atalho que funcione sem nenhum esforço da sua parte.</span></div>
+        </div>
+        <div class="col col--sim">
+          <div class="th th--sim">O Arsenal Pro É Para Você Se...</div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você está começando e quer aprender do jeito certo — com método, ferramenta e sistema desde o início, sem precisar montar peça por peça.</span></div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você já opera mas não tem consistência — boa semana, semana ruim — e quer entender o que está faltando no seu operacional.</span></div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você tem estratégia mas não tem ferramenta — opera no achismo, sem indicadores confiáveis para embasar as entradas.</span></div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você já tem indicadores mas não tem estratégia — os sinais aparecem e você não sabe exatamente como agir com eles.</span></div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você quer parar de depender de uma única metodologia e construir um operacional sólido e diversificado.</span></div>
+          <div class="cel"><i class="mk mk--v">✓</i><span>Você já opera na Safirion e quer potencializar cada operação com uma IA integrada direto na plataforma.</span></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ============================== ESCASSEZ ============================== -->
-<section class="sec escassez">
+<section class="sec escassez glow-dir">
   <div class="wrap">
-    <div class="split-head">
-      <h2 class="fill-words">Esse Produto <span data-destaque>Não Vai Existir</span> Depois Dessa Noite.</h2>
-      <p class="lead rev">Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, <strong>o produto dessa noite</strong>.</p>
+    <div class="mural-wrap">
+      <div class="mural" aria-hidden="true">
+        <div class="mural-col">
+            <div class="mcard"><span class="nm">Método PHIZ 5K</span><span class="num"><span class="preco">R$ 997</span></span><svg class="spark spark--up" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Mestre do Price Action</span><span class="num"><span class="preco">R$ 497</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Ultra Sniper + Aula</span><span class="num"><span class="preco">R$ 297</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Mentoria Zero ao Avançado</span><span class="num"><span class="preco">R$ 497</span></span><svg class="spark spark--up" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Kit Zero Loss + PA Pro</span><span class="num"><span class="preco">R$ 497</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Método VPA</span><span class="num"><span class="preco">R$ 297</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+        </div>
+        <div class="mural-col mural-col--rev">
+            <div class="mcard"><span class="nm">Estratégia 6 Anos</span><span class="num"><span class="preco">R$ 397</span></span><svg class="spark spark--up" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">MACD Sniper</span><span class="num"><span class="preco">R$ 197</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Olho de Deus (IA)</span><span class="num"><span class="preco">R$ 997</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Indicador LEAD</span><span class="num"><span class="preco">R$ 497</span></span><svg class="spark spark--up" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+            <div class="mcard"><span class="nm">Retração ST</span><span class="num"><span class="preco">R$ 497</span></span><svg class="spark spark--down" viewBox="0 0 54 26" aria-hidden="true"><path d=""/></svg></div>
+        </div>
+      </div>
+      <div>
+        <h2 class="fill-words">Esse Produto <span data-destaque>Não Vai Existir</span> Depois Dessa Noite.</h2>
+        <p class="lead rev">Não porque a gente vai tirar do ar para criar urgência artificial. Mas porque o Arsenal Pro é, literalmente, <strong>o produto dessa noite</strong>.</p>
+        <p class="lead rev">Para reunir os maiores traders com sistemas diferentes, indicadores exclusivos e uma IA integrada em um único produto — foi preciso criar algo que não existia antes. Cada trader contribuiu com o seu melhor por uma razão específica: o Safirion Corujão de Traders.</p>
+        <p class="lead rev">Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, <em>não se repete</em>.</p>
+        <p class="lead rev"><strong>R$ 10.000 em entregáveis</strong> reunidos em um único produto por <strong>R$ 997</strong> — disponível apenas durante o Corujão. Quando o evento terminar, essa oferta fecha.</p>
+      </div>
     </div>
-    <p class="lead rev">Para reunir os maiores traders com sistemas diferentes, indicadores exclusivos e uma IA integrada em um único produto — foi preciso criar algo que não existia antes. Cada trader contribuiu com o seu melhor por uma razão específica: o Safirion Corujão de Traders.</p>
-    <p class="lead rev">Quando essa noite terminar, cada trader volta para o seu próprio negócio. Os indicadores, as estratégias, a IA — cada um segue o seu caminho. O conjunto que você vê aqui, por esse preço, <em>não se repete</em>.</p>
-    <p class="lead rev"><strong>R$ 10.000 em entregáveis</strong> reunidos em um único produto por <strong>R$ 997</strong> — disponível apenas durante o Corujão. Quando o evento terminar, essa oferta fecha.</p>
   </div>
 </section>
 
@@ -596,12 +772,13 @@ h3{font-size:20px;line-height:1.3}
 <section class="sec garantia sec-clara" id="garantia">
   <div class="wrap">
     <span class="selo7 rev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>7 dias · sem risco</span>
-    <div class="split-head">
-      <h2 class="rev">Você Tem <span class="grad-blue">7 Dias</span> Para Testar. Sem Risco.</h2>
-      <p class="lead rev">Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o <em>reembolso em até 7 dias</em>. <strong>Sem perguntas. Sem burocracia.</strong></p>
+    <h2 class="rev">Você Tem <span class="grad-blue">7 Dias</span> Para Testar. Sem Risco.</h2>
+    <p class="lead rev" style="max-width:760px">Se você entrar no Arsenal Pro e por qualquer motivo sentir que não era o que esperava, basta pedir o <em>reembolso em até 7 dias</em>. <strong>Sem perguntas. Sem burocracia.</strong></p>
+    <div class="clara-cols">
+      <p class="lead rev">Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento.</p>
+      <p class="lead rev">Se não gostar — <em>devolvemos 100% do seu investimento</em>.</p>
     </div>
-    <p class="lead rev">Você tem 7 dias para acessar tudo, testar os indicadores, estudar as estratégias e ver a IA em funcionamento. Se não gostar — <em>devolvemos 100% do seu investimento</em>.</p>
-    <p class="lead rev">A única coisa que não devolvemos é o conhecimento que você já vai ter absorvido.</p>
+    <p class="clara-callout rev">A única coisa que não devolvemos é o conhecimento que você já vai ter absorvido.</p>
     <div class="selos-confia">
       <div class="selo-card rev">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
@@ -620,6 +797,9 @@ h3{font-size:20px;line-height:1.3}
         <h4>7 dias para decidir</h4><p>Teste tudo antes de escolher ficar.</p>
       </div>
     </div>
+    <a class="cta rev" data-checkout href="#">Quero o Arsenal Pro — R$ 997
+      <span class="seta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+    </a>
   </div>
 </section>
 
@@ -730,6 +910,36 @@ document.querySelectorAll("[data-checkout]").forEach(a => a.href = CHECKOUT_URL)
       es.forEach(e=>{ if(e.isIntersecting && v.paused) v.play().catch(()=>{}); });
     },{threshold:.05}).observe(v);
   });
+})();
+
+/* ============ MURAL: sparklines decorativas + duplicação p/ loop ============ */
+(function(){
+  const reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.mcard .spark').forEach((svg,idx)=>{
+    // gera um caminho de sparkline pseudoaleatório e estável por índice
+    let seed=idx*7+3, pts=[];
+    const rnd=()=>{seed=(seed*9301+49297)%233280; return seed/233280;};
+    let y=13+(rnd()-.5)*8;
+    for(let x=0;x<=54;x+=6){ y=Math.max(3,Math.min(23,y+(rnd()-.5)*9)); pts.push(`${x},${y.toFixed(1)}`); }
+    svg.querySelector('path').setAttribute('d','M'+pts.join(' L'));
+  });
+  document.querySelectorAll('.mural-col').forEach(col=>{ col.innerHTML+=col.innerHTML; if(reduz) col.style.animation='none'; });
+})();
+
+/* ============ DOTS DO CARROSSEL DE DORES (mobile, padrão kvc do clone) ============ */
+(function(){
+  const grid=document.getElementById('doresGrid'), dots=document.getElementById('doresDots');
+  if(!grid||!dots) return;
+  const cards=[...grid.children];
+  dots.innerHTML=cards.map(()=>'<span></span>').join('');
+  const ds=[...dots.children]; ds[0].classList.add('on');
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting && matchMedia('(max-width:680px)').matches){
+      const i=cards.indexOf(e.target);
+      ds.forEach((d,j)=>d.classList.toggle('on',j===i));
+    }});
+  },{root:grid,threshold:.6});
+  cards.forEach(c=>io.observe(c));
 })();
 
 /* ============ MARQUEE: duplica o trilho para loop infinito ============ */
