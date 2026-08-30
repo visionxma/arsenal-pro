@@ -1,0 +1,7 @@
+@keyframes anim_01 {
+  from { opacity: 1; transform: translateY(+382px); }
+  to   { opacity: 0; transform: translateY(0px); }
+}
+.anim_01 {
+  animation: anim_01 22051ms linear(0, 0.45, 0.85, 1.06, 1.02, 1) both;
+}

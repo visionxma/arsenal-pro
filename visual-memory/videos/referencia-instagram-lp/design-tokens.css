@@ -1,0 +1,39 @@
+/* Design tokens extraidos de: Referencia Instagram LP */
+:root {
+  --color-background: #06070a;
+  --color-surface: #161b18;
+  --color-text: #d4d5d4;
+  --color-primary: #0a7f0d;
+  --color-secondary: #115c0d;
+  --palette-1: #06070a; /* 55.8% */
+  --palette-2: #161b18; /* 14.2% */
+  --palette-3: #0a7f0d; /* 11.1% */
+  --palette-4: #223520; /* 5.8% */
+  --palette-5: #115c0d; /* 4.9% */
+  --palette-6: #89cb23; /* 4.3% */
+  --palette-7: #7f7880; /* 2.2% */
+  --palette-8: #d4d5d4; /* 1.7% */
+  --space-unit: 4px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-36: 36px;
+  --space-40: 40px;
+  --space-44: 44px;
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-9: 9px;
+  --font-9: 9px;
+  --font-15: 15px;
+  --font-20: 20px;
+  --font-27: 27px;
+  --font-32: 32px;
+  --font-38: 38px;
+  --font-43: 43px;
+  --font-50: 50px;
+  --duration-anim_01: 22051ms;
+  --ease-anim_01: linear(0, 0.45, 0.85, 1.06, 1.02, 1);
+}
