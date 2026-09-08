@@ -1,0 +1,22 @@
+# Fim de linha: o repositorio guarda tudo em LF.
+# Sem isto, um editor que salva em CRLF marca o arquivo inteiro como
+# modificado sem mudar uma virgula do conteudo — foi o que aconteceu em
+# 08/09/2026, com 323 arquivos "modificados" em 6 repositorios.
+* text=auto eol=lf
+
+# Binarios: nunca converter.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp4 binary
+*.mp3 binary
+*.zip binary
+*.bin binary
