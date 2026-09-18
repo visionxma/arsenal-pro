@@ -1,45 +1,100 @@
-name: Backup do Supabase
+name: Backup da roleta e dos logins
 
-# Dump diário do banco Supabase, criptografado e guardado como artefato (retenção 30 dias).
-# Requer 2 secrets no repo (Settings → Secrets and variables → Actions):
-#   SUPABASE_DB_URL  → string de conexão (Supabase → Project Settings → Database → Connection string → URI)
-#   BACKUP_PASSPHRASE → senha forte para criptografar o dump
+# O que este projeto tem de verdade no Supabase: o LOGIN do operador (auth) e a
+# linha com o ESTADO da roleta (public.roleta_estado) — lista de experts,
+# lápides, configuração, rodada e histórico. Não há mais nada.
+#
+# Por isso o backup não é um pg_dump: ele lê pela API com a chave service_role,
+# junta tudo num JSON, comprime e criptografa. Guardado como artefato por 90
+# dias. Antes daqui, este workflow falhava todo dia por falta de secrets e o
+# projeto ficou sem backup nenhum (corrigido em 18/09/2026).
+#
+# Secrets necessários (Settings → Secrets and variables → Actions):
+#   SUPABASE_SERVICE_ROLE  → chave service_role do projeto
+#   BACKUP_PASSPHRASE      → senha que abre o arquivo (está no cofre local)
+
 on:
   schedule:
-    - cron: "0 5 * * *"   # todo dia 05:00 UTC (~02:00 BRT)
+    - cron: "0 5 * * *"   # todo dia 05:00 UTC (~02:00 BRT, depois do Corujão)
   workflow_dispatch:
 
 permissions:
   contents: read
 
+env:
+  SUPA: https://hovbgrhmoqrhrxvwvkbt.supabase.co
+
 jobs:
-  dump:
+  backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Instalar Postgres client 16
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
-          sudo apt-get update && sudo apt-get install -y postgresql-client-16 gnupg
-
-      - name: Dump + criptografia
+      - name: Conferir os secrets
         env:
-          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SRV: ${{ secrets.SUPABASE_SERVICE_ROLE }}
           PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           set -euo pipefail
-          test -n "$DB_URL" || { echo "::error::Secret SUPABASE_DB_URL ausente"; exit 1; }
+          test -n "$SRV"        || { echo "::error::Secret SUPABASE_SERVICE_ROLE ausente"; exit 1; }
           test -n "$PASSPHRASE" || { echo "::error::Secret BACKUP_PASSPHRASE ausente"; exit 1; }
-          STAMP=$(date -u +%Y%m%d-%H%M)
-          pg_dump --no-owner --no-privileges "$DB_URL" \
-            | gzip -9 \
-            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASSPHRASE" \
-            > "supabase-$STAMP.sql.gz.gpg"
-          ls -lh supabase-*.sql.gz.gpg
 
-      - name: Guardar artefato
-        uses: actions/upload-artifact@v4
+      - name: Baixar estado e logins
+        env:
+          SRV: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: |
+          set -euo pipefail
+          curl -sS -f "$SUPA/rest/v1/roleta_estado?select=*" \
+            -H "apikey: $SRV" -H "Authorization: Bearer $SRV" > estado.json
+          curl -sS -f "$SUPA/auth/v1/admin/users?per_page=200" \
+            -H "apikey: $SRV" -H "Authorization: Bearer $SRV" > usuarios.json
+          python3 - <<'PY'
+          import json, datetime
+          estado = json.load(open('estado.json'))
+          users  = json.load(open('usuarios.json'))
+          lista  = users.get('users', users if isinstance(users, list) else [])
+          # e-mail e data bastam para recriar o acesso; nada de hash de senha no artefato.
+          enxuto = [{'id':u.get('id'),'email':u.get('email'),
+                     'criado':u.get('created_at'),'ultimo_login':u.get('last_sign_in_at')}
+                    for u in lista]
+          saida = {'quando': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'projeto': 'hovbgrhmoqrhrxvwvkbt', 'estado': estado, 'operadores': enxuto}
+          json.dump(saida, open('backup.json','w'), ensure_ascii=False, indent=1)
+          linha = estado[0] if estado else {}
+          print('experts guardados:', len(linha.get('experts') or []))
+          print('ja sorteados:', len(linha.get('sorteados') or []))
+          print('operadores:', len(enxuto))
+          PY
+          test -s backup.json
+
+      - name: Recusar backup vazio
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open('backup.json'))
+          e = (d.get('estado') or [{}])[0]
+          if not (e.get('experts') or []):
+              print("::error::O backup veio sem nenhum expert — melhor falhar do que guardar um arquivo vazio e achar que tem backup")
+              sys.exit(1)
+          if not d.get('operadores'):
+              print("::error::O backup veio sem nenhum operador cadastrado")
+              sys.exit(1)
+          print("backup com conteudo: ok")
+          PY
+
+      - name: Compactar e criptografar
+        env:
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          STAMP=$(date -u +%Y%m%d-%H%M)
+          gzip -9 -c backup.json \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASSPHRASE" \
+            > "backup-$STAMP.json.gz.gpg"
+          rm -f backup.json estado.json usuarios.json
+          ls -lh backup-*.json.gz.gpg
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: supabase-backup
-          path: "*.sql.gz.gpg"
-          retention-days: 30
+          name: backup-roleta
+          path: backup-*.json.gz.gpg
+          retention-days: 90
