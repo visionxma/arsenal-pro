@@ -1,0 +1,61 @@
+name: Pulso da Roleta (login e páginas no ar)
+
+# Por que existe (18/09/2026): em 18/09 o projeto Supabase saiu do ar e o painel
+# do operador ficou sem login no meio da operação. Este pulso faz duas coisas:
+#
+#   1. mantém o projeto Supabase ATIVO — projeto de plano gratuito é pausado por
+#      inatividade, e um pedido a cada dois dias conta como atividade;
+#   2. avisa cedo — se o login, o painel ou a roleta caírem, o GitHub manda
+#      e-mail de falha antes de a live descobrir do jeito difícil.
+#
+# Nenhum segredo aqui: a chave anônima já está no HTML público da roleta.
+# Para rodar na hora: aba Actions → este workflow → "Run workflow".
+
+on:
+  schedule:
+    - cron: "0 9 */2 * *"   # a cada 2 dias, 09:00 UTC (06:00 BRT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SUPA: https://hovbgrhmoqrhrxvwvkbt.supabase.co
+  ANON: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4
+  PAINEL: https://admin.safiriontradingbrasil.com/roleta/admin/
+  ROLETA: https://admin.safiriontradingbrasil.com/roleta/
+
+jobs:
+  pulso:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Servidor de login de pé (GoTrue)
+        run: |
+          set -euo pipefail
+          COD=$(curl -sS -o /tmp/health.json -w '%{http_code}' -H "apikey: $ANON" "$SUPA/auth/v1/health")
+          cat /tmp/health.json; echo
+          test "$COD" = "200" || { echo "::error::Servidor de login fora do ar (HTTP $COD) — o painel não vai deixar ninguém entrar"; exit 1; }
+
+      - name: Login por senha aceita pedidos
+        run: |
+          set -euo pipefail
+          # Credencial de propósito inválida: só queremos saber se o endpoint de
+          # senha responde. 400 = serviço vivo e rejeitando. 5xx/000 = problema.
+          COD=$(curl -sS -o /tmp/tok.json -w '%{http_code}' -X POST \
+            -H "apikey: $ANON" -H "Content-Type: application/json" \
+            -d '{"email":"pulso@exemplo.invalido","password":"pulso-nao-existe"}' \
+            "$SUPA/auth/v1/token?grant_type=password")
+          cat /tmp/tok.json; echo
+          case "$COD" in
+            400|401|403) echo "OK — endpoint de senha respondeu $COD" ;;
+            *) echo "::error::Endpoint de login respondeu $COD (esperado 400) — login do painel em risco"; exit 1 ;;
+          esac
+
+      - name: Painel e roleta servindo no ar
+        run: |
+          set -euo pipefail
+          for U in "$PAINEL" "$ROLETA"; do
+            COD=$(curl -sS -o /dev/null -w '%{http_code}' "$U")
+            echo "$COD  $U"
+            test "$COD" = "200" || { echo "::error::$U respondeu $COD"; exit 1; }
+          done
