@@ -1715,12 +1715,28 @@ function anotarRev(v){
 let tumbas = load(LS_TUMBAS, {});
 if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
 const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
+/* EMPATE DE CARIMBO (18/09/2026) — o furo que fazia duas maquinas do mesmo login
+   ficarem diferentes PARA SEMPRE. Duas pessoas editando o mesmo expert no MESMO
+   milissegundo geram o mesmo carimbo; com "maior vence", nenhum vence e cada
+   maquina ficava com a sua versao, sem nada para corrigir depois.
+   O desempate precisa dar o MESMO resultado em qualquer maquina, sem ninguem
+   combinar nada: comparamos o conteudo em texto. E estavel, nao depende da ordem
+   de chegada e vale tanto aqui quanto na roleta. */
+function textoCanonico(e){
+  return JSON.stringify([ String(e.id), String(e.name || ""), !!e.active,
+    (e.minutes === 0 || e.minutes) ? String(e.minutes) : "", String(e.photo || "") ]);
+}
+function versaoQuePrevalece(a, b){
+  const ca = carimbo(a), cb = carimbo(b);
+  if (ca !== cb) return ca > cb ? a : b;
+  return textoCanonico(a) >= textoCanonico(b) ? a : b;
+}
 function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
   const porId = new Map();
   const absorve = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
     if (!e || !e.id) return;
     const atual = porId.get(e.id);
-    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+    porId.set(e.id, atual ? versaoQuePrevalece(atual, e) : e);
   });
   absorve(listaA); absorve(listaB);
   const tum = Object.assign({}, tumbasA || {});
@@ -1762,7 +1778,8 @@ function applyAdminState(m){
    recusa escrita anonima. Serve para a roleta subir ja com a lista certa quando
    e aberta num computador novo e nao ha painel no ar para responder. Sem a
    tabela, nada muda: ela percebe uma vez e nao tenta mais. */
-const EST_REST = SYNC_URL + "/rest/v1/roleta_estado_teste";
+const EST_TABELA_NOME = "roleta_estado_teste";
+const EST_REST = SYNC_URL + "/rest/v1/" + EST_TABELA_NOME;
 const EST_ID   = "cj-TESTE";
 let estadoNoServidor = null;
 async function adotarDoServidor(){
@@ -1777,6 +1794,7 @@ async function adotarDoServidor(){
     const linha = Array.isArray(linhas) && linhas.length ? linhas[0] : null;
     if (!linha) return false;
     const rev = parseInt(linha.rev, 10) || 0;
+    revVistoServidor = rev;
     /* o relogio de ANTES: applyAdminState ja anota o do servidor, e comparar
        depois daria empate — a rodada guardada nunca seria adotada. */
     const revAntes = revVisto;
@@ -1894,7 +1912,13 @@ async function tratarMsg(m, local){
     const m = payload || {};
     if (m.k !== SYNC_KEY) return;
     tratarMsg(m, false);
-  }).subscribe(st => {
+  }).on("postgres_changes", { event:"UPDATE", schema:"public", table: EST_TABELA_NOME, filter: "id=eq." + EST_ID },
+       payload => {
+         const rev = payload && payload.new ? (parseInt(payload.new.rev, 10) || 0) : 0;
+         if (rev && rev === revVistoServidor) return;
+         adotarDoServidor();
+       })
+    .subscribe(st => {
     syncOn = st === "SUBSCRIBED";
     if (syncOn){
       /* Ao conectar/reconectar, a roleta anuncia presença E pede a lista atual
@@ -1925,6 +1949,24 @@ if (CMD_CH){
 
 /* A memoria do servidor nao depende de ninguem estar no ar: consulta sempre. */
 setTimeout(adotarDoServidor, 1200);
+/* E nunca ficar diferente do resto (18/09/2026): se uma mensagem em tempo real
+   se perder, a roleta ficaria com uma lista velha ate alguem recarregar a
+   pagina da transmissao — que ninguem recarrega no meio da live. De 15 em 15
+   segundos ela confere so o numero da versao no servidor e, se mudou, relê.
+   Custa uma linha de resposta e nunca destroi nada: o que vem e mesclado. */
+let revVistoServidor = 0;
+async function conferirVersaoServidor(){
+  if (estadoNoServidor === false) return;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=rev",
+                          { headers: { "apikey": SYNC_ANON } });
+    if (!r.ok) return;
+    const l = await r.json();
+    const rev = (Array.isArray(l) && l.length) ? (parseInt(l[0].rev, 10) || 0) : 0;
+    if (rev && rev !== revVistoServidor){ revVistoServidor = rev; await adotarDoServidor(); }
+  } catch {}
+}
+setInterval(conferirVersaoServidor, 15000);
 
 /* ================= Redundância: principal + reserva ================= */
 const LS_HB = "cj_roleta_hb";
