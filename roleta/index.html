@@ -1734,6 +1734,38 @@ function applyAdminState(m){
   }
   safeRebuild();
 }
+/* ============ ESTADO GUARDADO NO SERVIDOR (18/09/2026) ============
+   A roleta so LE. Quem grava e o painel, que tem sessao — a politica do banco
+   recusa escrita anonima. Serve para a roleta subir ja com a lista certa quando
+   e aberta num computador novo e nao ha painel no ar para responder. Sem a
+   tabela, nada muda: ela percebe uma vez e nao tenta mais. */
+const EST_REST = SYNC_URL + "/rest/v1/roleta_estado";
+const EST_ID   = "cj-corujao";
+let estadoNoServidor = null;
+async function adotarDoServidor(){
+  if (estadoNoServidor === false) return false;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=*",
+                          { headers: { "apikey": SYNC_ANON } });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return false; }
+    if (!r.ok) return false;
+    const linhas = await r.json();
+    estadoNoServidor = true;
+    const linha = Array.isArray(linhas) && linhas.length ? linhas[0] : null;
+    if (!linha) return false;
+    const rev = parseInt(linha.rev, 10) || 0;
+    /* o relogio de ANTES: applyAdminState ja anota o do servidor, e comparar
+       depois daria empate — a rodada guardada nunca seria adotada. */
+    const revAntes = revVisto;
+    if (Array.isArray(linha.experts) && linha.experts.length)
+      applyAdminState({ experts: linha.experts, tumbas: linha.tumbas, cfg: linha.cfg, rev });
+    if (rev > revAntes || !sorteados.length)
+      applyStateR({ sorteados: linha.sorteados, hist: linha.hist });
+    anotarRev(rev);
+    return true;
+  } catch { return false; }
+}
+
 function applyStateR(m){
   if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
   if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); renderHist(); }
@@ -1861,6 +1893,9 @@ if (CMD_CH){
   /* anuncia presenca no canal local: o painel ja aberto encontra a roleta */
   setTimeout(() => { syncSend({ type:"hello", role:"roleta" }); syncSend({ type:"reqState" }); }, 900);
 }
+
+/* A memoria do servidor nao depende de ninguem estar no ar: consulta sempre. */
+setTimeout(adotarDoServidor, 1200);
 
 /* ================= Redundância: principal + reserva ================= */
 const LS_HB = "cj_roleta_hb";

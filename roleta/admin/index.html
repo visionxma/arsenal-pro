@@ -1355,9 +1355,118 @@ function sendState(){
   /* Sem base real ainda: publicar aqui empurraria uma lista vazia/padrao por
      cima de quem esta no ar. Fica quieto ate adotar. */
   if (!listaPropria) return false;
+  agendarGravacao();
   return syncSend({ type:"state", experts, tumbas, cfg, rev: relogio });
 }
-function sendStateR(){ return syncSend({ type:"state-r", sorteados, hist }); }
+function sendStateR(){ agendarGravacao(); return syncSend({ type:"state-r", sorteados, hist }); }
+
+/* ============ ESTADO GUARDADO NO SERVIDOR (18/09/2026) ============
+   O Corujao roda com UM login dividido por varias pessoas, que trocam de turno
+   pela madrugada. Mensagem em tempo real so alcanca quem esta com a pagina
+   aberta: se ninguem estiver no ar na hora da troca, quem entra fica com o que
+   sobrou no navegador dele. Esta linha no banco e a memoria que nao depende de
+   ninguem estar online.
+
+   Como e seguro:
+   - LER nunca destroi nada: a lista que vem do servidor e MESCLADA pelo mesmo
+     caminho das mensagens (carimbo por expert + lapide para remocao).
+   - GRAVAR e so do painel e so com sessao valida — a politica do banco recusa
+     anonimo. Antes de gravar, le e mescla, entao dois painies nao se apagam.
+   - Sem a tabela no banco, TUDO continua funcionando como antes: o painel
+     percebe uma vez, anota e nunca mais tenta. */
+const EST_TABELA = "roleta_estado";
+const EST_ID     = "cj-corujao";
+const EST_REST   = SYNC_URL + "/rest/v1/" + EST_TABELA;
+let estadoNoServidor = null;      // null = ainda nao sabemos; false = nao existe
+let gravacaoAgendada = null;
+
+function estCabecalho(extra){
+  return Object.assign({ "apikey": SYNC_ANON, "Content-Type": "application/json" },
+                       authTok ? { "Authorization": "Bearer " + authTok } : {}, extra || {});
+}
+async function lerDoServidor(){
+  if (estadoNoServidor === false) return null;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=*",
+                          { headers: estCabecalho() });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return null; }
+    if (!r.ok) return null;
+    const linhas = await r.json();
+    estadoNoServidor = true;
+    return Array.isArray(linhas) && linhas.length ? linhas[0] : null;
+  } catch { return null; }
+}
+/* Traz o que esta guardado e junta com o que este navegador tem. */
+async function adotarDoServidor(){
+  const linha = await lerDoServidor();
+  if (!linha) return false;
+  const revServidor = parseInt(linha.rev, 10) || 0;
+  /* Guarda o relogio de ANTES: mesclar a lista ja absorve o relogio do servidor,
+     e comparar depois daria sempre empate — a rodada nunca seria adotada e quem
+     ja tinha sido sorteado voltava ao sorteio no turno seguinte. */
+  const revLocalAntes = relogio;
+  if (Array.isArray(linha.experts) && linha.experts.length){
+    if (!listaPropria){
+      experts = dedupeExperts(linha.experts);
+      tumbas  = (linha.tumbas && typeof linha.tumbas === "object") ? Object.assign({}, linha.tumbas) : {};
+      aguardandoListaInicial = false;
+      try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+    } else {
+      const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
+      experts = r.experts; tumbas = r.tumbas;
+    }
+    save(LS_EXPERTS, experts); salvarTumbas();
+    absorverRelogio(revServidor);
+    listaPropria = true; listaConferida = true;
+  }
+  /* rodada, historico e configuracao: quem tem o relogio maior manda. O painel
+     que passou a noite fora tem relogio velho, entao adota o do servidor. */
+  if (revServidor > revLocalAntes){
+    if (Array.isArray(linha.sorteados)){ sorteados = linha.sorteados; save(LS_RODADA, sorteados); }
+    if (Array.isArray(linha.hist)){ hist = linha.hist; save(LS_HIST, hist); }
+    if (linha.cfg && Object.keys(linha.cfg).length){ cfg = Object.assign({}, CFG_DEF, linha.cfg); save(LS_CFG, cfg); }
+    absorverRelogio(revServidor);
+  }
+  const ids = experts.map(e => e.id);
+  sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
+  render(); renderLive();
+  return true;
+}
+/* Grava o estado inteiro, depois de mesclar com o que ja esta la. */
+async function gravarNoServidor(){
+  if (estadoNoServidor === false || !listaPropria || !authTok) return false;
+  const linha = await lerDoServidor();
+  if (estadoNoServidor === false) return false;
+  let ex = experts, tu = tumbas, so = sorteados, hi = hist, cf = cfg;
+  if (linha){
+    const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
+    ex = r.experts; tu = r.tumbas;
+    const revServidor = parseInt(linha.rev, 10) || 0;
+    if (revServidor > relogio){          // o servidor esta na frente: nao regride a rodada
+      so = Array.isArray(linha.sorteados) ? linha.sorteados : so;
+      hi = Array.isArray(linha.hist) ? linha.hist : hi;
+      cf = (linha.cfg && Object.keys(linha.cfg).length) ? linha.cfg : cf;
+    }
+  }
+  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, rev: tick(relogio), atualizado: new Date().toISOString() };
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID),
+      { method:"PATCH", headers: estCabecalho({ "Prefer":"return=minimal" }), body: JSON.stringify(corpo) });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return false; }
+    if (r.status === 401 || r.status === 403){
+      /* sessao expirada: o caminho que ja existe renova e reenvia */
+      await recuperarSessaoEReenviar("A gravação no servidor foi recusada — faça login novamente.");
+      return false;
+    }
+    return r.ok;
+  } catch { return false; }
+}
+/* Toda publicacao no canal tambem grava. Junta as chamadas seguidas numa so. */
+function agendarGravacao(){
+  if (estadoNoServidor === false) return;
+  clearTimeout(gravacaoAgendada);
+  gravacaoAgendada = setTimeout(() => { gravacaoAgendada = null; gravarNoServidor(); }, 1500);
+}
 const connected = () => Date.now() - lastPongPrim < 6000;
 const stbAlive  = () => Date.now() - lastPongStb < 6000;
 function sendCmd(msg){
@@ -1468,6 +1577,9 @@ async function tratarMsgPainel(m){
       case "state-r":
         if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
         if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); }
+        /* a roleta e quem sorteia: o que ela manda precisa ficar guardado, senao
+           a rodada some quando o painel que estava aberto fecha. */
+        agendarGravacao();
         render();
         break;
       case "hello":
@@ -1498,6 +1610,8 @@ let listaConferida = false;
 let avisouNaoConferida = false;
 function pedirConferencia(){
   syncSend({ type:"reqExperts" });
+  /* o servidor responde mesmo se nao houver viva alma no ar */
+  adotarDoServidor().then(veio => { if (veio) updateConn(); });
   setTimeout(() => {
     if (listaConferida || avisouNaoConferida) return;
     if (!listaPropria) return;                 // esse caso ja tem o modal de lista inicial

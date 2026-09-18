@@ -58,10 +58,22 @@ create policy "escrita do operador" on public.roleta_estado
   for update to authenticated using (true) with check (true);
 ```
 
-Depois de rodar, me avise: eu ligo o painel e a roleta nessa tabela, com o
-cuidado de sempre — o merge continua sendo por carimbo e lápide (a gravação
-nunca vira "o último a falar vence"), e tudo passa pelo sandbox
-(`testes-roleta/`) antes de ir para o ar.
+## O código já está pronto e publicado
 
-**Enquanto você não rodar, nada quebra:** o que está publicado hoje funciona sem
-essa tabela.
+O painel e a roleta **já sabem usar essa tabela**. Assim que ela existir, eles
+passam a usá-la sozinhos, sem novo deploy:
+
+- o painel **lê** ao abrir e mescla com o que tem (nunca substitui em bloco);
+- o painel **grava** a cada mudança, sempre lendo e mesclando antes, então dois
+  operadores ao mesmo tempo não se apagam;
+- a roleta **só lê** — a política do banco recusa escrita sem sessão;
+- a rodada (quem já foi sorteado) e o histórico vão junto, com relógio lógico:
+  quem tem o relógio mais velho adota o do servidor, nunca o contrário.
+
+**Testado contra um Postgres de verdade** (projeto de ensaio, apagado depois):
+turno trocando sem ninguém no ar, roleta subindo sozinha num computador novo,
+rodada atravessando a virada e escrita anônima recusada pelo banco.
+
+**Enquanto a tabela não existir, nada quebra:** o painel tenta **uma vez**,
+percebe que ela não está lá, anota e nunca mais tenta — tudo segue funcionando
+como hoje. Verificado.
