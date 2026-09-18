@@ -49,6 +49,10 @@ s = io.open(PROD, encoding="utf-8").read()
 assert 'cj-corujao' in s and '<body class="locked">' in s
 s = s.replace("cj-corujao", "cj-SANDBOX-TESTE")
 s = s.replace("q1vcjZHdCejBqSJeQSXBKCNC", "SANDBOX-KEY-NAO-PRODUCAO")
+# O canal local (BroadcastChannel, 18/09/2026) nao exige token: e restrito ao
+# navegador. Se o sandbox usasse o mesmo nome da producao, um painel de teste
+# aberto na mesma janela comandaria a roleta de verdade. Isola tambem ele.
+s = s.replace('BroadcastChannel("cj-cmd")', 'BroadcastChannel("cj-cmd-SANDBOX")')
 s = s.replace('<body class="locked">', HOOK, 1)
 assert "cj-SANDBOX-TESTE" in s and "HOOK DE QA" in s
 io.open(SAND, "w", encoding="utf-8").write(s)
