@@ -1621,7 +1621,13 @@ function pedirConferencia(){
   }, 9000);
 }
 
+/* TUDO AQUI DENTRO E OPCIONAL (18/09/2026): se a sincronizacao explodir — rede
+   estranha, WebSocket bloqueado por firewall, biblioteca com defeito — a excecao
+   subia e matava o resto do script, inclusive o cadastro do formulario de login.
+   Painel morto, operador sem entrar. Agora o erro fica preso aqui: o painel abre,
+   avisa, e ainda serve pela memoria do servidor e pelo canal deste navegador. */
 (function initSync(){
+ try {
   if (!SB){ toast("Falha ao carregar a sincronização."); return; }
   syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
   syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
@@ -1642,9 +1648,16 @@ function pedirConferencia(){
       if (MIGRATED){ sendState(); MIGRATED = false; toast("Experts que faltavam foram adicionados e enviados à roleta."); }
     }
   });
+ } catch (err){
+  console.error("Sincronização em tempo real fora do ar:", err);
+  toast("Sincronização em tempo real fora do ar — o painel continua funcionando.");
+  syncOn = false;
+  try { updateConn(); } catch {}
+ }
 })();
 /* O canal local vale mesmo com a internet ou o servidor fora do ar. */
 if (CMD_CH){
+ try {
   CMD_CH.onmessage = ev => tratarMsgPainel(ev.data || {});
   setTimeout(() => {
     syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
@@ -1653,6 +1666,7 @@ if (CMD_CH){
        uma maquina nova ficaria com a roleta vazia e sem como preencher. */
     pedirConferencia();
   }, 900);
+ } catch (err){ console.error("Canal local indisponível:", err); }
 }
 setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
 

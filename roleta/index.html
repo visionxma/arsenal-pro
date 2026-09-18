@@ -1858,7 +1858,12 @@ async function tratarMsg(m, local){
         break;
     }
 }
+/* A roleta e a tela que fica na transmissao: nada aqui dentro pode derrubar o
+   resto do script (18/09/2026). Se a sincronizacao em tempo real explodir — rede
+   estranha, WebSocket bloqueado —, a roda continua girando pelo canal local e
+   pela memoria do servidor em vez de a pagina morrer no meio da live. */
 (function initSync(){
+ try {
   if (!window.supabase) return;
   const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
   syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
@@ -1882,6 +1887,7 @@ async function tratarMsg(m, local){
       askAdmin();
     }
   });
+ } catch (err){ console.error("Sincronização em tempo real fora do ar:", err); syncOn = false; }
 })();
 /* Mesmo sem internet, a roleta ouve e responde ao painel deste navegador. */
 if (CMD_CH){
