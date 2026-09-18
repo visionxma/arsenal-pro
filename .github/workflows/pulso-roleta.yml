@@ -55,6 +55,33 @@ jobs:
             *) echo "::error::Endpoint de login respondeu $COD (esperado 400) — login do painel em risco"; exit 1 ;;
           esac
 
+      - name: A memoria do servidor esta de pe
+        run: |
+          set -euo pipefail
+          # A tabela roleta_estado e o que segura a troca de turno quando ninguem
+          # esta com a pagina aberta. Se ela sumir ou ficar vazia, o painel volta
+          # a depender de ter alguem no ar — e isso tem de ser avisado.
+          COD=$(curl -sS -o /tmp/est.json -w '%{http_code}' \
+            -H "apikey: $ANON" "$SUPA/rest/v1/roleta_estado?id=eq.cj-corujao&select=rev,atualizado,experts")
+          test "$COD" = "200" || { echo "::error::A tabela do estado respondeu $COD — a memoria do servidor sumiu"; exit 1; }
+          python3 - <<'PY'
+          import json
+          linhas = json.load(open('/tmp/est.json'))
+          if not linhas:
+              raise SystemExit("::error::A linha cj-corujao nao existe mais na tabela do estado")
+          l = linhas[0]
+          n = len(l.get('experts') or [])
+          print(f"estado guardado: {n} experts | atualizado em {l.get('atualizado')}")
+          if n == 0:
+              raise SystemExit("::error::O estado guardado esta sem nenhum expert")
+          PY
+          # escrita anonima tem de continuar recusada
+          VAZIO=$(curl -sS -X PATCH "$SUPA/rest/v1/roleta_estado?id=eq.cj-corujao" \
+            -H "apikey: $ANON" -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d '{"rev":1}')
+          test "$VAZIO" = "[]" || { echo "::error::Escrita ANONIMA foi aceita na tabela do estado — a politica do banco abriu"; exit 1; }
+          echo "escrita anonima recusada: ok"
+
       - name: Painel e roleta publicados (origem)
         run: |
           set -euo pipefail

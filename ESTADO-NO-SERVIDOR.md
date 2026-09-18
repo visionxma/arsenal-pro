@@ -29,7 +29,7 @@ que **ninguém** está com a página aberta na hora da troca.
 Uma linha no banco do Supabase com o estado atual. Quem abre o painel lê essa
 linha antes de operar; quem edita, grava. Aí não importa quem está no ar.
 
-**Você roda isto uma vez** (Supabase → seu projeto → SQL Editor → cole → Run):
+**Já foi rodado em 18/09/2026** (a tabela existe e está em uso). Fica aqui o que foi criado:
 
 ```sql
 -- Estado único da roleta do Corujão. Uma linha só, sempre a mesma.
@@ -58,7 +58,17 @@ create policy "escrita do operador" on public.roleta_estado
   for update to authenticated using (true) with check (true);
 ```
 
-## O código já está pronto e publicado
+## Está tudo ligado desde 18/09/2026
+
+A tabela existe, as duas políticas estão ativas e o painel já grava nela — o
+estado real da operação (22 experts, 11 lápides, configuração) está guardado.
+Verificado no ar com a sincronização em tempo real **desligada de propósito**: o
+painel montou o estado inteiro sozinho, só pela tabela.
+
+O pulso de 2 em 2 dias confere que a linha continua lá, com conteúdo, e que
+escrita anônima segue recusada.
+
+## O código
 
 O painel e a roleta **já sabem usar essa tabela**. Assim que ela existir, eles
 passam a usá-la sozinhos, sem novo deploy:
