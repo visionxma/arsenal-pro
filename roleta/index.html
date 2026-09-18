@@ -1748,6 +1748,12 @@ async function tratarMsg(m, local){
     if (m.type === "hello"){
       if (m.role === "admin" && isPrimary){
         syncStateR();
+        /* TROCA DE TURNO (18/09/2026): manda tambem a LISTA que esta no ar.
+           Antes so ia a rodada (state-r), entao o painel do turno seguinte —
+           que ja tinha lista salva no navegador dele — continuava exibindo a
+           lista do turno passado e ninguem percebia a divergencia. */
+        if (Array.isArray(experts) && experts.length)
+          syncSend({ type:"state", experts, tumbas, cfg, rev: revVisto, deRoleta:true });
         syncSend(Object.assign({ type:"live" }, load(LS_LIVE, { status:"idle" })));
       }
       return;

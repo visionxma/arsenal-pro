@@ -1392,6 +1392,11 @@ function updateConn(){
     el.classList.add("on");
     tx.textContent = (syncOn ? "Roleta conectada" : "Roleta conectada neste navegador")
                    + (stbAlive() ? " · reserva pronta" : "");
+  } else if (avisouNaoConferida && !listaConferida){
+    /* conectado ao servidor, mas ninguem confirmou a lista: o operador precisa
+       saber que a tela pode estar mostrando o turno passado. */
+    el.classList.remove("on");
+    tx.textContent = "Lista não conferida — ninguém no ar";
   } else if (stbAlive()){
     el.classList.remove("on");
     tx.textContent = "Reserva assumindo…";
@@ -1448,6 +1453,7 @@ async function tratarMsgPainel(m){
           save(LS_EXPERTS, experts); salvarTumbas();
           absorverRelogio(m.rev);
           listaPropria = true;                 // ja temos base real: podemos publicar
+          listaConferida = true;               // alguem no ar confirmou a lista (ver pedirConferencia)
           const ids = experts.map(e => e.id);
           sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
           if (m.cfg){ cfg = Object.assign({}, CFG_DEF, m.cfg); save(LS_CFG, cfg); }
@@ -1467,6 +1473,11 @@ async function tratarMsgPainel(m){
       case "hello":
         /* a roleta apareceu (subiu/reconectou): manda a lista autoritativa na hora */
         if (m.role === "roleta"){ sendState(); sendStateR(); syncSend({ type:"ping" }); }
+        /* TROCA DE TURNO (18/09/2026): outro painel do mesmo login acabou de
+           abrir. Quem ja tem base real responde com o estado. Sem isso, quem
+           entra no turno seguinte fica olhando a lista que sobrou no navegador
+           dele — foi o que o operador da madrugada viu divergir. */
+        else if (m.role === "admin" && listaPropria){ sendState(); sendStateR(); }
         break;
       case "reqState":
         /* a roleta pediu explicitamente o estado atual — o painel é a autoridade */
@@ -1478,6 +1489,24 @@ async function tratarMsgPainel(m){
         break;
     }
 }
+/* CONFERENCIA DA LISTA (18/09/2026 — troca de turno)
+   Uma conta so, varias pessoas, turnos que se revezam a noite inteira. Cada
+   navegador guarda a sua copia da lista, entao quem entra precisa conferir com
+   quem esta no ar ANTES de operar. Se ninguem responder, o painel diz isso na
+   cara do operador em vez de deixar ele achar que a tela esta certa. */
+let listaConferida = false;
+let avisouNaoConferida = false;
+function pedirConferencia(){
+  syncSend({ type:"reqExperts" });
+  setTimeout(() => {
+    if (listaConferida || avisouNaoConferida) return;
+    if (!listaPropria) return;                 // esse caso ja tem o modal de lista inicial
+    avisouNaoConferida = true;
+    toast("Ninguém no ar confirmou a lista: o que está na tela é a última salva NESTE computador.");
+    updateConn();
+  }, 9000);
+}
+
 (function initSync(){
   if (!SB){ toast("Falha ao carregar a sincronização."); return; }
   syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
@@ -1488,9 +1517,13 @@ async function tratarMsgPainel(m){
     updateConn();
     if (syncOn){
       syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
-      /* Sem base real neste navegador: PERGUNTA a lista antes de publicar a
-         propria, senao um painel recem-aberto ditaria a lista padrao. */
-      if (!listaPropria){ syncSend({ type:"reqExperts" }); semearSePrecisar(); }
+      /* PERGUNTA SEMPRE, tendo lista propria ou nao (18/09/2026). Antes so
+         perguntava quem nascia vazio: um painel que ja tinha lista salva abria
+         mostrando a lista do turno anterior e nunca conferia com o ar. O
+         "state" que volta e MESCLADO, nunca substitui — entao perguntar nao
+         tem risco de perder edicao local. */
+      pedirConferencia();
+      if (!listaPropria){ semearSePrecisar(); }
       flushPendente();
       if (MIGRATED){ sendState(); MIGRATED = false; toast("Experts que faltavam foram adicionados e enviados à roleta."); }
     }
@@ -1504,7 +1537,7 @@ if (CMD_CH){
     /* Mesmo caminho do canal da internet: pede a lista a quem estiver no ar
        neste navegador e, se ninguem responder, pergunta ao operador. Sem isso,
        uma maquina nova ficaria com a roleta vazia e sem como preencher. */
-    if (!listaPropria) syncSend({ type:"reqExperts" });
+    pedirConferencia();
   }, 900);
 }
 setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
