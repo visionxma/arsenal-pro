@@ -334,3 +334,38 @@ Feita com ponto de restauracao salvo antes de tudo. 60+ verificacoes.
 - reativar expert: o `render()` recria a linha, e o teste clicava num no obsoleto
 - `abrirCropper()` chamado direto nao seta `fotoRecortada` — isso e feito pelo
   handler do input; pelo fluxo real do usuario funcionou 7/7
+
+
+---
+
+## 18/09/2026 — o backend sumiu e a live foi blindada
+
+Verificacao pedida na vespera do Corujao. Resultado em uma linha: **a mecanica da
+roleta esta integra, o que quebrou foi o servidor**.
+
+`hovbgrhmoqrhrxvwvkbt.supabase.co` responde **NXDOMAIN** (dominio inexistente) em
+8.8.8.8, 1.1.1.1, 9.9.9.9 e 208.67.222.222, e o navegador falha com
+`ERR_NAME_NOT_RESOLVED` ao abrir o WebSocket. Ou seja: o projeto do Supabase foi
+apagado. Consequencia: sem login no painel e sem sincronizacao entre maquinas.
+
+### Rede de seguranca: modo local
+
+Canal `BroadcastChannel("cj-cmd")`, restrito ao proprio navegador, espelhando as
+mesmas mensagens do canal da internet. Na roleta, o tratador virou
+`tratarMsg(m, local)`: pelo canal local ele pula `verifyAdmin` (nao ha como um
+estranho falar nesse canal). No painel, `syncSend` publica nos dois caminhos e o
+login ganhou **"Entrar em modo local"**, que aparece sozinho quando a autenticacao
+nao responde em 6s.
+
+### Bateria executada (Playwright, contra os arquivos que estao no ar)
+
+| bloco | o que cobre | resultado |
+|---|---|---|
+| T1 | roda montada, rodada completa de 16 giros, novo ciclo | 6/7 (a unica falha e o WebSocket morto) |
+| T2 | forcar, inativo, cronometro, pausar/retomar/encerrar, aba em segundo plano, trava do auto-refresh, 3 ciclos completos (48 giros) | 12/12 |
+| T3 | painel, login, indicador, responsivo 360-1920, producao no ar, pagina do Corujao | so o Supabase falhou |
+| T5 | modo local ponta a ponta: girar e encerrar pelo painel | 8/8 |
+| T6 | maquina zerada: criar lista, publicar, remover, nao ressuscitar, forcar | 8/8 |
+
+Nao ha rolagem lateral em nenhuma largura (320-1920): o que "vaza" e so o fundo
+decorativo, com `overflow-x:hidden` no ancestral e `scrollX` medido em 0.

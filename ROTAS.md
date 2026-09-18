@@ -13,6 +13,24 @@ DNS novo: `AAAA admin → 100::` com proxy (nuvem laranja). Nenhum registro exis
 A comunicação painel ↔ roleta usa **Supabase Realtime** (chave anon no código) e funciona
 de qualquer dispositivo/navegador — não depende mais de mesma origem.
 
+> ⚠️ **O projeto Supabase `hovbgrhmoqrhrxvwvkbt` NÃO EXISTE MAIS (verificado em
+> 18/09/2026: NXDOMAIN em 4 resolvedores; o navegador falha com
+> `ERR_NAME_NOT_RESOLVED` ao abrir o WebSocket).** Enquanto ele não for
+> substituído, **não há sincronização entre máquinas nem login no painel**.
+> Para voltar ao normal basta criar um projeto novo e trocar `SYNC_URL` e
+> `SYNC_ANON` nos três arquivos (`roleta/index.html`, `roleta/admin/index.html`,
+> `corujao/index.html`) e criar o usuário do operador — o CSP do Worker já libera
+> qualquer `*.supabase.co`, então nada mais precisa mudar.
+>
+> **MODO LOCAL (rede de segurança, 18/09/2026):** para a live não depender disso,
+> painel e roleta também conversam por um `BroadcastChannel` chamado `cj-cmd`, que
+> só alcança **abas do mesmo navegador**. Quando o servidor de login não responde,
+> o painel oferece **"Entrar em modo local"** e daí comanda normalmente a roleta
+> aberta na mesma máquina: girar, forçar, pausar, retomar, encerrar, editar a lista.
+> Como o canal não sai do navegador, ele não exige token (ninguém de fora alcança).
+> Numa máquina nova, o painel em modo local pergunta se cria a lista dos 16 e a
+> publica na roleta. Testado ponta a ponta em `testes-roleta/` (T5 e T6).
+
 > ⚠️ **INVARIANTE — NÃO REMOVER (sincronização de experts):** apagar/editar/adicionar
 > um expert em **qualquer** Painel Admin deve refletir **em todos os painéis abertos e
 > na roleta**, e o expert removido **não pode voltar** ao recarregar nenhuma tela —

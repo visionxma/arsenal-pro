@@ -1637,9 +1637,19 @@ const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 let syncCh = null, syncOn = false;
 /* último link da live recebido de um admin autenticado (url + token que o validou) */
 let LIVE_URL = { url: (function(){ try { return localStorage.getItem("cj_live_url_v1") || null; } catch { return null; } })(), t: null };
+/* CANAL LOCAL (rede de seguranca, 18/09/2026)
+   O canal pela internet (Supabase Realtime) pode estar fora do ar — foi o que
+   aconteceu: o projeto sumiu e painel e roleta ficaram sem se falar. Este
+   BroadcastChannel alcanca SO as abas deste mesmo navegador e nao depende de
+   nada externo, entao o operador continua comandando a roleta com o painel
+   aberto na mesma maquina. Como e restrito ao proprio navegador, nao precisa
+   (nem tem como) exigir token: ninguem de fora consegue falar por aqui. */
+const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd"); } catch { return null; } })();
 function syncSend(o){
+  const msg = Object.assign({ k: SYNC_KEY }, o);
+  try { if (CMD_CH) CMD_CH.postMessage(msg); } catch {}
   if (!syncCh || !syncOn) return;
-  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY }, o) }); } catch {}
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: msg }); } catch {}
 }
 function syncStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
 /* comandos privilegiados exigem sessão válida do painel (token verificado no Supabase) */
@@ -1729,13 +1739,10 @@ function applyStateR(m){
   if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); renderHist(); }
   safeRebuild();
 }
-(function initSync(){
-  if (!window.supabase) return;
-  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
-  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
-  syncCh.on("broadcast", { event:"msg" }, async ({ payload }) => {
-    const m = payload || {};
-    if (m.k !== SYNC_KEY) return;
+/* Tratador unico das mensagens do painel. Vem por dois caminhos:
+   `local=false` pela internet (Supabase), com token conferido; `local=true`
+   pelo BroadcastChannel deste navegador, que ja e restrito por origem. */
+async function tratarMsg(m, local){
     // tipos sem privilégio
     if (m.type === "ping"){ syncSend({ type:"pong", standby: !isPrimary }); return; }
     if (m.type === "hello"){
@@ -1760,7 +1767,7 @@ function applyStateR(m){
       return;
     }
     // daqui em diante, só com sessão válida do painel
-    if (!(await verifyAdmin(m.t))){
+    if (!local && !(await verifyAdmin(m.t))){
       if (m.type === "spin" || m.type === "endOp" || m.type === "state")
         syncSend({ type:"ack", cmd:m.type, ok:false, reason:"Sessão do painel inválida — faça login novamente." });
       return;
@@ -1812,6 +1819,15 @@ function applyStateR(m){
         syncSend({ type:"ack", cmd:"endOp", ok:true });
         break;
     }
+}
+(function initSync(){
+  if (!window.supabase) return;
+  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    const m = payload || {};
+    if (m.k !== SYNC_KEY) return;
+    tratarMsg(m, false);
   }).subscribe(st => {
     syncOn = st === "SUBSCRIBED";
     if (syncOn){
@@ -1829,6 +1845,16 @@ function applyStateR(m){
     }
   });
 })();
+/* Mesmo sem internet, a roleta ouve e responde ao painel deste navegador. */
+if (CMD_CH){
+  CMD_CH.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.k !== SYNC_KEY) return;
+    tratarMsg(m, true);
+  };
+  /* anuncia presenca no canal local: o painel ja aberto encontra a roleta */
+  setTimeout(() => { syncSend({ type:"hello", role:"roleta" }); syncSend({ type:"reqState" }); }, 900);
+}
 
 /* ================= Redundância: principal + reserva ================= */
 const LS_HB = "cj_roleta_hb";

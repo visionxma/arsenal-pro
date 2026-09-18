@@ -501,10 +501,17 @@
     30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
   .gate-card.wrong{ animation:shake .4s; }
   .gate-btn{ width:100%; margin-top:8px; padding:11px; border-radius:var(--r); cursor:pointer;
+    min-height:44px;                       /* alvo de toque minimo */
     font-weight:600; font-size:13.5px;
     background:var(--brand); color:#fff; border:1px solid var(--brand);
     transition:background .15s; }
   .gate-btn:hover{ background:#2f95f2; }
+  /* secundario: precisa vir DEPOIS de .gate-btn, senao a cascata o deixa
+     identico ao botao primario (mesma especificidade, vence a ordem) */
+  .gate-btn--local{ margin-top:10px; background:var(--s2); color:var(--t2);
+    border:1px solid var(--line-2); font-weight:600; }
+  .gate-btn--local:hover{ background:var(--s3); color:var(--text); border-color:var(--brand-line); }
+  .g-local{ font-size:12px; line-height:1.45; color:var(--t4); margin-top:10px; text-align:left; }
   .gate-btn:active{ transform:translateY(1px); }
   .gate-err{ display:none; margin-top:12px; font-size:12.5px; color:var(--danger); }
   .gate-card.wrong .gate-err{ display:block; }
@@ -1069,6 +1076,9 @@
         </div></div>
       <p class="gate-err">E-mail ou senha incorretos.</p>
       <button type="submit" class="gate-btn">Entrar no painel</button>
+      <button type="button" class="gate-btn gate-btn--local" id="btnLocal" hidden>Entrar em modo local</button>
+      <p class="g-local" id="gateLocalTxt" hidden>Sem resposta do servidor de login. No modo local o painel
+        comanda a roleta aberta <b>neste mesmo navegador</b>.</p>
     </form>
   </div>
 
@@ -1269,9 +1279,17 @@ async function recuperarSessaoEReenviar(motivo){
   } catch {}
   toast(motivo || "A roleta recusou a lista. Faça login novamente.");
 }
+/* CANAL LOCAL (rede de seguranca, 18/09/2026) — ver o comentario igual na
+   roleta. Alcanca so as abas deste navegador, entao funciona sem internet e
+   sem servidor nenhum. E o caminho usado no "modo local" do login. */
+const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd"); } catch { return null; } })();
+let modoLocal = false;
 function syncSend(o){
-  if (!syncCh || !syncOn) return false;
-  try { syncCh.send({ type:"broadcast", event:"msg", payload: Object.assign({ k: SYNC_KEY, t: authTok }, o) }); return true; } catch { return false; }
+  const msg = Object.assign({ k: SYNC_KEY, t: authTok }, o);
+  let entregueLocal = false;
+  try { if (CMD_CH){ CMD_CH.postMessage(msg); entregueLocal = true; } } catch {}
+  if (!syncCh || !syncOn) return entregueLocal;
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: msg }); return true; } catch { return entregueLocal; }
 }
 /* ===================== RELOGIO LOGICO + MERGE =====================
    rev e um contador logico (Lamport). Toda mensagem recebida empurra o
@@ -1343,7 +1361,7 @@ function sendStateR(){ return syncSend({ type:"state-r", sorteados, hist }); }
 const connected = () => Date.now() - lastPongPrim < 6000;
 const stbAlive  = () => Date.now() - lastPongStb < 6000;
 function sendCmd(msg){
-  if (!syncOn){ toast("Sincronização offline — verifique a internet."); return false; }
+  if (!syncOn && !CMD_CH){ toast("Sincronização offline — verifique a internet."); return false; }
   if (!connected()){
     toast(stbAlive()
       ? "A roleta reserva está assumindo… tente novamente em instantes."
@@ -1365,10 +1383,15 @@ function updateConn(){
     tx.textContent = "Alterações não enviadas — reenviando…";
     return;
   }
-  if (!syncOn){ el.classList.remove("on"); tx.textContent = "Conectando à sincronização…"; return; }
+  if (!syncOn && !connected()){
+    el.classList.remove("on");
+    tx.textContent = CMD_CH ? "Procurando a roleta neste navegador…" : "Conectando à sincronização…";
+    return;
+  }
   if (connected()){
     el.classList.add("on");
-    tx.textContent = "Roleta conectada" + (stbAlive() ? " · reserva pronta" : "");
+    tx.textContent = (syncOn ? "Roleta conectada" : "Roleta conectada neste navegador")
+                   + (stbAlive() ? " · reserva pronta" : "");
   } else if (stbAlive()){
     el.classList.remove("on");
     tx.textContent = "Reserva assumindo…";
@@ -1377,11 +1400,9 @@ function updateConn(){
     tx.textContent = "Roleta não encontrada";
   }
 }
-(function initSync(){
-  if (!SB){ toast("Falha ao carregar a sincronização."); return; }
-  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
-  syncCh.on("broadcast", { event:"msg" }, async ({ payload }) => {
-    const m = payload || {};
+/* Tratador unico das mensagens da roleta: serve tanto o canal da internet
+   quanto o canal local deste navegador. */
+async function tratarMsgPainel(m){
     if (m.k !== SYNC_KEY) return;
     switch (m.type){
       case "pong":
@@ -1456,6 +1477,12 @@ function updateConn(){
         sendLiveUrl();
         break;
     }
+}
+(function initSync(){
+  if (!SB){ toast("Falha ao carregar a sincronização."); return; }
+  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    tratarMsgPainel(payload || {});
   }).subscribe(st => {
     syncOn = st === "SUBSCRIBED";
     updateConn();
@@ -1469,6 +1496,17 @@ function updateConn(){
     }
   });
 })();
+/* O canal local vale mesmo com a internet ou o servidor fora do ar. */
+if (CMD_CH){
+  CMD_CH.onmessage = ev => tratarMsgPainel(ev.data || {});
+  setTimeout(() => {
+    syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+    /* Mesmo caminho do canal da internet: pede a lista a quem estiver no ar
+       neste navegador e, se ninguem responder, pergunta ao operador. Sem isso,
+       uma maquina nova ficaria com a roleta vazia e sem como preencher. */
+    if (!listaPropria) syncSend({ type:"reqExperts" });
+  }, 900);
+}
 setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
 
 /* ================= Estado AO VIVO ================= */
@@ -2853,6 +2891,10 @@ function unlock(){
   document.body.classList.remove("locked");
   loginOverlay.classList.remove("show");
   render(); renderLive();
+  /* So depois de entrar: se este navegador nunca teve lista, pede a de quem
+     estiver no ar e, se ninguem responder, pergunta ao operador. Antes isso so
+     acontecia com a sincronizacao pela internet no ar. */
+  if (!listaPropria){ syncSend({ type:"reqExperts" }); semearSePrecisar(); }
 }
 loginCard.addEventListener("submit", async e => {
   e.preventDefault();
@@ -2865,6 +2907,7 @@ loginCard.addEventListener("submit", async e => {
   });
   btn.disabled = false; btn.textContent = "Entrar no painel";
   if (error){
+    ofereceModoLocal();
     loginCard.classList.add("wrong");
     loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
     loginPass.select();
@@ -2876,14 +2919,34 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
   try { if (SB) await SB.auth.signOut(); } catch {}
   location.reload();
 });
+/* MODO LOCAL (18/09/2026)
+   O login depende do servidor de autenticacao. Quando ele nao responde — foi o
+   que aconteceu com o projeto do Supabase — o painel ficava inutilizavel e a
+   live perdia o controle da roleta. O modo local libera o painel para comandar
+   a roleta aberta NESTE navegador (canal BroadcastChannel, que nao sai da
+   maquina). Nao e um furo de seguranca: de fora ninguem alcanca esse canal. */
+const btnLocal = document.getElementById("btnLocal");
+const gateLocalTxt = document.getElementById("gateLocalTxt");
+function ofereceModoLocal(){
+  if (!CMD_CH || !btnLocal || !loginOverlay.classList.contains("show")) return;
+  btnLocal.hidden = false; gateLocalTxt.hidden = false;
+}
+btnLocal.addEventListener("click", () => {
+  modoLocal = true; authTok = null;
+  unlock();
+  toast("Modo local: comandando a roleta deste navegador.");
+  syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+});
 (async function checkSession(){
   try {
-    if (!SB){ loginEmail.focus(); return; }
+    if (!SB){ loginEmail.focus(); ofereceModoLocal(); return; }
     const { data } = await SB.auth.getSession();
     if (data && data.session) unlock();
     else loginEmail.focus();
   } catch { loginEmail.focus(); }
 })();
+/* Se em 6s a sincronizacao nao subiu, o servidor esta fora: oferece o modo local. */
+setTimeout(() => { if (!syncOn) ofereceModoLocal(); }, 6000);
 
 /* ================= Toast ================= */
 /* `var` de proposito: toast() e chamado ja na inicializacao (initSync avisa
