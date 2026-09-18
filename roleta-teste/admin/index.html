@@ -156,17 +156,11 @@
      Hora e autor ficam na mesma linha do texto quando ha espaco (>=420px) e
      empilham em coluna estreita, em vez de espremer a frase. */
   .diario{ list-style:none; margin:0; padding:0; display:grid; gap:2px; }
-  .diario li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  .diario li{ display:grid; grid-template-columns:auto 1fr; gap:2px 10px;
     padding:7px 0; border-bottom:1px solid var(--line); font-size:12.5px; line-height:1.35; }
   .diario li:last-child{ border-bottom:0; }
   .diario-h{ color:var(--t4); font-variant-numeric:tabular-nums; font-size:11.5px; align-self:center; }
-  .diario-q{ color:var(--brand-2); font-weight:600; align-self:center;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .diario-o{ grid-column:1 / -1; color:var(--t2); min-width:0; overflow-wrap:anywhere; }
-  @media (min-width:420px){
-    .diario li{ grid-template-columns:auto auto 1fr; }
-    .diario-o{ grid-column:auto; }
-  }
+  .diario-o{ color:var(--t2); min-width:0; overflow-wrap:anywhere; }
   .diario-vazio{ color:var(--t4); font-size:12.5px; margin:0; }
 
   /* QUEM ESTA OPERANDO (18/09/2026)
@@ -180,7 +174,8 @@
     font-size:10px; font-weight:700; letter-spacing:.02em; }
   .quem-nome{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
   .quem-rot{ color:var(--t4); font-weight:500; }
-  .quem-outros{ margin-top:7px; color:var(--warn); line-height:1.35; }
+  .quem-outros{ margin-top:7px; color:var(--t4); line-height:1.35; }
+  .quem-outros.ok{ color:var(--ok); }
   .quem-outros:empty{ display:none; }
   body.sb-min .quem{ padding:10px 0; display:grid; place-items:center; }
   body.sb-min .quem-nome, body.sb-min .quem-rot, body.sb-min .quem-outros{ display:none; }
@@ -1350,7 +1345,7 @@ let diario = load(LS_DIARIO, []);
 if (!Array.isArray(diario)) diario = [];
 function anotar(oque){
   try {
-    diario.unshift({ t: Date.now(), quem: (euOperador && euOperador.apelido) || "operador", o: String(oque) });
+    diario.unshift({ t: Date.now(), o: String(oque) });
     diario = diario.slice(0, 200);
     save(LS_DIARIO, diario);
     renderDiario();
@@ -1362,7 +1357,7 @@ function mesclarDiario(a, b){
   const vistos = new Set(); const juntos = [];
   [].concat(Array.isArray(a)?a:[], Array.isArray(b)?b:[]).forEach(l => {
     if (!l || !l.t) return;
-    const chave = l.t + "|" + (l.quem||"") + "|" + (l.o||"");
+    const chave = l.t + "|" + (l.o||"");
     if (vistos.has(chave)) return;
     vistos.add(chave); juntos.push(l);
   });
@@ -1380,7 +1375,6 @@ function renderDiario(){
   if (!diario.length){ el.innerHTML = '<p class="diario-vazio">Nada registrado ainda neste turno.</p>'; return; }
   el.innerHTML = diario.slice(0, 12).map(l =>
     '<li><span class="diario-h">' + horaCurta(l.t) + '</span>' +
-    '<span class="diario-q">' + escHTML(l.quem || "operador") + '</span>' +
     '<span class="diario-o">' + escHTML(l.o || "") + '</span></li>').join("");
 }
 
@@ -1408,7 +1402,7 @@ function mostrarOperador(){
   cx.hidden = false;
   document.getElementById("quemIni").textContent = iniciaisDe(euOperador.apelido);
   document.getElementById("quemNome").innerHTML =
-    '<span class="quem-rot">no turno:</span> ' + escHTML(euOperador.apelido);
+    '<span class="quem-rot">conta:</span> ' + escHTML(euOperador.apelido);
   document.getElementById("quemNome").title = euOperador.email || "";
 }
 async function descobrirOperador(){
@@ -1435,19 +1429,14 @@ function atualizarPresenca(){
       if (m && m.aba && m.aba !== ABA_ID) outros.push(m);
     }));
   } catch { el.textContent = ""; return; }
-  if (!outros.length){ el.textContent = ""; return; }
-  const nomes = [...new Set(outros.map(o => o.apelido || "alguém"))];
-  const mesmoLogin = euOperador && outros.every(o => o.email && o.email === euOperador.email);
-  if (mesmoLogin){
-    el.textContent = outros.length === 1
-      ? "Este mesmo login está aberto em outro aparelho agora."
-      : "Este mesmo login está aberto em outros " + outros.length + " aparelhos agora.";
-  } else {
-    el.textContent = nomes.length === 1
-      ? "Também no painel agora: " + nomes[0] + "."
-      : "Também no painel agora: " + nomes.slice(0, 2).join(", ") +
-        (nomes.length > 2 ? " e mais " + (nomes.length - 2) : "") + ".";
-  }
+  if (!outros.length){ el.textContent = ""; el.className = "quem-outros"; return; }
+  /* A conta e uma so e e dividida de proposito: varias pessoas, varias maquinas.
+     Ter outro painel aberto NAO e problema nem pede nada a ninguem — a mensagem
+     existe so para o operador saber que o que ele faz aparece do outro lado. */
+  el.className = "quem-outros ok";
+  el.textContent = outros.length === 1
+    ? "Mais 1 painel aberto agora — sincronizado."
+    : "Mais " + outros.length + " painéis abertos agora — sincronizados.";
 }
 
 /* A roleta so aceita comando com sessao valida. Se o token expirou, renova e
@@ -1515,12 +1504,28 @@ const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
    - lapide com carimbo maior    -> o expert sai e fica fora
    Mensagem de painel antigo (sem updatedAt/tumbas) entra com carimbo 0: nunca
    sobrescreve dado mais novo, mas ainda consegue acrescentar gente nova. */
+/* EMPATE DE CARIMBO (18/09/2026) — o furo que fazia duas maquinas do mesmo login
+   ficarem diferentes PARA SEMPRE. Duas pessoas editando o mesmo expert no MESMO
+   milissegundo geram o mesmo carimbo; com "maior vence", nenhum vence e cada
+   maquina ficava com a sua versao, sem nada para corrigir depois.
+   O desempate precisa dar o MESMO resultado em qualquer maquina, sem ninguem
+   combinar nada: comparamos o conteudo em texto. E estavel, nao depende da ordem
+   de chegada e vale tanto aqui quanto na roleta. */
+function textoCanonico(e){
+  return JSON.stringify([ String(e.id), String(e.name || ""), !!e.active,
+    (e.minutes === 0 || e.minutes) ? String(e.minutes) : "", String(e.photo || "") ]);
+}
+function versaoQuePrevalece(a, b){
+  const ca = carimbo(a), cb = carimbo(b);
+  if (ca !== cb) return ca > cb ? a : b;
+  return textoCanonico(a) >= textoCanonico(b) ? a : b;
+}
 function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
   const porId = new Map();
   const põe = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
     if (!e || !e.id) return;
     const atual = porId.get(e.id);
-    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+    porId.set(e.id, atual ? versaoQuePrevalece(atual, e) : e);
   });
   põe(listaA); põe(listaB);
 
@@ -1586,6 +1591,7 @@ async function adotarDoServidor(){
   const linha = await lerDoServidor();
   if (!linha) return false;
   const revServidor = parseInt(linha.rev, 10) || 0;
+  revVistoServidor = revServidor;
   /* Guarda o relogio de ANTES: mesclar a lista ja absorve o relogio do servidor,
      e comparar depois daria sempre empate — a rodada nunca seria adotada e quem
      ja tinha sido sorteado voltava ao sorteio no turno seguinte. */
@@ -1636,7 +1642,9 @@ async function gravarNoServidor(){
   }
   const di = linha ? mesclarDiario(diario, linha.diario) : diario;
   diario = di; save(LS_DIARIO, diario);
-  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, diario: di, rev: tick(relogio), atualizado: new Date().toISOString() };
+  const revNova = tick(relogio);
+  revVistoServidor = revNova;                 // o que acabamos de gravar nao precisa ser relido
+  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, diario: di, rev: revNova, atualizado: new Date().toISOString() };
   try {
     const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID),
       { method:"PATCH", headers: estCabecalho({ "Prefer":"return=minimal" }), body: JSON.stringify(corpo) });
@@ -1649,6 +1657,40 @@ async function gravarNoServidor(){
     return r.ok;
   } catch { return false; }
 }
+/* ===== NUNCA FICAR DIVERGENTE (18/09/2026) =====
+   A conta e uma so, dividida por varias pessoas em varias maquinas. Mensagem em
+   tempo real pode se perder (rede oscilando, aba dormindo, reconexao no meio de
+   uma edicao) — e antes disso a maquina que perdeu a mensagem ficava diferente
+   das outras ATE alguem recarregar a pagina. Inaceitavel numa operacao que vira
+   a noite.
+
+   Duas redes de seguranca, as duas em cima da linha do servidor, que e a
+   verdade:
+   1. o banco AVISA quando a linha muda (postgres_changes) e a gente relê;
+   2. de 15 em 15 segundos a gente pergunta so o numero da versao (rev). Se o
+      numero mudou e nao chegou aviso nenhum, relê do mesmo jeito.
+   Reler nunca destroi nada: o que vem e mesclado por carimbo e lapide. */
+let revVistoServidor = 0;
+let lendoServidor = false;
+async function reconciliar(motivo){
+  if (estadoNoServidor === false || lendoServidor) return;
+  lendoServidor = true;
+  try { await adotarDoServidor(); }
+  finally { lendoServidor = false; }
+}
+async function conferirVersaoServidor(){
+  if (estadoNoServidor === false) return;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=rev",
+                          { headers: estCabecalho() });
+    if (!r.ok) return;
+    const l = await r.json();
+    const rev = (Array.isArray(l) && l.length) ? (parseInt(l[0].rev, 10) || 0) : 0;
+    if (rev && rev !== revVistoServidor){ revVistoServidor = rev; await reconciliar("pulso"); }
+  } catch {}
+}
+setInterval(conferirVersaoServidor, 15000);
+
 /* Toda publicacao no canal tambem grava. Junta as chamadas seguidas numa so. */
 function agendarGravacao(){
   if (estadoNoServidor === false) return;
@@ -1821,6 +1863,13 @@ function pedirConferencia(){
   syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
     tratarMsgPainel(payload || {});
   }).on("presence", { event:"sync" }, () => { try { atualizarPresenca(); } catch {} })
+    .on("postgres_changes", { event:"UPDATE", schema:"public", table: EST_TABELA, filter: "id=eq." + EST_ID },
+        payload => {
+          /* alguem gravou: se nao fomos nos, relê e mescla na hora */
+          const rev = payload && payload.new ? (parseInt(payload.new.rev, 10) || 0) : 0;
+          if (rev && rev === revVistoServidor) return;
+          reconciliar("aviso do banco");
+        })
     .subscribe(st => {
     syncOn = st === "SUBSCRIBED";
     updateConn();
