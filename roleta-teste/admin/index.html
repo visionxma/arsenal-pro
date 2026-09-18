@@ -152,6 +152,38 @@
   body.sb-min .sb-top{ padding:16px 0 14px; display:flex; justify-content:center; }
   /* o logo é um wordmark largo: recolhido, mostra só o touro (recorte à esquerda) */
   body.sb-min .sb-top img{ height:22px; width:30px; object-fit:cover; object-position:left center; }
+  /* DIARIO DO TURNO — lista densa, legivel em 360px sem rolagem lateral.
+     Hora e autor ficam na mesma linha do texto quando ha espaco (>=420px) e
+     empilham em coluna estreita, em vez de espremer a frase. */
+  .diario{ list-style:none; margin:0; padding:0; display:grid; gap:2px; }
+  .diario li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+    padding:7px 0; border-bottom:1px solid var(--line); font-size:12.5px; line-height:1.35; }
+  .diario li:last-child{ border-bottom:0; }
+  .diario-h{ color:var(--t4); font-variant-numeric:tabular-nums; font-size:11.5px; align-self:center; }
+  .diario-q{ color:var(--brand-2); font-weight:600; align-self:center;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .diario-o{ grid-column:1 / -1; color:var(--t2); min-width:0; overflow-wrap:anywhere; }
+  @media (min-width:420px){
+    .diario li{ grid-template-columns:auto auto 1fr; }
+    .diario-o{ grid-column:auto; }
+  }
+  .diario-vazio{ color:var(--t4); font-size:12.5px; margin:0; }
+
+  /* QUEM ESTA OPERANDO (18/09/2026)
+     O Corujao vira a noite trocando de turno no mesmo login. Saber quem esta com
+     o painel aberto agora evita dois operadores mexendo na mesma lista sem saber
+     um do outro. Cabe na coluna de 240px e some no modo recolhido. */
+  .quem{ padding:10px 16px; border-bottom:1px solid var(--line); font-size:12px; }
+  .quem-eu{ display:flex; align-items:center; gap:8px; min-width:0; color:var(--t2); }
+  .quem-ini{ width:22px; height:22px; border-radius:50%; flex:none;
+    display:grid; place-items:center; background:var(--brand); color:#fff;
+    font-size:10px; font-weight:700; letter-spacing:.02em; }
+  .quem-nome{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .quem-rot{ color:var(--t4); font-weight:500; }
+  .quem-outros{ margin-top:7px; color:var(--warn); line-height:1.35; }
+  .quem-outros:empty{ display:none; }
+  body.sb-min .quem{ padding:10px 0; display:grid; place-items:center; }
+  body.sb-min .quem-nome, body.sb-min .quem-rot, body.sb-min .quem-outros{ display:none; }
   body.sb-min .conn{ justify-content:center; padding:10px 0; }
   body.sb-min .sb-item{ justify-content:center; padding:9px 0; }
   body.sb-min .sb-item.active::before{ top:8px; bottom:8px; }
@@ -609,6 +641,13 @@
       <div class="sb-title">Admin · Roleta</div>
     </div>
     <div class="conn" id="conn"><i></i><span id="connTxt">Procurando a roleta…</span></div>
+    <div class="quem" id="quem" hidden>
+      <div class="quem-eu">
+        <span class="quem-ini" id="quemIni" aria-hidden="true"></span>
+        <span class="quem-nome" id="quemNome"><span class="quem-rot">no turno:</span> …</span>
+      </div>
+      <div class="quem-outros" id="quemOutros" role="status"></div>
+    </div>
     <nav class="sb-nav" aria-label="Seções do painel">
       <div class="sb-group">Operação</div>
       <button class="sb-item active" data-view="live" type="button">
@@ -715,6 +754,17 @@
               </div>
               <p class="sub">Atualiza em tempo real o botão da página do Corujão. Aceita apenas endereços http(s).</p>
             </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Diário do turno</h2>
+            <div class="ph-side"><span id="diarioQtd"></span></div>
+          </div>
+          <div class="panel-b">
+            <ul class="diario" id="diarioLista"></ul>
+            <p class="sub">Quem assume o turno vê o que aconteceu antes: fica guardado com o estado, não só neste computador.</p>
           </div>
         </div>
       </section>
@@ -1288,6 +1338,118 @@ if (SB){
   SB.auth.getSession().then(({ data }) => { authTok = data && data.session ? data.session.access_token : null; });
   SB.auth.onAuthStateChange((_ev, session) => { authTok = session ? session.access_token : null; });
 }
+/* ================= DIARIO DO TURNO (18/09/2026) =================
+   Conta compartilhada e turno virando de madrugada: quando algo aparece
+   diferente, a primeira pergunta e "quem mexeu nisso?". O diario responde. Fica
+   guardado junto com o estado, entao quem assume o turno le o que aconteceu no
+   anterior, mesmo sem ninguem para contar.
+   Nao e log de sistema: e uma frase por acao, em portugues, com a hora e o nome
+   de quem fez. Guarda as ultimas 200. */
+const LS_DIARIO = "cj_diario_v1";
+let diario = load(LS_DIARIO, []);
+if (!Array.isArray(diario)) diario = [];
+function anotar(oque){
+  try {
+    diario.unshift({ t: Date.now(), quem: (euOperador && euOperador.apelido) || "operador", o: String(oque) });
+    diario = diario.slice(0, 200);
+    save(LS_DIARIO, diario);
+    renderDiario();
+    agendarGravacao();
+  } catch {}
+}
+/* Junta dois diarios sem duplicar e sem depender de quem chegou primeiro. */
+function mesclarDiario(a, b){
+  const vistos = new Set(); const juntos = [];
+  [].concat(Array.isArray(a)?a:[], Array.isArray(b)?b:[]).forEach(l => {
+    if (!l || !l.t) return;
+    const chave = l.t + "|" + (l.quem||"") + "|" + (l.o||"");
+    if (vistos.has(chave)) return;
+    vistos.add(chave); juntos.push(l);
+  });
+  return juntos.sort((x,y) => y.t - x.t).slice(0, 200);
+}
+function horaCurta(ts){
+  try { return new Date(ts).toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" }); }
+  catch { return ""; }
+}
+function renderDiario(){
+  const el = document.getElementById("diarioLista");
+  if (!el) return;
+  const qtd = document.getElementById("diarioQtd");
+  if (qtd) qtd.textContent = diario.length ? diario.length + (diario.length === 1 ? " registro" : " registros") : "";
+  if (!diario.length){ el.innerHTML = '<p class="diario-vazio">Nada registrado ainda neste turno.</p>'; return; }
+  el.innerHTML = diario.slice(0, 12).map(l =>
+    '<li><span class="diario-h">' + horaCurta(l.t) + '</span>' +
+    '<span class="diario-q">' + escHTML(l.quem || "operador") + '</span>' +
+    '<span class="diario-o">' + escHTML(l.o || "") + '</span></li>').join("");
+}
+
+/* ================= QUEM ESTA OPERANDO (18/09/2026) =================
+   O Corujao vira a noite com o turno passando de mao em mao. Duas coisas que
+   faltavam e custam caro: (1) a tela nao dizia em nome de quem voce esta
+   mexendo, e (2) ninguem via que TEM outra pessoa com o painel aberto agora —
+   dois operadores editavam a mesma lista sem saber um do outro.
+   Presenca e do proprio canal em tempo real; nao inventa servidor nenhum e, se
+   falhar, some sem derrubar nada. */
+const ABA_ID = (Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
+let euOperador = null;
+function apelidoDe(u){
+  const m = (u && u.user_metadata) || {};
+  return String(m.apelido || m.nome || (u && u.email ? u.email.split("@")[0] : "") || "operador");
+}
+function iniciaisDe(nome){
+  const partes = String(nome).replace(/[._-]+/g, " ").trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return "?";
+  return (partes[0][0] + (partes[1] ? partes[1][0] : "")).toUpperCase();
+}
+function mostrarOperador(){
+  const cx = document.getElementById("quem");
+  if (!cx || !euOperador) return;
+  cx.hidden = false;
+  document.getElementById("quemIni").textContent = iniciaisDe(euOperador.apelido);
+  document.getElementById("quemNome").innerHTML =
+    '<span class="quem-rot">no turno:</span> ' + escHTML(euOperador.apelido);
+  document.getElementById("quemNome").title = euOperador.email || "";
+}
+async function descobrirOperador(){
+  if (!SB) return;
+  try {
+    const { data } = await SB.auth.getUser();
+    if (!data || !data.user) return;
+    euOperador = { id: data.user.id, email: data.user.email || "", apelido: apelidoDe(data.user) };
+    mostrarOperador();
+    anunciarPresenca();
+  } catch {}
+}
+function anunciarPresenca(){
+  if (!syncCh || !syncOn || !euOperador) return;
+  try { syncCh.track({ aba: ABA_ID, apelido: euOperador.apelido, email: euOperador.email, desde: Date.now() }); } catch {}
+}
+function atualizarPresenca(){
+  const el = document.getElementById("quemOutros");
+  if (!el) return;
+  let outros = [];
+  try {
+    const estado = syncCh && syncCh.presenceState ? syncCh.presenceState() : {};
+    Object.values(estado || {}).forEach(lista => (lista || []).forEach(m => {
+      if (m && m.aba && m.aba !== ABA_ID) outros.push(m);
+    }));
+  } catch { el.textContent = ""; return; }
+  if (!outros.length){ el.textContent = ""; return; }
+  const nomes = [...new Set(outros.map(o => o.apelido || "alguém"))];
+  const mesmoLogin = euOperador && outros.every(o => o.email && o.email === euOperador.email);
+  if (mesmoLogin){
+    el.textContent = outros.length === 1
+      ? "Este mesmo login está aberto em outro aparelho agora."
+      : "Este mesmo login está aberto em outros " + outros.length + " aparelhos agora.";
+  } else {
+    el.textContent = nomes.length === 1
+      ? "Também no painel agora: " + nomes[0] + "."
+      : "Também no painel agora: " + nomes.slice(0, 2).join(", ") +
+        (nomes.length > 2 ? " e mais " + (nomes.length - 2) : "") + ".";
+  }
+}
+
 /* A roleta so aceita comando com sessao valida. Se o token expirou, renova e
    reenvia uma unica vez; se ainda assim falhar, avisa em vez de deixar o
    operador achar que salvou. */
@@ -1450,6 +1612,7 @@ async function adotarDoServidor(){
     if (linha.cfg && Object.keys(linha.cfg).length){ cfg = Object.assign({}, CFG_DEF, linha.cfg); save(LS_CFG, cfg); }
     absorverRelogio(revServidor);
   }
+  if (Array.isArray(linha.diario)){ diario = mesclarDiario(diario, linha.diario); save(LS_DIARIO, diario); renderDiario(); }
   const ids = experts.map(e => e.id);
   sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
   render(); renderLive();
@@ -1471,7 +1634,9 @@ async function gravarNoServidor(){
       cf = (linha.cfg && Object.keys(linha.cfg).length) ? linha.cfg : cf;
     }
   }
-  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, rev: tick(relogio), atualizado: new Date().toISOString() };
+  const di = linha ? mesclarDiario(diario, linha.diario) : diario;
+  diario = di; save(LS_DIARIO, diario);
+  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, diario: di, rev: tick(relogio), atualizado: new Date().toISOString() };
   try {
     const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID),
       { method:"PATCH", headers: estCabecalho({ "Prefer":"return=minimal" }), body: JSON.stringify(corpo) });
@@ -1652,14 +1817,16 @@ function pedirConferencia(){
 (function initSync(){
  try {
   if (!SB){ toast("Falha ao carregar a sincronização."); return; }
-  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false }, presence: { key: ABA_ID } } });
   syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
     tratarMsgPainel(payload || {});
-  }).subscribe(st => {
+  }).on("presence", { event:"sync" }, () => { try { atualizarPresenca(); } catch {} })
+    .subscribe(st => {
     syncOn = st === "SUBSCRIBED";
     updateConn();
     if (syncOn){
       syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+      anunciarPresenca();
       /* PERGUNTA SEMPRE, tendo lista propria ou nao (18/09/2026). Antes so
          perguntava quem nascia vazio: um painel que ja tinha lista salva abria
          mostrando a lista do turno anterior e nunca conferia com o ar. O
@@ -1865,9 +2032,10 @@ function fazSwitchAtivo(e){
       const ok = await confirmModal('"' + e.name + '" está em operação agora. Desativar também encerra a operação na roleta. Continuar?',
         { title:"Expert em operação", okText:"Desativar e encerrar", danger:true });
       if (!ok){ ev.target.checked = true; return; }
-      sendCmd({ type:"endOp" });
+      if (sendCmd({ type:"endOp" })) anotar("encerrou a operação");
     }
     e.active = ligar; persistExperts(e);
+    anotar((ligar ? "ativou " : "desativou ") + '"' + e.name + '"');
     toast(e.active ? e.name+" ativado." : e.name+" desativado.");
   });
   return sw;
@@ -1903,6 +2071,7 @@ function removerExpert(e){
       { title:"Remover expert", okText:"Remover", danger:true });
     if (!ok) return;
     if (opera) sendCmd({ type:"endOp" });
+    anotar('removeu "' + e.name + '" da roleta');
     const removido = e;                                   // guarda para o Desfazer
     const posicao = experts.findIndex(x => x.id === e.id);
     const eraSorteado = sorteados.includes(e.id);
@@ -1918,6 +2087,7 @@ function removerExpert(e){
       delete tumbas[removido.id];            // some a lapide: ele volta a existir
       if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
       persistExperts(removido);              // carimbo novo vence a lapide antiga
+      anotar('desfez a remoção de "' + removido.name + '"');
       toast(removido.name + " restaurado.");
     });
   })();
@@ -2810,7 +2980,7 @@ fForce.addEventListener("change", () => {
   else fForce.value = "";
 });
 document.getElementById("btnSpinNow").addEventListener("click", () => {
-  sendCmd({ type:"spin", forcedId: fForce.value || null });
+  if (sendCmd({ type:"spin", forcedId: fForce.value || null })) anotar("mandou a roleta sortear");
   fForce.value = "";
 });
 document.getElementById("btnEndOp").addEventListener("click", () => {
@@ -2848,6 +3018,7 @@ document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
   const url = safeLiveUrl(raw);
   if (!url){ toast("Link inválido — use um endereço http(s) completo."); return; }
   localStorage.setItem(LS_LIVE_URL, url);
+  anotar("trocou o link da live");
   showLiveUrl();
   // vai direto pelo canal (o alvo é a página do Corujão, não a roleta):
   if (syncSend({ type:"liveUrl", url }))
@@ -3074,6 +3245,8 @@ const loginPass = document.getElementById("loginPass");
 function unlock(){
   document.body.classList.remove("locked");
   loginOverlay.classList.remove("show");
+  descobrirOperador();
+  renderDiario();
   render(); renderLive();
   /* So depois de entrar: se este navegador nunca teve lista, pede a de quem
      estiver no ar e, se ninguem responder, pergunta ao operador. Antes isso so
@@ -3117,7 +3290,8 @@ function ofereceModoLocal(){
 }
 btnLocal.addEventListener("click", () => {
   modoLocal = true; authTok = null;
-  unlock();
+  euOperador = { id:"local", email:"", apelido:"modo local" };
+  unlock(); mostrarOperador();
   toast("Modo local: comandando a roleta deste navegador.");
   syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
 });
