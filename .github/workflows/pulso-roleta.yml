@@ -22,6 +22,10 @@ permissions:
 env:
   SUPA: https://hovbgrhmoqrhrxvwvkbt.supabase.co
   ANON: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4
+  # Origem (GitHub Pages): e o que prova que a pagina foi publicada.
+  PAINEL_ORIGEM: https://visionxma.github.io/arsenal-pro/roleta/admin/
+  ROLETA_ORIGEM: https://visionxma.github.io/arsenal-pro/roleta/
+  # Dominio publico (passa pela Cloudflare).
   PAINEL: https://admin.safiriontradingbrasil.com/roleta/admin/
   ROLETA: https://admin.safiriontradingbrasil.com/roleta/
 
@@ -51,11 +55,27 @@ jobs:
             *) echo "::error::Endpoint de login respondeu $COD (esperado 400) — login do painel em risco"; exit 1 ;;
           esac
 
-      - name: Painel e roleta servindo no ar
+      - name: Painel e roleta publicados (origem)
         run: |
           set -euo pipefail
-          for U in "$PAINEL" "$ROLETA"; do
+          for U in "$PAINEL_ORIGEM" "$ROLETA_ORIGEM"; do
             COD=$(curl -sS -o /dev/null -w '%{http_code}' "$U")
             echo "$COD  $U"
-            test "$COD" = "200" || { echo "::error::$U respondeu $COD"; exit 1; }
+            test "$COD" = "200" || { echo "::error::$U respondeu $COD — a pagina nao esta publicada"; exit 1; }
+          done
+
+      - name: Dominio publico respondendo (aviso, nao falha)
+        run: |
+          set -euo pipefail
+          # A Cloudflare barra IP de datacenter com 403 mesmo a pagina estando de
+          # pe, entao aqui 403 vira aviso: quem prova a publicacao e a origem acima.
+          UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
+          for U in "$PAINEL" "$ROLETA"; do
+            COD=$(curl -sS -o /dev/null -w '%{http_code}' -A "$UA" "$U" || echo 000)
+            echo "$COD  $U"
+            case "$COD" in
+              200) ;;
+              403) echo "::warning::$U respondeu 403 (defesa da Cloudflare contra IP de datacenter) — navegador de gente continua entrando" ;;
+              *) echo "::error::$U respondeu $COD"; exit 1 ;;
+            esac
           done
