@@ -5,8 +5,8 @@ name: Backup da roleta e dos logins
 # lápides, configuração, rodada e histórico. Não há mais nada.
 #
 # Por isso o backup não é um pg_dump: ele lê pela API com a chave service_role,
-# junta tudo num JSON, comprime e criptografa. Guardado como artefato por 90
-# dias. Antes daqui, este workflow falhava todo dia por falta de secrets e o
+# junta tudo num JSON, comprime e criptografa com openssl — que já existe no Mac
+# do Victor, ao contrário do gpg. Guardado como artefato por 90 dias. Antes daqui, este workflow falhava todo dia por falta de secrets e o
 # projeto ficou sem backup nenhum (corrigido em 18/09/2026).
 #
 # Secrets necessários (Settings → Secrets and variables → Actions):
@@ -87,14 +87,18 @@ jobs:
         run: |
           set -euo pipefail
           STAMP=$(date -u +%Y%m%d-%H%M)
+          ARQ="backup-$STAMP.json.gz.enc"
           gzip -9 -c backup.json \
-            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASSPHRASE" \
-            > "backup-$STAMP.json.gz.gpg"
+            | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:PASSPHRASE \
+            > "$ARQ"
+          # prova de que abre: descriptografa de volta e confere o JSON
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PASSPHRASE -in "$ARQ" \
+            | gunzip | python3 -c "import json,sys; d=json.load(sys.stdin); print('conferido: abre e tem', len(d['estado'][0]['experts']), 'experts')"
           rm -f backup.json estado.json usuarios.json
-          ls -lh backup-*.json.gz.gpg
+          ls -lh "$ARQ"
 
       - uses: actions/upload-artifact@v4
         with:
           name: backup-roleta
-          path: backup-*.json.gz.gpg
+          path: backup-*.json.gz.enc
           retention-days: 90
