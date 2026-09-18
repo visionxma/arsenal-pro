@@ -1,0 +1,3252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[TESTE] Painel Admin · Roleta dos Experts</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/safirion-icon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png" />
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     PAINEL ADMIN · ROLETA — v3 "ferramenta interna"
+     Reformulação: sidebar = navegação real (uma tela por função),
+     densidade de painel operacional, tabelas administrativas, radius
+     discreto, azul Safirion reservado para ação/estado ativo.
+     A lógica de dados/sincronização é a MESMA da v2 (não mexer).
+     =================================================================== */
+  :root{
+    --bg:#070b12;            /* página */
+    --s1:#0c121d;            /* painel / sidebar */
+    --s2:#111927;            /* campo, linha ativa, hover leve */
+    --s3:#182335;            /* hover forte / pressionado */
+    --line:rgba(255,255,255,.07);
+    --line-2:rgba(255,255,255,.13);
+    --text:#eef4fb;
+    --t2:#c6d2e1;
+    --t3:#9fb0c4;
+    --t4:#66788e;
+    --brand:#2389e6;
+    --brand-2:#4ba3f0;
+    --brand-dim:rgba(35,137,230,.13);
+    --brand-line:rgba(35,137,230,.45);
+    --ok:#34d399;   --ok-dim:rgba(52,211,153,.1);    --ok-line:rgba(52,211,153,.35);
+    --danger:#f87171; --danger-dim:rgba(248,113,113,.09); --danger-line:rgba(248,113,113,.35);
+    --warn:#fbbf24;  --warn-dim:rgba(251,191,36,.1); --warn-line:rgba(251,191,36,.35);
+    --r:6px;                 /* controles */
+    --r-lg:8px;              /* painéis */
+    --sbw:240px;
+    --sbw-min:64px;
+    --tbh:52px;
+    --shadow-float:0 16px 48px rgba(0,0,0,.55);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color:var(--text); min-height:100vh; background:var(--bg);
+    font-size:13.5px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  a{ color:inherit; text-decoration:none; }
+  button, input, select, textarea{ font-family:inherit; }
+  ::selection{ background:rgba(35,137,230,.4); }
+  :focus-visible{ outline:2px solid var(--brand-2); outline-offset:1px; border-radius:3px; }
+  ::-webkit-scrollbar{ width:10px; height:10px }
+  ::-webkit-scrollbar-track{ background:transparent }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.13); border-radius:99px; border:3px solid transparent; background-clip:content-box }
+  ::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.22); background-clip:content-box }
+  *{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent; }
+  .num{ font-variant-numeric:tabular-nums; }
+
+  /* ================= BARRA SUPERIOR (mobile) ================= */
+  .topbar{
+    display:none; position:fixed; top:0; left:0; right:0; z-index:48;
+    height:var(--tbh); align-items:center; gap:12px; padding:0 14px;
+    background:rgba(9,13,20,.94); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .tb-burger{
+    width:36px; height:36px; flex:none; border-radius:var(--r); cursor:pointer;
+    display:grid; place-items:center; color:var(--text);
+    background:var(--s2); border:1px solid var(--line-2);
+  }
+  .tb-burger:active{ background:var(--s3); }
+  .tb-logo{ height:20px; display:block; flex:none; }
+  .tb-title{ font-weight:600; font-size:13px; color:var(--t2);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tb-dot{ width:8px; height:8px; border-radius:50%; background:var(--t4); flex:none; margin-left:auto;
+    transition:background .3s; }
+  .tb-dot.on{ background:var(--ok); }
+
+  /* ================= SIDEBAR ================= */
+  .sidebar{
+    position:fixed; top:0; bottom:0; left:0; z-index:50; width:var(--sbw);
+    background:var(--s1);
+    border-right:1px solid var(--line);
+    display:flex; flex-direction:column;
+    transition:width .22s cubic-bezier(.2,0,.2,1), transform .22s cubic-bezier(.2,0,.2,1);
+  }
+  .sb-top{ padding:16px 16px 14px; border-bottom:1px solid var(--line); }
+  .sb-top img{ height:22px; width:auto; display:block; }
+  .sb-title{ margin-top:10px; font-weight:600; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.1em; color:var(--t4); white-space:nowrap; }
+
+  .sb-nav{ flex:1; padding:10px 10px 14px; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; }
+  .sb-group{ margin-top:14px; padding:0 8px 6px; font-size:10px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.12em; color:var(--t4); white-space:nowrap; }
+  .sb-nav .sb-group:first-child{ margin-top:4px; }
+  .sb-item{
+    position:relative; display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px;
+    border-radius:var(--r); cursor:pointer; text-align:left;
+    background:transparent; border:0; color:var(--t3);
+    font-size:13px; font-weight:500;
+    transition:background .15s, color .15s;
+  }
+  .sb-item + .sb-item{ margin-top:2px; }
+  .sb-item:hover{ background:var(--s2); color:var(--text); }
+  .sb-item svg{ width:16px; height:16px; flex:none; opacity:.85; }
+  .sb-item .lbl{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-item.active{
+    background:var(--brand-dim); color:#fff; font-weight:600;
+  }
+  .sb-item.active svg{ color:var(--brand-2); opacity:1; }
+  .sb-item.active::before{
+    content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px;
+    border-radius:0 2px 2px 0; background:var(--brand-2);
+  }
+  .sb-foot{ padding:10px; border-top:1px solid var(--line); }
+  .sb-foot .sb-item{ color:var(--t4); }
+  .sb-foot .sb-item:hover{ color:var(--text); }
+
+  /* status de conexão no rodapé do bloco superior */
+  .conn{ display:flex; align-items:center; gap:8px; margin:0; padding:10px 16px;
+    font-size:12px; font-weight:500; color:var(--t4); white-space:nowrap; overflow:hidden;
+    border-bottom:1px solid var(--line); }
+  .conn i{ width:7px; height:7px; border-radius:50%; background:#42506a; flex:none; transition:background .3s; }
+  .conn.on i{ background:var(--ok); }
+  .conn.on span{ color:var(--ok); }
+  .conn span{ overflow:hidden; text-overflow:ellipsis; }
+
+  /* botão recolher/expandir — controle de primeira classe, meio vertical */
+  .sb-handle{
+    position:absolute; top:50%; right:-13px; transform:translateY(-50%); z-index:51;
+    width:26px; height:64px; border-radius:8px; cursor:pointer; padding:0;
+    border:1px solid var(--line-2); background:var(--s2); color:var(--t3);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+    transition:color .15s, border-color .15s, background .15s;
+  }
+  .sb-handle:hover{ color:#fff; border-color:var(--brand-line); background:var(--s3); }
+  .sb-handle svg{ width:14px; height:14px; transition:transform .22s cubic-bezier(.2,0,.2,1); }
+  body.sb-min .sb-handle svg{ transform:rotate(180deg); }
+
+  body.sb-min .sidebar{ width:var(--sbw-min); }
+  body.sb-min .sb-title, body.sb-min .sb-item .lbl, body.sb-min .conn span{ display:none; }
+  body.sb-min .sb-group{ padding:0; height:1px; margin:12px 8px 8px; background:var(--line); overflow:hidden; color:transparent; }
+  body.sb-min .sb-nav .sb-group:first-child{ display:none; }
+  body.sb-min .sb-top{ padding:16px 0 14px; display:flex; justify-content:center; }
+  /* o logo é um wordmark largo: recolhido, mostra só o touro (recorte à esquerda) */
+  body.sb-min .sb-top img{ height:22px; width:30px; object-fit:cover; object-position:left center; }
+  body.sb-min .conn{ justify-content:center; padding:10px 0; }
+  body.sb-min .sb-item{ justify-content:center; padding:9px 0; }
+  body.sb-min .sb-item.active::before{ top:8px; bottom:8px; }
+
+  /* ================= ÁREA PRINCIPAL ================= */
+  .main{ margin-left:var(--sbw); padding:0 0 64px; transition:margin-left .22s cubic-bezier(.2,0,.2,1); }
+  body.sb-min .main{ margin-left:var(--sbw-min); }
+  .wrap{ width:100%; max-width:1080px; margin:0 auto; padding:28px clamp(18px,3vw,40px) 0; }
+
+  /* telas: uma por item da sidebar */
+  .view{ display:none; }
+  .view.active{ display:block; animation:vfade .16s ease; }
+  @keyframes vfade{ from{ opacity:0; transform:translateY(3px);} to{ opacity:1; transform:none;} }
+
+  /* cabeçalho de página */
+  .page-head{ display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+  .page-head .ph-txt{ flex:1 1 260px; min-width:0; }
+  .page-head h1{ font-weight:600; font-size:18px; letter-spacing:-.01em; color:var(--text); }
+  .page-head p{ margin-top:3px; font-size:13px; color:var(--t4); }
+  .page-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+  /* ================= PAINÉIS / SEÇÕES ================= */
+  .panel{ background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; }
+  .panel + .panel, .panel + .stats, .stats + .panel{ margin-top:16px; }
+  .panel-h{
+    display:flex; align-items:center; gap:12px; padding:12px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-h h2{ font-weight:600; font-size:13.5px; color:var(--text); }
+  .panel-h .ph-side{ margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--t4); }
+  .panel-b{ padding:16px; }
+  .panel-b > * + *{ margin-top:14px; }
+  .panel-b.tight{ padding:0; }
+  .panel-b.tight > * + *{ margin-top:0; }
+
+  /* ================= AO VIVO ================= */
+  .op-bar{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    padding:14px 16px;
+  }
+  .op-bar img{ width:44px; height:44px; border-radius:50%; object-fit:cover; flex:none;
+    border:1px solid var(--line-2);
+    background:var(--s2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2366788e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center/20px no-repeat; }
+  .op-txt{ flex:1 1 200px; min-width:0; }
+  .op-status{ display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--t4); }
+  .op-status::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--t4); flex:none; }
+  .op-main{ font-weight:600; font-size:15px; margin-top:2px; color:var(--text); overflow-wrap:anywhere; }
+  .op-main .op-timer{ color:var(--brand-2); font-variant-numeric:tabular-nums; }
+  .op-bar.running .op-status{ color:var(--brand-2); }
+  .op-bar.running .op-status::before{ background:var(--brand-2); }
+  .op-bar.running img{ border-color:var(--brand-line); }
+  .op-bar.paused .op-status{ color:var(--warn); }
+  .op-bar.paused .op-status::before{ background:var(--warn); }
+  .op-bar.paused img{ border-color:var(--warn-line); }
+  .op-bar.paused .op-main .op-timer{ color:var(--warn); }
+  .op-cta{ display:flex; gap:8px; flex-wrap:wrap; margin-left:auto; align-items:center; }
+  .op-sec{ display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    padding:10px 16px; border-top:1px solid var(--line); background:rgba(255,255,255,.015); }
+  .op-sec .lbl-sec{ font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--t4); margin-right:4px; }
+
+  /* faixa de indicadores: um container, células com divisores */
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr);
+    background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; }
+  .stat{ padding:13px 16px; border-left:1px solid var(--line); min-width:0; }
+  .stat:first-child{ border-left:0; }
+  .stat b{ display:block; font-weight:600; font-size:21px; line-height:1.15; color:var(--text);
+    font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat span{ display:block; margin-top:2px; font-size:11px; font-weight:500; color:var(--t4);
+    text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat b.small{ font-size:14px; line-height:1.6; }
+
+  /* ================= FORMULÁRIOS ================= */
+  .field{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .field label{ font-size:12.5px; font-weight:600; color:var(--t2); }
+  .field input[type=text],.field input[type=number],.field input[type=password],
+  .field input[type=url],.field input[type=email],.field input[type=search],.field input:not([type]),
+  .field select, .exp-search, .cm-input, .gate-field input{
+    width:100%; padding:8px 11px; border-radius:var(--r); font-size:13.5px; color:var(--text);
+    background:var(--s2); border:1px solid var(--line-2); outline:none;
+    transition:border-color .15s, background .15s, box-shadow .15s;
+  }
+  .field input:hover, .field select:hover, .exp-search:hover{ border-color:rgba(255,255,255,.22); }
+  .field input:focus, .field select:focus, .exp-search:focus, .cm-input:focus, .gate-field input:focus{
+    border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15);
+  }
+  .field input::placeholder, .exp-search::placeholder{ color:var(--t4); }
+  .field input:disabled{ opacity:.5; cursor:not-allowed; }
+  .field select{
+    appearance:none; cursor:pointer; padding-right:34px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239fb0c4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 11px center;
+  }
+  .field select option{ background:#0c121d; color:#fff; }
+  .sub{ font-size:12px; color:var(--t4); line-height:1.5; }
+  .sub b{ color:var(--t3); font-weight:600; }
+  .grid2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr)); gap:14px; }
+
+  .field input[type=file]{
+    width:100%; font-size:12.5px; color:var(--t3); cursor:pointer;
+    background:var(--s2); border:1px dashed var(--line-2); border-radius:var(--r);
+    padding:8px 10px; transition:border-color .15s;
+  }
+  .field input[type=file]:hover{ border-color:var(--brand-line); }
+  .field input[type=file]::file-selector-button{
+    margin-right:10px; padding:6px 12px; border-radius:var(--r); cursor:pointer;
+    font-family:inherit; font-size:12px; font-weight:600;
+    background:var(--s3); border:1px solid var(--line-2); color:var(--t2);
+    transition:background .15s;
+  }
+  .field input[type=file]:hover::file-selector-button{ background:var(--brand-dim); }
+
+  /* linha de configuração: rótulo + descrição à esquerda, controle à direita */
+  .set-row{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
+  .set-row + .set-row{ border-top:1px solid var(--line); }
+  .set-txt{ flex:1 1 220px; min-width:0; }
+  .set-txt .st-l{ font-size:13px; font-weight:600; color:var(--t2); }
+  .set-txt .st-d{ font-size:12px; color:var(--t4); margin-top:1px; }
+  .set-ctl{ flex:none; display:flex; align-items:center; gap:8px; }
+  .set-ctl input[type=number]{ width:88px; padding:7px 10px; border-radius:var(--r); font-size:13px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    text-align:right; font-variant-numeric:tabular-nums;
+    transition:border-color .15s, box-shadow .15s; }
+  .set-ctl select{ padding:7px 30px 7px 10px; border-radius:var(--r); font-size:13px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    appearance:none; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239fb0c4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 9px center; }
+  .set-ctl select option{ background:#0c121d; color:#fff; }
+  .set-ctl input[type=number]:focus, .set-ctl select:focus{
+    border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .set-ctl .unit{ font-size:12px; color:var(--t4); }
+
+  /* interruptor */
+  .sw{ position:relative; width:36px; height:20px; flex:none; cursor:pointer; display:inline-block; }
+  .sw input{ position:absolute; inset:-8px -6px; width:auto; height:auto; opacity:0; margin:0; cursor:pointer; z-index:2; }
+  .sw .tr{ position:absolute; inset:0; border-radius:99px; background:var(--s3);
+    border:1px solid var(--line-2); transition:background .18s, border-color .18s; }
+  .sw .th{ position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%;
+    background:var(--t3); transition:transform .18s cubic-bezier(.2,0,.2,1), background .18s; }
+  .sw input:checked + .tr{ background:var(--brand); border-color:var(--brand); }
+  .sw input:checked + .tr .th{ transform:translateX(16px); background:#fff; }
+  .sw input:focus-visible + .tr{ outline:2px solid var(--brand-2); outline-offset:2px; }
+
+  /* ================= BOTÕES ================= */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    padding:8px 14px; border-radius:var(--r); cursor:pointer;
+    font-size:13px; font-weight:600;
+    background:var(--s2); color:var(--t2); border:1px solid var(--line-2);
+    transition:background .15s, color .15s, border-color .15s, opacity .15s;
+    white-space:nowrap;
+  }
+  .btn:hover{ background:var(--s3); color:var(--text); border-color:rgba(255,255,255,.22); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+  .btn svg{ width:14px; height:14px; flex:none; }
+  .btn-pri{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .btn-pri:hover{ background:#2f95f2; border-color:#2f95f2; color:#fff; }
+  .btn-pri:disabled{ background:var(--brand); border-color:var(--brand); }
+  .btn-lg{ padding:10px 20px; font-size:13.5px; }
+  .btn-danger{ background:transparent; border-color:var(--danger-line); color:var(--danger); }
+  .btn-danger:hover{ background:var(--danger-dim); border-color:var(--danger); color:var(--danger); }
+  .btn-sm{ padding:5px 10px; font-size:12px; font-weight:600; border-radius:5px; }
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  .icon-btn{
+    width:28px; height:28px; border-radius:5px; display:grid; place-items:center; flex:none; cursor:pointer;
+    background:transparent; border:1px solid transparent; color:var(--t4);
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .icon-btn:hover{ background:var(--s3); color:var(--text); border-color:var(--line-2); }
+  .icon-btn.on{ color:var(--ok); }
+  .icon-btn.del:hover{ background:var(--danger-dim); border-color:var(--danger-line); color:var(--danger); }
+
+  /* etiquetas de estado */
+  .tag{ display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:4px;
+    font-size:11px; font-weight:600; white-space:nowrap; }
+  .tag-ok{ color:var(--ok); background:var(--ok-dim); border:1px solid var(--ok-line); }
+  .tag-brand{ color:var(--brand-2); background:var(--brand-dim); border:1px solid var(--brand-line); }
+  .tag-mut{ color:var(--t4); background:rgba(255,255,255,.04); border:1px solid var(--line); }
+  .tag-warn{ color:var(--warn); background:var(--warn-dim); border:1px solid var(--warn-line); }
+
+  /* ================= TABELAS ================= */
+  .tbl-wrap{ overflow-x:auto; }
+  table.tbl{ width:100%; border-collapse:collapse; font-size:13px; }
+  .tbl th{
+    text-align:left; padding:9px 14px; font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.07em; color:var(--t4);
+    border-bottom:1px solid var(--line-2); white-space:nowrap;
+    background:rgba(255,255,255,.015);
+  }
+  .tbl td{ padding:8px 14px; border-bottom:1px solid var(--line); color:var(--t2); vertical-align:middle; }
+  .tbl tbody tr:last-child td{ border-bottom:0; }
+  .tbl tbody tr{ transition:background .12s; }
+  .tbl tbody tr:hover{ background:rgba(255,255,255,.025); }
+  .tbl td.r, .tbl th.r{ text-align:right; }
+  .tbl td.c, .tbl th.c{ text-align:center; }
+  .tbl .cell-nm{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .tbl .cell-nm img{ width:28px; height:28px; border-radius:50%; object-fit:cover; flex:none;
+    border:1px solid var(--line-2); }
+  .tbl .cell-nm .nm{ font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; min-width:0; }
+  .tbl tr.inactive .cell-nm{ opacity:.45; }
+  .tbl tr.hiddenByStat, .tbl tr.hiddenByFilter{ display:none; }
+  .tbl .acts{ display:flex; gap:4px; justify-content:flex-end; }
+  .tbl input.cell-min{ width:74px; padding:5px 8px; border-radius:5px; font-size:12.5px;
+    color:var(--text); background:var(--s2); border:1px solid var(--line-2); outline:none;
+    text-align:right; font-variant-numeric:tabular-nums; transition:border-color .15s, box-shadow .15s; }
+  .tbl input.cell-min:focus{ border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .tbl input.cell-min::placeholder{ color:var(--t4); }
+  .tbl-empty{ padding:26px 16px; text-align:center; font-size:13px; color:var(--t4); }
+
+  /* barra de ferramentas de tabela (busca + filtros) */
+  .tbl-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    padding:10px 14px; border-bottom:1px solid var(--line); }
+  .exp-search{ flex:1 1 200px; max-width:320px; padding-left:32px !important;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2366788e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:10px center; }
+  .seg{ display:inline-flex; border:1px solid var(--line-2); border-radius:var(--r); overflow:hidden; }
+  .seg button{
+    padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer;
+    background:transparent; border:0; color:var(--t4); border-left:1px solid var(--line);
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+    transition:background .15s, color .15s;
+  }
+  .seg button:first-child{ border-left:0; }
+  .seg button:hover{ color:var(--t2); background:var(--s2); }
+  .seg button[aria-pressed="true"]{ background:var(--brand-dim); color:var(--brand-2); }
+  .seg button b{ font-weight:600; font-variant-numeric:tabular-nums; }
+
+  /* ================= LINK DA TRANSMISSÃO ================= */
+  .url-row{ display:flex; align-items:center; gap:8px; }
+  .url-row input[type=url]{
+    flex:1; min-width:0; padding:8px 11px; font-size:13px; color:var(--text);
+    background:var(--s2); border:1px solid var(--line-2); border-radius:var(--r); outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .url-row input[type=url]:focus{ border-color:var(--brand); box-shadow:0 0 0 3px rgba(35,137,230,.15); }
+  .url-row input[type=url]::placeholder{ color:var(--t4); }
+  .url-current{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--t4);
+    flex-wrap:wrap; }
+  .url-current b{ color:var(--t2); font-weight:500; word-break:break-all; }
+
+  /* ================= ZONA DE RISCO ================= */
+  .panel.risk{ border-color:var(--danger-line); }
+  .panel.risk .panel-h{ border-bottom-color:var(--danger-line); background:var(--danger-dim); }
+  .panel.risk .panel-h h2{ color:var(--danger); }
+  .risk-row{ display:flex; align-items:center; gap:16px; padding:12px 16px; }
+  .risk-row + .risk-row{ border-top:1px solid var(--line); }
+  .risk-row .set-txt .st-l{ color:var(--t2); }
+
+  /* prévia da foto recortada */
+  .foto-previa{ display:none; align-items:center; gap:10px; padding:8px 11px; border-radius:var(--r);
+    background:var(--s2); border:1px solid var(--line); }
+  .foto-previa.show{ display:flex; }
+  .foto-previa img{ width:34px; height:34px; border-radius:50%; object-fit:cover; flex:none; border:1px solid var(--line-2); }
+  .foto-previa .fp-txt{ flex:1; min-width:0; font-size:12.5px; color:var(--t3); }
+  .foto-previa button{ flex:none; padding:5px 10px; border-radius:5px; font:inherit; font-size:12px; font-weight:600;
+    cursor:pointer; background:var(--s3); border:1px solid var(--line-2); color:var(--t2);
+    transition:background .15s, color .15s; }
+  .foto-previa button:hover{ background:var(--brand-dim); color:var(--text); }
+
+  /* formulário de expert (abre sob demanda) */
+  .exp-form{ display:none; border-bottom:1px solid var(--line); padding:16px; background:rgba(255,255,255,.015); }
+  .exp-form.show{ display:block; }
+  .exp-form > * + *{ margin-top:12px; }
+
+  /* ================= AVISO FLUTUANTE ================= */
+  .toast{
+    position:fixed; right:20px; bottom:20px; transform:translateY(10px); z-index:130;
+    display:flex; align-items:center; gap:12px; max-width:min(420px, calc(100vw - 32px));
+    padding:11px 15px; border-radius:var(--r-lg); font-size:13px; font-weight:500; color:var(--text);
+    background:var(--s3); border:1px solid var(--line-2); box-shadow:var(--shadow-float);
+    opacity:0; pointer-events:none; transition:opacity .18s, transform .18s cubic-bezier(.2,0,.2,1);
+  }
+  .toast.show{ opacity:1; transform:none; pointer-events:auto; }
+  .toast .undo{
+    flex:none; padding:5px 11px; border-radius:5px; cursor:pointer; font:inherit;
+    font-size:12px; font-weight:600;
+    background:var(--brand-dim); border:1px solid var(--brand-line); color:var(--brand-2);
+  }
+  .toast .undo:hover{ background:rgba(35,137,230,.22); }
+
+  /* ================= MODAL ================= */
+  .cmodal{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,7,12,.78); backdrop-filter:blur(6px); }
+  .cmodal.show{ display:flex; animation:cmFade .15s ease; }
+  @keyframes cmFade{ from{opacity:0} to{opacity:1} }
+  .cmodal-card{ width:100%; max-width:400px; border-radius:var(--r-lg); padding:22px; text-align:left;
+    background:var(--s1); border:1px solid var(--line-2); box-shadow:var(--shadow-float);
+    animation:cmUp .18s cubic-bezier(.2,0,.2,1); }
+  @keyframes cmUp{ from{transform:translateY(8px)} to{transform:none} }
+  .cmodal-card h3{ font-weight:600; font-size:15px; margin-bottom:6px; color:var(--text); }
+  .cmodal-card p{ font-size:13px; color:var(--t3); line-height:1.55; margin-bottom:18px; }
+  .cmodal-row{ display:flex; gap:8px; justify-content:flex-end; }
+  .cmodal-row button{ padding:8px 16px; border-radius:var(--r); font:inherit;
+    font-weight:600; font-size:13px; cursor:pointer; border:1px solid transparent; transition:background .15s; }
+  .cmodal-row .cm-cancel{ background:transparent; border-color:var(--line-2); color:var(--t3); }
+  .cmodal-row .cm-cancel:hover{ background:var(--s2); color:var(--text); }
+  .cmodal-row .cm-ok{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .cmodal-row .cm-ok:hover{ background:#2f95f2; }
+  .cmodal-row .cm-ok.danger{ background:#d94848; border-color:#d94848; }
+  .cmodal-row .cm-ok.danger:hover{ background:#e35b5b; }
+  .cm-input{ text-align:left; margin:0 0 16px; }
+
+  /* editor de recorte */
+  .cropm-card{ max-width:420px; }
+  .cropm-stage{ position:relative; width:100%; aspect-ratio:1/1; margin:0 auto 14px; border-radius:var(--r);
+    overflow:hidden; background:var(--bg); border:1px solid var(--line); touch-action:none; cursor:grab; }
+  .cropm-stage:active{ cursor:grabbing; }
+  .cropm-stage canvas{ display:block; width:100%; height:100%; }
+  .cropm-mask{ position:absolute; inset:0; pointer-events:none;
+    box-shadow:0 0 0 9999px rgba(4,7,12,.68); border-radius:50%;
+    border:1px solid rgba(255,255,255,.4); }
+  .cropm-tools{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .cropm-tools input[type=range]{ flex:1; accent-color:var(--brand); cursor:pointer; min-width:0; }
+  .crop-btn{ flex:none; width:32px; height:32px; border-radius:var(--r); display:grid; place-items:center; cursor:pointer;
+    background:var(--s2); border:1px solid var(--line-2); color:var(--t3);
+    font-size:14px; font-weight:600; line-height:1; transition:background .15s, color .15s; }
+  .crop-btn:hover{ background:var(--s3); color:var(--text); }
+  .crop-btn:active{ transform:translateY(1px); }
+  .crop-btn.wide{ width:auto; padding:0 11px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+
+  /* ================= LOGIN ================= */
+  body.locked .sidebar, body.locked .main, body.locked .topbar{ filter:blur(8px); pointer-events:none; user-select:none; }
+  .gate{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px;
+    background:rgba(4,7,12,.94); }
+  .gate.show{ display:flex; animation:fade .2s ease; }
+  @keyframes fade{ from{opacity:0} to{opacity:1} }
+  .gate-card{ width:100%; max-width:372px; padding:30px 28px; border-radius:var(--r-lg); text-align:center;
+    background:var(--s1); border:1px solid var(--line-2); box-shadow:var(--shadow-float); }
+  .gate-card img{ height:26px; margin:0 auto 20px; display:block; }
+  .gate-card h2{ font-weight:600; font-size:18px; color:var(--text); }
+  .gate-card p.g-sub{ font-size:13px; color:var(--t4); margin:6px 0 20px; }
+  .gate-field{ text-align:left; margin-bottom:12px; }
+  .gate-field label{ display:block; font-size:12.5px; font-weight:600; color:var(--t2); margin-bottom:6px; }
+  .gate-field input.err{ border-color:var(--danger); }
+  .pass-wrap{ position:relative; }
+  .pass-wrap input{ padding-right:42px; }
+  .pass-eye{ position:absolute; top:50%; right:5px; transform:translateY(-50%);
+    width:32px; height:32px; border-radius:5px; display:grid; place-items:center; cursor:pointer;
+    background:transparent; border:0; color:var(--t4); transition:color .15s, background .15s; }
+  .pass-eye:hover{ color:var(--text); background:var(--s2); }
+  @keyframes shake{ 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)}
+    30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+  .gate-card.wrong{ animation:shake .4s; }
+  .gate-btn{ width:100%; margin-top:8px; padding:11px; border-radius:var(--r); cursor:pointer;
+    min-height:44px;                       /* alvo de toque minimo */
+    font-weight:600; font-size:13.5px;
+    background:var(--brand); color:#fff; border:1px solid var(--brand);
+    transition:background .15s; }
+  .gate-btn:hover{ background:#2f95f2; }
+  /* secundario: precisa vir DEPOIS de .gate-btn, senao a cascata o deixa
+     identico ao botao primario (mesma especificidade, vence a ordem) */
+  .gate-btn--local{ margin-top:10px; background:var(--s2); color:var(--t2);
+    border:1px solid var(--line-2); font-weight:600; }
+  .gate-btn--local:hover{ background:var(--s3); color:var(--text); border-color:var(--brand-line); }
+  .g-local{ font-size:12px; line-height:1.45; color:var(--t4); margin-top:10px; text-align:left; }
+  .gate-btn:active{ transform:translateY(1px); }
+  .gate-err{ display:none; margin-top:12px; font-size:12.5px; color:var(--danger); }
+  .gate-card.wrong .gate-err{ display:block; }
+
+  .sb-bg{ display:none; }
+
+  /* ================= RESPONSIVO ================= */
+  @media (max-width:900px){
+    .topbar{ display:flex; }
+    .sidebar{ transform:translateX(-100%); box-shadow:var(--shadow-float); }
+    body.sb-open .sidebar{ transform:none; }
+    body.sb-min .sidebar{ width:var(--sbw); }
+    body.sb-min .sb-title, body.sb-min .sb-item .lbl, body.sb-min .conn span{ display:initial; }
+    body.sb-min .sb-group{ padding:0 8px 6px; height:auto; margin:14px 0 0; background:transparent; color:var(--t4); }
+    body.sb-min .sb-nav .sb-group:first-child{ display:block; margin-top:4px; }
+    body.sb-min .sb-top{ padding:16px 16px 14px; display:block; justify-content:flex-start; }
+    body.sb-min .conn{ justify-content:flex-start; padding:10px 16px; }
+    body.sb-min .sb-item{ justify-content:flex-start; padding:8px 10px; }
+    .sb-handle{ display:none; }
+    .main{ margin-left:0; padding-top:var(--tbh); }
+    body.sb-min .main{ margin-left:0; }
+    .sb-bg{ display:block; position:fixed; inset:0; z-index:49; background:rgba(4,7,12,.72);
+      opacity:0; pointer-events:none; transition:opacity .25s; }
+    body.sb-open .sb-bg{ opacity:1; pointer-events:auto; }
+    body.sb-open{ overflow:hidden; }
+    .wrap{ padding-top:20px; }
+  }
+  @media (max-width:720px){
+    .stats{ grid-template-columns:1fr 1fr; }
+    .stats .stat:nth-child(3), .stats .stat:nth-child(4){ border-top:1px solid var(--line); }
+    .stats .stat:nth-child(3){ border-left:0; }
+    .op-cta{ flex:1 1 100%; margin-left:0; }
+    .op-cta .btn{ flex:1; }
+    .op-sec{ flex-wrap:wrap; }
+    .op-sec .btn{ flex:1 1 auto; }
+    .page-actions{ width:100%; }
+    .page-actions .btn{ flex:1 1 auto; }
+    .set-row{ flex-wrap:wrap; }
+    .toast{ left:14px; right:14px; bottom:14px; max-width:none; }
+    .url-row{ flex-wrap:wrap; }
+    .url-row input[type=url]{ flex:1 1 100%; }
+    .url-row .btn{ flex:1; }
+  }
+  @media (pointer:coarse){
+    .icon-btn{ width:34px; height:34px; }
+    .crop-btn{ width:38px; height:38px; }
+    .sb-item{ padding:11px 10px; }
+    .btn-sm{ padding:7px 12px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body class="locked">
+<style>
+  .aviso-teste{
+    position:fixed; top:max(8px, env(safe-area-inset-top)); right:max(8px, env(safe-area-inset-right));
+    z-index:2147483647; pointer-events:none; user-select:none;
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 10px; border-radius:999px;
+    background:#b45309; color:#fff; border:1px solid #f59e0b;
+    font:700 clamp(10px, 9px + .25vw, 12px)/1 Inter, system-ui, sans-serif;
+    letter-spacing:.06em; text-transform:uppercase;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  .aviso-teste::before{
+    content:""; width:7px; height:7px; border-radius:50%; background:#fde68a; flex:none;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .aviso-teste::before{ animation:aviso-pisca 1.6s ease-in-out infinite; }
+    @keyframes aviso-pisca{ 50%{ opacity:.25 } }
+  }
+  .aviso-teste .longo{ display:none; }
+  @media (min-width:600px){ .aviso-teste .longo{ display:inline; } }
+</style>
+<div class="aviso-teste" role="status" aria-label="Ambiente de teste">TESTE<span class="longo">&nbsp;· não é a roleta do ar</span></div>
+
+
+  <div class="sb-bg" id="sbBg"></div>
+
+  <!-- Barra superior: só aparece em telas <=900px -->
+  <header class="topbar" id="topbar">
+    <button class="tb-burger" id="tbBurger" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <img class="tb-logo" src="../../assets/logo.svg" alt="Safirion" />
+    <span class="tb-title" id="tbTitle">Ao vivo</span>
+    <i class="tb-dot" id="tbDot" aria-hidden="true"></i>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <img src="../../assets/logo.svg" alt="Safirion" />
+      <div class="sb-title">Admin · Roleta</div>
+    </div>
+    <div class="conn" id="conn"><i></i><span id="connTxt">Procurando a roleta…</span></div>
+    <nav class="sb-nav" aria-label="Seções do painel">
+      <div class="sb-group">Operação</div>
+      <button class="sb-item active" data-view="live" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></svg>
+        <span class="lbl">Ao vivo</span>
+      </button>
+      <button class="sb-item" data-view="round" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+        <span class="lbl">Rodada e sorteio</span>
+      </button>
+      <button class="sb-item" data-view="times" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>
+        <span class="lbl">Tempos e giro</span>
+      </button>
+      <div class="sb-group">Cadastros</div>
+      <button class="sb-item" data-view="experts" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="lbl">Experts</span>
+      </button>
+      <button class="sb-item" data-view="lists" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v4H4z"/><path d="M9 20h11"/></svg>
+        <span class="lbl">Listas salvas</span>
+      </button>
+      <div class="sb-group">Personalização</div>
+      <button class="sb-item" data-view="fx" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
+        <span class="lbl">Efeitos</span>
+      </button>
+      <div class="sb-group">Sistema</div>
+      <button class="sb-item" data-view="backup" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span class="lbl">Backup e reset</span>
+      </button>
+    </nav>
+    <div class="sb-foot">
+      <a class="sb-item" href="../" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="lbl">Abrir roleta</span>
+      </a>
+      <button class="sb-item" id="btnLogout" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="lbl">Sair</span>
+      </button>
+    </div>
+    <button class="sb-handle" id="sbHandle" type="button" aria-label="Recolher ou expandir a navegação" title="Recolher ou expandir a navegação">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="14 6 8 12 14 18"/></svg>
+    </button>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <!-- ============ TELA: AO VIVO ============ -->
+      <section class="view active" id="view-live">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Ao vivo</h1>
+            <p>Estado da operação e sorteio.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="op-bar" id="liveCard">
+            <img id="liveAv" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
+            <div class="op-txt">
+              <div class="op-status" id="liveStatus">Aguardando sorteio</div>
+              <div class="op-main" id="liveMain">Nenhum expert em operação</div>
+            </div>
+            <div class="op-cta">
+              <button class="btn btn-pri btn-lg" id="btnSpinNow" type="button">Sortear agora</button>
+            </div>
+          </div>
+          <div class="op-sec">
+            <span class="lbl-sec">Ações</span>
+            <button class="btn btn-sm" id="btnPauseOp" type="button" disabled>Pausar</button>
+            <button class="btn btn-sm" id="btnEndOp" type="button">Encerrar operação</button>
+            <button class="btn btn-sm" id="btnResetRoundTop" type="button">Reiniciar rodada</button>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Resumo operacional">
+          <div class="stat"><b id="stTotal">0</b><span>Experts ativos</span></div>
+          <div class="stat"><b id="stLeft">0</b><span>Aguardando sorteio</span></div>
+          <div class="stat"><b id="stDone">0</b><span>Já sorteados</span></div>
+          <div class="stat"><b class="small" id="stOp">Aguardando</b><span>Operação</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Link da transmissão</h2>
+            <div class="ph-side"><span class="tag tag-mut" id="liveUrlTag">Padrão</span></div>
+          </div>
+          <div class="panel-b">
+            <div class="url-current">
+              <span>Link ativo:</span>
+              <b id="liveUrlNow">padrão (Google Meet)</b>
+              <button class="btn btn-sm" id="btnCopyLiveUrl" type="button">Copiar</button>
+            </div>
+            <div class="field">
+              <label for="fLiveUrl">Alterar o link do botão "Entrar na live"</label>
+              <div class="url-row">
+                <input type="url" id="fLiveUrl" inputmode="url" placeholder="https://…" autocomplete="off" spellcheck="false" />
+                <button class="btn btn-pri" id="btnSaveLiveUrl" type="button">Aplicar</button>
+              </div>
+              <p class="sub">Atualiza em tempo real o botão da página do Corujão. Aceita apenas endereços http(s).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: RODADA E SORTEIO ============ -->
+      <section class="view" id="view-round">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Rodada e sorteio</h1>
+            <p>Controle da rodada atual e histórico dos sorteios.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn" id="btnResetRound" type="button">Reiniciar rodada</button>
+            <button class="btn" id="btnClearHist" type="button">Limpar histórico</button>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Resumo da rodada">
+          <div class="stat"><b class="small" id="rdStatus">—</b><span>Status da rodada</span></div>
+          <div class="stat"><b id="rdPart">0</b><span>Participantes</span></div>
+          <div class="stat"><b id="rdLeft">0</b><span>Aguardando sorteio</span></div>
+          <div class="stat"><b id="rdDone">0</b><span>Já sorteados</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Próximo sorteio</h2></div>
+          <div class="panel-b">
+            <div class="field">
+              <label for="fForce">Forçar próximo sorteado (opcional)</label>
+              <select id="fForce"><option value="">Sorteio aleatório</option></select>
+              <p class="sub">Vale só para o próximo giro e exige a roleta aberta.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Histórico da rodada</h2>
+            <div class="ph-side"><span id="histCount"></span></div>
+          </div>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th class="r" style="width:56px">Ordem</th>
+                  <th>Expert</th>
+                  <th style="width:110px">Horário</th>
+                  <th style="width:130px">Status</th>
+                </tr></thead>
+                <tbody id="histBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: TEMPOS E GIRO ============ -->
+      <section class="view" id="view-times">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Tempos e giro</h1>
+            <p>Alterações são salvas e aplicadas na roleta automaticamente.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Configurações gerais</h2></div>
+          <div class="panel-b tight">
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgMinutes">Tempo padrão de operação</label></div>
+                <div class="st-d">Usado por todo expert sem tempo próprio.</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgMinutes" min="1" max="180" step="1" inputmode="numeric" />
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgWait">Espera para o próximo giro</label></div>
+                <div class="st-d">Usada só com o sorteio automático ligado.</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgWait" min="0" max="300" step="1" inputmode="numeric" />
+                <span class="unit">s</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgSpinSec">Duração do giro</label></div>
+                <div class="st-d">Em branco, cada giro sorteia a duração (6,8–9,7 s).</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgSpinSec" min="2" max="30" step="1" inputmode="numeric" placeholder="auto" />
+                <span class="unit">s</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgRounds">Voltas do giro</label></div>
+                <div class="st-d">Em branco, cada giro sorteia as voltas (6–11).</div>
+              </div>
+              <div class="set-ctl">
+                <input type="number" id="cfgRounds" min="2" max="16" step="1" inputmode="numeric" placeholder="auto" />
+                <span class="unit">voltas</span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Sorteio automático</div>
+                <div class="st-d">Sorteia o próximo expert ao fim do tempo.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swAuto" aria-label="Sorteio automático"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Tempo por expert</h2>
+            <div class="ph-side"><span id="timesCount"></span></div>
+          </div>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th>Expert</th>
+                  <th class="r" style="width:120px">Tempo</th>
+                  <th class="c" style="width:80px">Ativo</th>
+                  <th class="r" style="width:110px">Ações</th>
+                </tr></thead>
+                <tbody id="timesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: EXPERTS ============ -->
+      <section class="view" id="view-experts">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Experts</h1>
+            <p>Cadastro dos participantes da roleta.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn" id="btnAtivarTodos" type="button">Ativar todos</button>
+            <button class="btn" id="btnDesativarTodos" type="button">Desativar todos</button>
+            <button class="btn" id="btnGoListas" type="button">Listas salvas</button>
+            <button class="btn btn-pri" id="btnAddExpert" type="button">Adicionar expert</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="exp-form" id="expForm">
+            <div class="grid2">
+              <div class="field">
+                <label for="fName" id="formTitle">Adicionar expert</label>
+                <input type="text" id="fName" placeholder="Nome do expert" maxlength="40" />
+              </div>
+              <div class="field">
+                <label for="fMinutes">Tempo próprio (min, opcional)</label>
+                <input type="number" id="fMinutes" min="1" max="180" step="1" placeholder="Usar o tempo padrão" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="fPhoto">Foto (opcional)</label>
+              <input type="file" id="fPhoto" accept="image/*" />
+              <p class="sub">Ao escolher a imagem abre o editor de recorte. Sem foto, usamos as iniciais.</p>
+              <div class="foto-previa" id="fotoPrevia">
+                <img id="fotoPreviaImg" src="" alt="Prévia da foto recortada" />
+                <span class="fp-txt">Foto recortada e pronta.</span>
+                <button type="button" id="btnReeditarFoto">Reajustar</button>
+                <button type="button" id="btnRemoverFoto">Remover</button>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-pri" id="btnSaveExpert" type="button">Adicionar</button>
+              <button class="btn" id="btnCancelEdit" type="button">Cancelar</button>
+            </div>
+          </div>
+
+          <div class="tbl-tools">
+            <input type="text" id="expSearch" class="exp-search" placeholder="Buscar pelo nome…" autocomplete="off" />
+            <div class="seg" role="group" aria-label="Filtrar por status">
+              <button type="button" data-filter="all" aria-pressed="true">Todos <b id="stTotalMini">0</b></button>
+              <button type="button" data-filter="left" aria-pressed="false">No sorteio <b id="stLeftMini">0</b></button>
+              <button type="button" data-filter="done" aria-pressed="false">Sorteados <b id="stDoneMini">0</b></button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th style="width:34px" class="r">#</th>
+                <th>Nome</th>
+                <th style="width:120px">Status</th>
+                <th class="r" style="width:90px">Tempo</th>
+                <th class="r" style="width:110px">Participações</th>
+                <th style="width:110px">Último sorteio</th>
+                <th class="r" style="width:150px">Ações</th>
+              </tr></thead>
+              <tbody id="expBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: LISTAS SALVAS ============ -->
+      <section class="view" id="view-lists">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Listas salvas</h1>
+            <p>Formações completas guardadas para aplicar quando quiser.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Salvar a formação atual</h2></div>
+          <div class="panel-b">
+            <div class="field">
+              <label for="fListaNome">Nome da lista</label>
+              <div class="url-row">
+                <input type="text" id="fListaNome" placeholder="Ex.: Night Challenge, noite 1" autocomplete="off" maxlength="60">
+                <button class="btn btn-pri" id="btnSalvarLista" type="button">Salvar lista</button>
+              </div>
+              <p class="sub">Guarda a lista de experts que está no ar agora, com fotos e tempos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Listas guardadas</h2>
+            <div class="ph-side"><span id="listasCount"></span></div>
+          </div>
+          <div class="panel-b tight">
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr>
+                  <th>Nome</th>
+                  <th class="r" style="width:90px">Experts</th>
+                  <th style="width:150px">Criada em</th>
+                  <th style="width:90px">Status</th>
+                  <th class="r" style="width:240px">Ações</th>
+                </tr></thead>
+                <tbody id="listasBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: EFEITOS ============ -->
+      <section class="view" id="view-fx">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Efeitos</h1>
+            <p>Aparência e som da roleta durante a live.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Aparência da roleta</h2></div>
+          <div class="panel-b tight">
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Confete ao sortear</div>
+                <div class="st-d">Dispara confete na tela da roleta quando um expert é sorteado.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swConfetti" aria-label="Confete ao sortear"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l">Som ligado por padrão</div>
+                <div class="st-d">A roleta abre com os efeitos sonoros ativados.</div>
+              </div>
+              <div class="set-ctl">
+                <span class="sw"><input type="checkbox" id="swSound" aria-label="Som ligado por padrão"><span class="tr"><span class="th"></span></span></span>
+              </div>
+            </div>
+            <div class="set-row">
+              <div class="set-txt">
+                <div class="st-l"><label for="cfgIdle">Giro ocioso</label></div>
+                <div class="st-d">Velocidade da roda enquanto espera o sorteio.</div>
+              </div>
+              <div class="set-ctl">
+                <select id="cfgIdle">
+                  <option value="0">Desligado</option>
+                  <option value="1">Lento</option>
+                  <option value="2">Normal</option>
+                  <option value="3">Rápido</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TELA: BACKUP E RESET ============ -->
+      <section class="view" id="view-backup">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Backup e reset</h1>
+            <p>Exportação, restauração e ações de risco.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Backup</h2></div>
+          <div class="panel-b">
+            <div class="btn-row">
+              <button class="btn btn-pri" id="btnExport" type="button">Exportar backup completo</button>
+              <button class="btn" id="btnExportExperts" type="button">Só experts</button>
+              <button class="btn" id="btnExportCfg" type="button">Só configurações</button>
+              <button class="btn" id="btnExportListas" type="button">Só listas salvas</button>
+              <button class="btn" id="btnExportRodada" type="button">Só dados da rodada</button>
+            </div>
+            <p class="sub">O backup completo leva experts (com fotos), configurações, listas salvas, rodada e histórico em um arquivo .json.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h2>Restauração</h2></div>
+          <div class="panel-b">
+            <div class="btn-row">
+              <label class="btn" for="fImport" style="cursor:pointer">Importar backup
+                <input type="file" id="fImport" accept="application/json" hidden />
+              </label>
+            </div>
+            <p class="sub">Aceita o backup completo ou qualquer exportação parcial deste painel. Só o que existir no arquivo é substituído.</p>
+          </div>
+        </div>
+
+        <div class="panel risk">
+          <div class="panel-h"><h2>Zona de risco</h2></div>
+          <div class="panel-b tight">
+            <div class="risk-row">
+              <div class="set-txt">
+                <div class="st-l">Resetar configurações</div>
+                <div class="st-d">Volta tempos, giro e efeitos aos valores padrão. Não mexe nos experts.</div>
+              </div>
+              <div class="set-ctl">
+                <button class="btn btn-danger btn-sm" id="btnResetCfg" type="button">Resetar</button>
+              </div>
+            </div>
+            <div class="risk-row">
+              <div class="set-txt">
+                <div class="st-l">Restaurar estado inicial</div>
+                <div class="st-d">Apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.</div>
+              </div>
+              <div class="set-ctl">
+                <button class="btn btn-danger btn-sm" id="btnRestoreDefaults" type="button">Restaurar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Login -->
+  <div class="gate show" id="loginOverlay" role="dialog" aria-modal="true">
+    <form class="gate-card" id="loginCard">
+      <img src="../../assets/logo.svg" alt="Safirion" />
+      <h2>Acesso restrito</h2>
+      <p class="g-sub">Entre com o e-mail e a senha do operador.</p>
+      <div class="gate-field"><label for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" placeholder="voce@email.com" autocomplete="username"></div>
+      <div class="gate-field"><label for="loginPass">Senha</label>
+        <div class="pass-wrap">
+          <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pass-eye" id="togglePass" aria-label="Mostrar senha" aria-pressed="false">
+            <svg class="eye-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9m3.3-1.7A10.5 10.5 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+          </button>
+        </div></div>
+      <p class="gate-err">E-mail ou senha incorretos.</p>
+      <button type="submit" class="gate-btn">Entrar no painel</button>
+      <button type="button" class="gate-btn gate-btn--local" id="btnLocal" hidden>Entrar em modo local</button>
+      <p class="g-local" id="gateLocalTxt" hidden>Sem resposta do servidor de login. No modo local o painel
+        comanda a roleta aberta <b>neste mesmo navegador</b>.</p>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- editor de recorte da foto -->
+  <div class="cmodal" id="cropModal" role="dialog" aria-modal="true" aria-label="Ajustar foto">
+    <div class="cmodal-card cropm-card">
+      <h3>Ajustar foto</h3>
+      <p>Arraste para posicionar. Use a roda do mouse, a pinça no celular ou o controle abaixo para aproximar.</p>
+      <div class="cropm-stage" id="cropStage">
+        <canvas id="cropCanvas"></canvas>
+        <div class="cropm-mask"></div>
+      </div>
+      <div class="cropm-tools">
+        <button class="crop-btn" type="button" id="cropMenos" aria-label="Afastar">&minus;</button>
+        <input type="range" id="cropZoom" min="1" max="6" step="0.01" value="1" aria-label="Aproximação" />
+        <button class="crop-btn" type="button" id="cropMais" aria-label="Aproximar">+</button>
+        <button class="crop-btn" type="button" id="cropGirar" aria-label="Girar 90 graus" title="Girar 90°">&#8635;</button>
+        <button class="crop-btn wide" type="button" id="cropReset">Redefinir</button>
+      </div>
+      <div class="cmodal-row">
+        <button class="cm-cancel" type="button" id="cropCancel">Cancelar</button>
+        <button class="cm-ok" type="button" id="cropOk">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação -->
+  <div class="cmodal" id="cmodal" role="dialog" aria-modal="true">
+    <div class="cmodal-card">
+      <h3 id="cmTitle">Confirmar</h3>
+      <p id="cmMsg"></p>
+      <input type="text" id="cmInput" class="cm-input" style="display:none" autocomplete="off" maxlength="60">
+      <div class="cmodal-row">
+        <button class="cm-cancel" id="cmCancel" type="button">Cancelar</button>
+        <button class="cm-ok" id="cmOk" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
+<script>
+"use strict";
+/* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
+/* version.json fica em ../version.json (mesma pasta da roleta). Verifica a cada 60s
+   e recarrega o painel ao detectar versão nova. NUNCA recarrega no meio do trabalho
+   do operador: campo em edição, foto recortada ainda não salva ou modal aberto
+   adiam o reload para a próxima checagem. */
+(function(){
+  var MY_VER = null;
+  var ocupado = function(){
+    try {
+      var ae = document.activeElement;
+      if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== "checkbox") return true;
+      var aberto = function(id){ var el = document.getElementById(id); return !!(el && el.classList.contains("show")); };
+      if (aberto("cropModal") || aberto("cmodal") || aberto("fotoPrevia")) return true;
+      var preenchido = function(id){ var el = document.getElementById(id); return !!(el && el.value && el.value.trim()); };
+      if (preenchido("fName") || preenchido("fMinutes") || preenchido("fListaNome") || preenchido("fLiveUrl")) return true;
+    } catch (e) {}
+    return false;
+  };
+  var check = function(){
+    fetch("../version.json?cb=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d || !d.v) return;
+        if (MY_VER === null){ MY_VER = d.v; return; }
+        if (d.v !== MY_VER && !ocupado()) location.reload();
+      })
+      .catch(function(){});
+  };
+  setInterval(check, 60000);
+  check();
+})();
+/* ================= Dados (mesmas chaves da roleta) ================= */
+const LS_EXPERTS = "cj_experts_v6";
+const LS_CFG     = "cj_cfg_v2";
+const LS_HIST    = "cj_hist_v1";
+const LS_RODADA  = "cj_rodada_v1";
+const LS_LIVE    = "cj_live_state_v1";
+const LS_LIVE_URL = "cj_live_url_v1";
+const LS_SB      = "cj_admin_sb";
+
+const CFG_DEF = { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true };
+
+/* fotos ficam em /assets/experts; o caminho é salvo relativo à PÁGINA DA ROLETA */
+const DEFAULT_EXPERTS = [
+  ["Taylon",         "taylon"],
+  ["Patrick",        "patrick"],
+  ["Miriele",        "mirieli"],
+  ["Julin",          "julinho"],
+  ["Thon Carvalho",  "thon"],
+  ["Ed Trader",      "edlaine"],
+  ["Vitor Lela",     "vitor-lela"],
+  ["Eduardo Bastos", "eduardo-bastos"],
+  ["Tio Vitão",      "vitao"],
+  ["Gustavo",        "gustavo"],
+  ["Lucas Bemfica",  "lucas-bemfica"],
+  ["Allan",          "allan"],
+  ["Big Boss",       "bigboos"],
+  ["Mineirinho",     "mineirinho"],
+  ["Molina",         "molina"],
+  ["Trader Estoico", "trader-estoico"],
+].map(([n,slug],i) => ({
+  id:"d"+i, name:n, photo: slug ? "../assets/experts/"+slug+".webp" : null,
+  active:true, minutes:null
+}));
+
+const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? f; } catch { return f; } };
+/* Devolve true/false. localStorage TEM cota (fotos viram data URI e pesam), e
+   estourar lancava excecao no meio do fluxo: o operador via "adicionado" e o
+   dado sumia no reload. Quem grava dado critico checa o retorno e desfaz. */
+const save = (k,v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+  catch (err){ console.error("Falha ao gravar", k, err); return false; }
+};
+
+/* O painel é a AUTORIDADE da lista. Semeia os 16 padrão só na PRIMEIRÍSSIMA
+   abertura (flag). Depois disso, a lista salva é a verdade: se o operador
+   removeu alguém, um reload NUNCA regenera os 16 por cima da lista editada. */
+let experts;
+/* false = este navegador nunca teve lista propria (1o acesso). Nesse estado o
+   painel PERGUNTA a lista a roleta antes de mandar a sua, senao um painel novo
+   ditaria uma lista padrao por cima da lista real que ja esta no ar. */
+let listaPropria = false;
+/* true enquanto esperamos a lista de quem ja esta no ar (ver semearSePrecisar) */
+let aguardandoListaInicial = false;
+(function(){
+  const INIT = "cj_experts_init_v1";
+  const raw = localStorage.getItem(LS_EXPERTS);
+  if (raw != null){
+    experts = load(LS_EXPERTS, []);                 // já existe lista salva → usa ela, seja qual for o tamanho
+    listaPropria = true;
+  } else if (!localStorage.getItem(INIT)){
+    /* Navegador sem lista NAO semeia na hora: ele nasce vazio, PERGUNTA a lista
+       a roleta e adota a resposta. Semear de cara e depois mesclar ressuscitava
+       quem ja tinha sido excluido (a uniao trazia os 16 padrao de volta).
+       Se ninguem responder em alguns segundos, ai sim assume que e a primeira
+       instalacao de todas e semeia. */
+    experts = [];
+    aguardandoListaInicial = true;
+  } else {
+    experts = [];                                   // já inicializou antes e storage foi limpo → NÃO recria os 16
+  }
+})();
+let MIGRATED = false;
+let cfg       = Object.assign({}, CFG_DEF, load(LS_CFG, {}));
+let hist      = load(LS_HIST, []);
+let sorteados = load(LS_RODADA, []);
+const saveCfg = () => { save(LS_CFG, cfg); sendState(); };
+
+function initials(name){ return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
+function avatarURI(name){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>`+
+    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>`+
+    `<stop offset='0%' stop-color='#2389e6'/><stop offset='100%' stop-color='#123a63'/></linearGradient></defs>`+
+    `<rect width='240' height='240' fill='url(#g)'/>`+
+    `<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' `+
+    `font-family='Montserrat,Arial,sans-serif' font-weight='600' font-size='84' fill='#fff'>${initials(name)}</text></svg>`;
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+/* o caminho salvo é relativo a /roleta/; esta página fica um nível abaixo */
+function photoOf(e){
+  const p = e.photo || avatarURI(e.name);
+  return p.startsWith("../") ? "../" + p : p;
+}
+const activeExperts = () => experts.filter(e => e.active);
+const jaSorteado = e => sorteados.includes(e.id);
+const disponiveis = () => activeExperts().filter(e => !jaSorteado(e));
+const minutesFor = e => {
+  const m = parseInt(e && e.minutes, 10);
+  return (m >= 1 && m <= 180) ? m : cfg.minutes;
+};
+
+/* ================= Comunicação com a roleta (Supabase Realtime) ================= */
+const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_ROOM = "cj-TESTE";
+const SYNC_KEY  = "TESTE-NAO-PRODUCAO";
+const SB = window.supabase ? window.supabase.createClient(SYNC_URL, SYNC_ANON) : null;
+let syncCh = null, syncOn = false, lastPongPrim = 0, lastPongStb = 0;
+let authTok = null;
+if (SB){
+  SB.auth.getSession().then(({ data }) => { authTok = data && data.session ? data.session.access_token : null; });
+  SB.auth.onAuthStateChange((_ev, session) => { authTok = session ? session.access_token : null; });
+}
+/* A roleta so aceita comando com sessao valida. Se o token expirou, renova e
+   reenvia uma unica vez; se ainda assim falhar, avisa em vez de deixar o
+   operador achar que salvou. */
+async function recuperarSessaoEReenviar(motivo){
+  marcarPendente();
+  try {
+    const { data } = await SB.auth.refreshSession();
+    if (data && data.session){
+      authTok = data.session.access_token;
+      if (sendState()){ sendStateR(); limparPendente(); toast("Sessão renovada — lista enviada à roleta."); return; }
+    }
+  } catch {}
+  toast(motivo || "A roleta recusou a lista. Faça login novamente.");
+}
+/* CANAL LOCAL (rede de seguranca, 18/09/2026) — ver o comentario igual na
+   roleta. Alcanca so as abas deste navegador, entao funciona sem internet e
+   sem servidor nenhum. E o caminho usado no "modo local" do login. */
+const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd-TESTE"); } catch { return null; } })();
+let modoLocal = false;
+function syncSend(o){
+  const msg = Object.assign({ k: SYNC_KEY, t: authTok }, o);
+  let entregueLocal = false;
+  try { if (CMD_CH){ CMD_CH.postMessage(msg); entregueLocal = true; } } catch {}
+  if (!syncCh || !syncOn) return entregueLocal;
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: msg }); return true; } catch { return entregueLocal; }
+}
+/* ===================== RELOGIO LOGICO + MERGE =====================
+   rev e um contador logico (Lamport). Toda mensagem recebida empurra o
+   relogio local para frente, entao ninguem "ganha" so por ter o relogio
+   adiantado. E a lista nunca e substituida em bloco: ela e MESCLADA por
+   expert, campo a campo, com lapides para as remocoes. Resultado: a ordem de
+   chegada deixa de importar e o estado converge igual em todas as maquinas,
+   com quantos painies estiverem abertos. */
+let relogio = parseInt(localStorage.getItem("cj_experts_rev") || "0", 10) || 0;
+const LS_TUMBAS = "cj_experts_tumbas_v1";
+/* lapides: { id: valorDoRelogio } — lembram QUE alguem foi removido e QUANDO.
+   Sem isso, uma maquina desatualizada re-adicionaria quem ja foi excluido. */
+let tumbas = load(LS_TUMBAS, {});
+if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
+
+/* Avanca o relogio local. Recebe o maior valor ja visto para nunca regredir. */
+function tick(vistoFora){
+  /* Date.now() entra como PISO, nao como fonte da verdade. Motivo: os dados
+     antigos foram gravados com rev = Date.now() (~1.78e12). Um painel recem-
+     aberto comeca em 0 e, sem esse piso, TODA edicao dele perderia para um
+     painel que ainda carrega o carimbo antigo. O comportamento Lamport
+     continua valendo — o max sempre inclui o maior valor ja visto. */
+  relogio = Math.max(relogio, parseInt(vistoFora, 10) || 0, Date.now()) + 1;
+  try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+  return relogio;
+}
+/* Absorve o relogio de quem mandou, sem contar como edicao local. */
+function absorverRelogio(vistoFora){
+  const v = parseInt(vistoFora, 10) || 0;
+  if (v > relogio){ relogio = v; try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {} }
+}
+const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
+
+/* Mescla duas visoes da lista. Determinista e comutativa: mesclar A com B da o
+   mesmo resultado que mesclar B com A, entao a ordem de chegada nao importa.
+   - mesmo expert nos dois lados -> fica a versao de carimbo maior
+   - expert so de um lado        -> entra (uniao)
+   - lapide com carimbo maior    -> o expert sai e fica fora
+   Mensagem de painel antigo (sem updatedAt/tumbas) entra com carimbo 0: nunca
+   sobrescreve dado mais novo, mas ainda consegue acrescentar gente nova. */
+function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
+  const porId = new Map();
+  const põe = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
+    if (!e || !e.id) return;
+    const atual = porId.get(e.id);
+    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+  });
+  põe(listaA); põe(listaB);
+
+  const tum = Object.assign({}, tumbasA || {}, {});
+  Object.entries(tumbasB || {}).forEach(([id, q]) => {
+    const v = parseInt(q, 10) || 0;
+    if (v > (parseInt(tum[id], 10) || 0)) tum[id] = v;
+  });
+  /* lapide so mata se for MAIS NOVA que a ultima alteracao do expert; assim um
+     re-cadastro proposital depois da exclusao continua valendo */
+  const vivos = [];
+  porId.forEach((e, id) => { if ((parseInt(tum[id], 10) || 0) <= carimbo(e)) vivos.push(e); });
+  return { experts: dedupeExperts(vivos), tumbas: tum };
+}
+function salvarTumbas(){ return save(LS_TUMBAS, tumbas); }
+function sendState(){
+  /* Sem base real ainda: publicar aqui empurraria uma lista vazia/padrao por
+     cima de quem esta no ar. Fica quieto ate adotar. */
+  if (!listaPropria) return false;
+  agendarGravacao();
+  return syncSend({ type:"state", experts, tumbas, cfg, rev: relogio });
+}
+function sendStateR(){ agendarGravacao(); return syncSend({ type:"state-r", sorteados, hist }); }
+
+/* ============ ESTADO GUARDADO NO SERVIDOR (18/09/2026) ============
+   O Corujao roda com UM login dividido por varias pessoas, que trocam de turno
+   pela madrugada. Mensagem em tempo real so alcanca quem esta com a pagina
+   aberta: se ninguem estiver no ar na hora da troca, quem entra fica com o que
+   sobrou no navegador dele. Esta linha no banco e a memoria que nao depende de
+   ninguem estar online.
+
+   Como e seguro:
+   - LER nunca destroi nada: a lista que vem do servidor e MESCLADA pelo mesmo
+     caminho das mensagens (carimbo por expert + lapide para remocao).
+   - GRAVAR e so do painel e so com sessao valida — a politica do banco recusa
+     anonimo. Antes de gravar, le e mescla, entao dois painies nao se apagam.
+   - Sem a tabela no banco, TUDO continua funcionando como antes: o painel
+     percebe uma vez, anota e nunca mais tenta. */
+const EST_TABELA = "roleta_estado_teste";
+const EST_ID     = "cj-TESTE";
+const EST_REST   = SYNC_URL + "/rest/v1/" + EST_TABELA;
+let estadoNoServidor = null;      // null = ainda nao sabemos; false = nao existe
+let gravacaoAgendada = null;
+
+function estCabecalho(extra){
+  return Object.assign({ "apikey": SYNC_ANON, "Content-Type": "application/json" },
+                       authTok ? { "Authorization": "Bearer " + authTok } : {}, extra || {});
+}
+async function lerDoServidor(){
+  if (estadoNoServidor === false) return null;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=*",
+                          { headers: estCabecalho() });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return null; }
+    if (!r.ok) return null;
+    const linhas = await r.json();
+    estadoNoServidor = true;
+    return Array.isArray(linhas) && linhas.length ? linhas[0] : null;
+  } catch { return null; }
+}
+/* Traz o que esta guardado e junta com o que este navegador tem. */
+async function adotarDoServidor(){
+  const linha = await lerDoServidor();
+  if (!linha) return false;
+  const revServidor = parseInt(linha.rev, 10) || 0;
+  /* Guarda o relogio de ANTES: mesclar a lista ja absorve o relogio do servidor,
+     e comparar depois daria sempre empate — a rodada nunca seria adotada e quem
+     ja tinha sido sorteado voltava ao sorteio no turno seguinte. */
+  const revLocalAntes = relogio;
+  if (Array.isArray(linha.experts) && linha.experts.length){
+    if (!listaPropria){
+      experts = dedupeExperts(linha.experts);
+      tumbas  = (linha.tumbas && typeof linha.tumbas === "object") ? Object.assign({}, linha.tumbas) : {};
+      aguardandoListaInicial = false;
+      try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+    } else {
+      const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
+      experts = r.experts; tumbas = r.tumbas;
+    }
+    save(LS_EXPERTS, experts); salvarTumbas();
+    absorverRelogio(revServidor);
+    listaPropria = true; listaConferida = true;
+  }
+  /* rodada, historico e configuracao: quem tem o relogio maior manda. O painel
+     que passou a noite fora tem relogio velho, entao adota o do servidor. */
+  if (revServidor > revLocalAntes){
+    if (Array.isArray(linha.sorteados)){ sorteados = linha.sorteados; save(LS_RODADA, sorteados); }
+    if (Array.isArray(linha.hist)){ hist = linha.hist; save(LS_HIST, hist); }
+    if (linha.cfg && Object.keys(linha.cfg).length){ cfg = Object.assign({}, CFG_DEF, linha.cfg); save(LS_CFG, cfg); }
+    absorverRelogio(revServidor);
+  }
+  const ids = experts.map(e => e.id);
+  sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
+  render(); renderLive();
+  return true;
+}
+/* Grava o estado inteiro, depois de mesclar com o que ja esta la. */
+async function gravarNoServidor(){
+  if (estadoNoServidor === false || !listaPropria || !authTok) return false;
+  const linha = await lerDoServidor();
+  if (estadoNoServidor === false) return false;
+  let ex = experts, tu = tumbas, so = sorteados, hi = hist, cf = cfg;
+  if (linha){
+    const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
+    ex = r.experts; tu = r.tumbas;
+    const revServidor = parseInt(linha.rev, 10) || 0;
+    if (revServidor > relogio){          // o servidor esta na frente: nao regride a rodada
+      so = Array.isArray(linha.sorteados) ? linha.sorteados : so;
+      hi = Array.isArray(linha.hist) ? linha.hist : hi;
+      cf = (linha.cfg && Object.keys(linha.cfg).length) ? linha.cfg : cf;
+    }
+  }
+  const corpo = { experts: ex, tumbas: tu, cfg: cf, sorteados: so, hist: hi, rev: tick(relogio), atualizado: new Date().toISOString() };
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID),
+      { method:"PATCH", headers: estCabecalho({ "Prefer":"return=minimal" }), body: JSON.stringify(corpo) });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return false; }
+    if (r.status === 401 || r.status === 403){
+      /* sessao expirada: o caminho que ja existe renova e reenvia */
+      await recuperarSessaoEReenviar("A gravação no servidor foi recusada — faça login novamente.");
+      return false;
+    }
+    return r.ok;
+  } catch { return false; }
+}
+/* Toda publicacao no canal tambem grava. Junta as chamadas seguidas numa so. */
+function agendarGravacao(){
+  if (estadoNoServidor === false) return;
+  clearTimeout(gravacaoAgendada);
+  gravacaoAgendada = setTimeout(() => { gravacaoAgendada = null; gravarNoServidor(); }, 1500);
+}
+const connected = () => Date.now() - lastPongPrim < 6000;
+const stbAlive  = () => Date.now() - lastPongStb < 6000;
+function sendCmd(msg){
+  if (!syncOn && !CMD_CH){ toast("Sincronização offline — verifique a internet."); return false; }
+  if (!connected()){
+    toast(stbAlive()
+      ? "A roleta reserva está assumindo… tente novamente em instantes."
+      : "Abra a página da roleta (em qualquer dispositivo) para usar este comando.");
+    return false;
+  }
+  syncSend(msg);
+  return true;
+}
+function updateConn(){
+  const el = document.getElementById("conn");
+  const tx = document.getElementById("connTxt");
+  /* espelha o estado no ponto da barra superior (mobile) */
+  const dot = document.getElementById("tbDot");
+  const ligado = syncOn && connected() && !(typeof envioPendente !== "undefined" && envioPendente);
+  if (dot) dot.classList.toggle("on", !!ligado);
+  if (typeof envioPendente !== "undefined" && envioPendente){
+    el.classList.remove("on");
+    tx.textContent = "Alterações não enviadas — reenviando…";
+    return;
+  }
+  if (!syncOn && !connected()){
+    el.classList.remove("on");
+    tx.textContent = CMD_CH ? "Procurando a roleta neste navegador…" : "Conectando à sincronização…";
+    return;
+  }
+  if (connected()){
+    el.classList.add("on");
+    tx.textContent = (syncOn ? "Roleta conectada" : "Roleta conectada neste navegador")
+                   + (stbAlive() ? " · reserva pronta" : "");
+  } else if (avisouNaoConferida && !listaConferida){
+    /* conectado ao servidor, mas ninguem confirmou a lista: o operador precisa
+       saber que a tela pode estar mostrando o turno passado. */
+    el.classList.remove("on");
+    tx.textContent = "Lista não conferida — ninguém no ar";
+  } else if (stbAlive()){
+    el.classList.remove("on");
+    tx.textContent = "Reserva assumindo…";
+  } else {
+    el.classList.remove("on");
+    tx.textContent = "Roleta não encontrada";
+  }
+}
+/* Tratador unico das mensagens da roleta: serve tanto o canal da internet
+   quanto o canal local deste navegador. */
+async function tratarMsgPainel(m){
+    if (m.k !== SYNC_KEY) return;
+    switch (m.type){
+      case "pong":
+        if (m.standby) lastPongStb = Date.now();
+        else lastPongPrim = Date.now();
+        updateConn();
+        break;
+      case "ack":
+        /* 'state' recusado era o pior caso: o operador via "salvo" e a roleta
+           tinha ignorado por sessao expirada. Agora renova e reenvia sozinho. */
+        if (m.cmd === "state"){
+          if (m.ok) limparPendente();
+          else await recuperarSessaoEReenviar(m.reason);
+          break;
+        }
+        if (m.ok) toast(m.cmd === "spin"     ? "Roleta girando!"
+                      : m.cmd === "pauseOp"  ? "Operação pausada."
+                      : m.cmd === "resumeOp" ? "Operação retomada."
+                      : "Comando aplicado na roleta.");
+        else toast(m.reason || "A roleta recusou o comando.");
+        break;
+      case "live":
+        live = m; renderLive();
+        break;
+      case "state": {
+        /* Chegou a visao de OUTRO painel (self:false garante que nao e a nossa).
+           NUNCA substituimos a lista em bloco: mesclamos. Assim duas maquinas no
+           mesmo login convergem para o mesmo estado independente da ordem de
+           chegada, e uma maquina que estava desatualizada nao apaga o trabalho
+           da outra — no maximo acrescenta o que ela tem de novo. */
+        if (Array.isArray(m.experts)){
+          if (!listaPropria){
+            /* PRIMEIRA lista que chega neste navegador: adota inteira. Mesclar
+               aqui seria errado — o que temos localmente nao vale nada ainda. */
+            experts = dedupeExperts(m.experts);
+            tumbas  = (m.tumbas && typeof m.tumbas === "object") ? Object.assign({}, m.tumbas) : {};
+            aguardandoListaInicial = false;
+            try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+          } else {
+            const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
+            experts = r.experts; tumbas = r.tumbas;
+          }
+          save(LS_EXPERTS, experts); salvarTumbas();
+          absorverRelogio(m.rev);
+          listaPropria = true;                 // ja temos base real: podemos publicar
+          listaConferida = true;               // alguem no ar confirmou a lista (ver pedirConferencia)
+          const ids = experts.map(e => e.id);
+          sorteados = sorteados.filter(id => ids.includes(id)); save(LS_RODADA, sorteados);
+          if (m.cfg){ cfg = Object.assign({}, CFG_DEF, m.cfg); save(LS_CFG, cfg); }
+          render();
+        }
+        break;
+      }
+      case "reqExperts":
+        /* Um painel recem-aberto pediu a lista. So responde quem tem base real. */
+        if (listaPropria) sendState();
+        break;
+      case "state-r":
+        if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
+        if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); }
+        /* a roleta e quem sorteia: o que ela manda precisa ficar guardado, senao
+           a rodada some quando o painel que estava aberto fecha. */
+        agendarGravacao();
+        render();
+        break;
+      case "hello":
+        /* a roleta apareceu (subiu/reconectou): manda a lista autoritativa na hora */
+        if (m.role === "roleta"){ sendState(); sendStateR(); syncSend({ type:"ping" }); }
+        /* TROCA DE TURNO (18/09/2026): outro painel do mesmo login acabou de
+           abrir. Quem ja tem base real responde com o estado. Sem isso, quem
+           entra no turno seguinte fica olhando a lista que sobrou no navegador
+           dele — foi o que o operador da madrugada viu divergir. */
+        else if (m.role === "admin" && listaPropria){ sendState(); sendStateR(); }
+        break;
+      case "reqState":
+        /* a roleta pediu explicitamente o estado atual — o painel é a autoridade */
+        sendState(); sendStateR();
+        break;
+      case "getLiveUrl":
+        // a página do Corujão pediu o link atual ao conectar
+        sendLiveUrl();
+        break;
+    }
+}
+/* CONFERENCIA DA LISTA (18/09/2026 — troca de turno)
+   Uma conta so, varias pessoas, turnos que se revezam a noite inteira. Cada
+   navegador guarda a sua copia da lista, entao quem entra precisa conferir com
+   quem esta no ar ANTES de operar. Se ninguem responder, o painel diz isso na
+   cara do operador em vez de deixar ele achar que a tela esta certa. */
+let listaConferida = false;
+let avisouNaoConferida = false;
+function pedirConferencia(){
+  syncSend({ type:"reqExperts" });
+  /* o servidor responde mesmo se nao houver viva alma no ar */
+  adotarDoServidor().then(veio => { if (veio) updateConn(); });
+  setTimeout(() => {
+    if (listaConferida || avisouNaoConferida) return;
+    if (!listaPropria) return;                 // esse caso ja tem o modal de lista inicial
+    avisouNaoConferida = true;
+    toast("Ninguém no ar confirmou a lista: o que está na tela é a última salva NESTE computador.");
+    updateConn();
+  }, 9000);
+}
+
+/* TUDO AQUI DENTRO E OPCIONAL (18/09/2026): se a sincronizacao explodir — rede
+   estranha, WebSocket bloqueado por firewall, biblioteca com defeito — a excecao
+   subia e matava o resto do script, inclusive o cadastro do formulario de login.
+   Painel morto, operador sem entrar. Agora o erro fica preso aqui: o painel abre,
+   avisa, e ainda serve pela memoria do servidor e pelo canal deste navegador. */
+(function initSync(){
+ try {
+  if (!SB){ toast("Falha ao carregar a sincronização."); return; }
+  syncCh = SB.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    tratarMsgPainel(payload || {});
+  }).subscribe(st => {
+    syncOn = st === "SUBSCRIBED";
+    updateConn();
+    if (syncOn){
+      syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+      /* PERGUNTA SEMPRE, tendo lista propria ou nao (18/09/2026). Antes so
+         perguntava quem nascia vazio: um painel que ja tinha lista salva abria
+         mostrando a lista do turno anterior e nunca conferia com o ar. O
+         "state" que volta e MESCLADO, nunca substitui — entao perguntar nao
+         tem risco de perder edicao local. */
+      pedirConferencia();
+      if (!listaPropria){ semearSePrecisar(); }
+      flushPendente();
+      if (MIGRATED){ sendState(); MIGRATED = false; toast("Experts que faltavam foram adicionados e enviados à roleta."); }
+    }
+  });
+ } catch (err){
+  console.error("Sincronização em tempo real fora do ar:", err);
+  toast("Sincronização em tempo real fora do ar — o painel continua funcionando.");
+  syncOn = false;
+  try { updateConn(); } catch {}
+ }
+})();
+/* O canal local vale mesmo com a internet ou o servidor fora do ar. */
+if (CMD_CH){
+ try {
+  CMD_CH.onmessage = ev => tratarMsgPainel(ev.data || {});
+  setTimeout(() => {
+    syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+    /* Mesmo caminho do canal da internet: pede a lista a quem estiver no ar
+       neste navegador e, se ninguem responder, pergunta ao operador. Sem isso,
+       uma maquina nova ficaria com a roleta vazia e sem como preencher. */
+    pedirConferencia();
+  }, 900);
+ } catch (err){ console.error("Canal local indisponível:", err); }
+}
+setInterval(() => { syncSend({ type:"ping" }); updateConn(); flushPendente(); }, 2500);
+
+/* ================= Estado AO VIVO ================= */
+let live = load(LS_LIVE, { status:"idle" });
+let liveRAF = null;
+const fmt = s => { s = Math.max(0, Math.ceil(s));
+  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
+const escHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+/* ---- Histórico da rodada (tabela administrativa) ---- */
+const histBody  = document.getElementById("histBody");
+const histCount = document.getElementById("histCount");
+/* as fotos do historico sao gravadas pela roleta, relativas a /roleta/;
+   este painel esta um nivel abaixo */
+function fotoHist(p){
+  if (!p) return PIXEL;
+  return p.startsWith("../") ? "../" + p : p;
+}
+function renderHist(){
+  if (!histBody) return;
+  histBody.innerHTML = "";
+  const n = Array.isArray(hist) ? hist.length : 0;
+  histCount.textContent = n ? (n === 1 ? "1 sorteio" : n + " sorteios") : "";
+  if (!n){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="4"><div class="tbl-empty">Nenhum sorteio nesta rodada ainda.</div></td>';
+    histBody.appendChild(tr);
+    return;
+  }
+  hist.forEach((h, i) => {
+    const tr = document.createElement("tr");
+    const tdPos = document.createElement("td");
+    tdPos.className = "r num"; tdPos.textContent = (n - i);   // ordem real do sorteio
+    const tdNome = document.createElement("td");
+    const cell = document.createElement("div"); cell.className = "cell-nm";
+    const im = document.createElement("img");
+    im.src = fotoHist(h.photo); im.alt = "";
+    im.onerror = () => { im.src = PIXEL; };
+    const nm = document.createElement("span");
+    nm.className = "nm"; nm.textContent = h.name || "Expert";
+    cell.append(im, nm); tdNome.appendChild(cell);
+    const tdHora = document.createElement("td");
+    tdHora.className = "num"; tdHora.textContent = h.at || "--:--";
+    const tdSt = document.createElement("td");
+    tdSt.innerHTML = i === 0 ? '<span class="tag tag-brand">Mais recente</span>'
+                             : '<span class="tag tag-mut">Concluído</span>';
+    tr.append(tdPos, tdNome, tdHora, tdSt);
+    histBody.appendChild(tr);
+  });
+}
+
+function renderLive(){
+  const card = document.getElementById("liveCard");
+  const st = document.getElementById("liveStatus");
+  const main = document.getElementById("liveMain");
+  const av = document.getElementById("liveAv");
+  const bp = document.getElementById("btnPauseOp");
+  const op = document.getElementById("stOp");
+  cancelAnimationFrame(liveRAF);
+  if (live && live.status === "running" && live.endsAt){
+    card.classList.add("running"); card.classList.remove("paused");
+    const ph = live.photo || "";
+    av.src = ph.startsWith("../") ? "../" + ph : ph;
+    st.textContent = "Em operação";
+    if (op) op.textContent = "Em operação";
+    bp.disabled = false; bp.textContent = "Pausar";
+    (function tick(){
+      const left = (live.endsAt - Date.now())/1000;
+      main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="op-timer">${fmt(left)}</span> restantes`;
+      if (left > 0) liveRAF = requestAnimationFrame(tick);
+      else main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · tempo encerrado`;
+    })();
+  } else if (live && live.status === "paused" && live.left > 0){
+    card.classList.add("running", "paused");
+    const ph = live.photo || "";
+    av.src = ph.startsWith("../") ? "../" + ph : ph;
+    st.textContent = "Operação pausada";
+    if (op) op.textContent = "Pausada";
+    bp.disabled = false; bp.textContent = "Retomar";
+    main.innerHTML = `<b>${escHTML(live.name || "Expert")}</b> · <span class="op-timer">${fmt(live.left)}</span> restantes`;
+  } else {
+    card.classList.remove("running", "paused");
+    /* pixel transparente: sem src (ou com src="") o Chrome ainda desenha o
+       glifo de imagem quebrada por cima do avatar neutro do CSS */
+    av.src = PIXEL;
+    st.textContent = "Aguardando sorteio";
+    if (op) op.textContent = "Aguardando";
+    main.textContent = "Nenhum expert em operação";
+    bp.disabled = true; bp.textContent = "Pausar";
+  }
+}
+try {
+  new BroadcastChannel("cj-live").onmessage = ev => { live = ev.data || { status:"idle" }; renderLive(); };
+} catch {}
+
+/* ================= Render ================= */
+const expBody = document.getElementById("expBody");
+const timesBody = document.getElementById("timesBody");
+const fName = document.getElementById("fName");
+const fPhoto = document.getElementById("fPhoto");
+const fMinutes = document.getElementById("fMinutes");
+const btnSaveExpert = document.getElementById("btnSaveExpert");
+const btnCancelEdit = document.getElementById("btnCancelEdit");
+const formTitle = document.getElementById("formTitle");
+const expForm = document.getElementById("expForm");
+const cfgMinutes = document.getElementById("cfgMinutes");
+const cfgWait = document.getElementById("cfgWait");
+const cfgSpinSec = document.getElementById("cfgSpinSec");
+const cfgRounds = document.getElementById("cfgRounds");
+const cfgIdle = document.getElementById("cfgIdle");
+const swAuto = document.getElementById("swAuto");
+const swConfetti = document.getElementById("swConfetti");
+const swSound = document.getElementById("swSound");
+const fForce = document.getElementById("fForce");
+let editingId = null;
+let editBase = null;   // snapshot dos campos ao iniciar a edição (p/ detectar alteração)
+/* true se o formulário de edição foi mudado em relação ao que estava salvo. */
+function edicaoTemMudanca(){
+  if (!editingId || !editBase) return false;
+  return fName.value.trim() !== editBase.name ||
+         String(fMinutes.value || "") !== String(editBase.minutes || "") ||
+         !!fotoRecortada || (fPhoto.files && fPhoto.files.length > 0);
+}
+/* abre/fecha o formulário de cadastro (fica dentro do painel da tabela) */
+function abreForm(aberto){
+  expForm.classList.toggle("show", !!aberto);
+}
+
+const normNome = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+function renderChips(){
+  const total = activeExperts().length, left = disponiveis().length, done = total - left;
+  document.getElementById("stTotal").textContent = total;
+  document.getElementById("stLeft").textContent = left;
+  document.getElementById("stDone").textContent = done;
+  document.getElementById("stTotalMini").textContent = total;
+  document.getElementById("stLeftMini").textContent = left;
+  document.getElementById("stDoneMini").textContent = done;
+  /* resumo da tela Rodada e sorteio */
+  document.getElementById("rdPart").textContent = total;
+  document.getElementById("rdLeft").textContent = left;
+  document.getElementById("rdDone").textContent = done;
+  document.getElementById("rdStatus").textContent =
+    !total ? "Sem experts" : (done === 0 ? "Não iniciada" : (left === 0 ? "Completa" : "Em andamento"));
+}
+
+/* participações e último sorteio vêm do histórico da rodada (casado por nome) */
+function statsDoHistorico(){
+  const parts = new Map(), ultimo = new Map();
+  (Array.isArray(hist) ? hist : []).forEach(h => {
+    const k = normNome(h.name);
+    if (!k) return;
+    parts.set(k, (parts.get(k) || 0) + 1);
+    if (!ultimo.has(k)) ultimo.set(k, h.at || "");   // hist[0] é o mais recente
+  });
+  return { parts, ultimo };
+}
+
+const SVG_CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
+const SVG_EDIT  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+const SVG_DEL   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+function fazSwitchAtivo(e){
+  const sw = document.createElement("label");
+  sw.className = "sw"; sw.title = e.active ? "Desativar" : "Ativar";
+  sw.innerHTML = `<input type="checkbox" ${e.active?"checked":""} aria-label="Ativar ou desativar ${escHTML(e.name)}"><span class="tr"><span class="th"></span></span>`;
+  sw.querySelector("input").addEventListener("change", async ev => {
+    const ligar = ev.target.checked;
+    /* desativar quem está em operação deixava o cronômetro rodando na roleta */
+    if (!ligar && emOperacao(e)){
+      const ok = await confirmModal('"' + e.name + '" está em operação agora. Desativar também encerra a operação na roleta. Continuar?',
+        { title:"Expert em operação", okText:"Desativar e encerrar", danger:true });
+      if (!ok){ ev.target.checked = true; return; }
+      sendCmd({ type:"endOp" });
+    }
+    e.active = ligar; persistExperts(e);
+    toast(e.active ? e.name+" ativado." : e.name+" desativado.");
+  });
+  return sw;
+}
+function fazCellNome(e){
+  const cell = document.createElement("div"); cell.className = "cell-nm";
+  const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
+  const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
+  cell.append(im, nm);
+  return cell;
+}
+function editarExpert(e){
+  (async () => {
+    if (editingId && editingId !== e.id && edicaoTemMudanca()){
+      if (!(await confirmModal("Você tem uma edição não salva. Descartar e editar outro expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+    }
+    editingId = e.id;
+    formTitle.textContent = "Editar expert: " + e.name;
+    btnSaveExpert.textContent = "Salvar";
+    fName.value = e.name; fPhoto.value = "";
+    fMinutes.value = e.minutes || "";
+    editBase = { name: e.name, minutes: e.minutes || "" };   // baseline p/ detectar mudança
+    goView("experts");
+    abreForm(true);
+    fName.focus();
+  })();
+}
+function removerExpert(e){
+  (async () => {
+    const opera = emOperacao(e);
+    const ok = await confirmModal('Remover "'+e.name+'" da roleta?' +
+        (opera ? ' Ele está em operação agora — a operação será encerrada.' : ''),
+      { title:"Remover expert", okText:"Remover", danger:true });
+    if (!ok) return;
+    if (opera) sendCmd({ type:"endOp" });
+    const removido = e;                                   // guarda para o Desfazer
+    const posicao = experts.findIndex(x => x.id === e.id);
+    const eraSorteado = sorteados.includes(e.id);
+    experts = experts.filter(x => x.id !== e.id);
+    /* lapide: sem ela, uma maquina desatualizada que ainda tenha o expert na
+       lista o traria de volta na proxima mesclagem */
+    tumbas[e.id] = tick(0);
+    if (editingId === e.id) cancelEdit();
+    persistExperts();
+    toastUndo(removido.name + " removido.", () => {
+      // recoloca na mesma posição, com foto e tempo, e restaura o sorteado se era
+      experts.splice(Math.min(posicao, experts.length), 0, removido);
+      delete tumbas[removido.id];            // some a lapide: ele volta a existir
+      if (eraSorteado && !sorteados.includes(removido.id)) sorteados.push(removido.id);
+      persistExperts(removido);              // carimbo novo vence a lapide antiga
+      toast(removido.name + " restaurado.");
+    });
+  })();
+}
+/* true se o expert é o que está em operação (rodando ou pausado) na roleta */
+function emOperacao(e){
+  return !!(live && (live.status === "running" || live.status === "paused") &&
+    live.name && normNome(live.name) === normNome(e.name));
+}
+async function alternaSorteado(e){
+  /* Mexe direto no pool do sorteio da rodada ao vivo — sempre confirma.
+     E mantém a lista "Últimos sorteados" coerente: marcar entra na lista,
+     desmarcar sai (mesmo formato/limite de 6 que a roleta usa). */
+  const desfazer = sorteados.includes(e.id);
+  const ok = await confirmModal(
+    desfazer ? '"' + e.name + '" volta a participar do sorteio e sai da lista de últimos sorteados. Continuar?'
+             : '"' + e.name + '" sai do sorteio como já sorteado e entra na lista de últimos sorteados. Continuar?',
+    { title: desfazer ? "Voltar ao sorteio" : "Marcar como sorteado",
+      okText: desfazer ? "Voltar ao sorteio" : "Marcar" });
+  if (!ok) return;
+  if (desfazer){
+    sorteados = sorteados.filter(id => id !== e.id);
+    const i = hist.findIndex(h => normNome(h.name) === normNome(e.name));
+    if (i !== -1) hist.splice(i, 1);
+    save(LS_HIST, hist);
+    toast(e.name + " voltou para o sorteio.");
+  } else {
+    sorteados.push(e.id);
+    const d = new Date();
+    /* foto no formato da roleta (caminho relativo a /roleta/ ou data URI) */
+    hist.unshift({ name: e.name, photo: e.photo || avatarURI(e.name),
+      at: String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0") });
+    hist = hist.slice(0, 6);
+    save(LS_HIST, hist);
+    toast(e.name + " marcado como já sorteado.");
+  }
+  save(LS_RODADA, sorteados);
+  sendStateR();
+  render();
+}
+
+function renderExpertsTable(){
+  expBody.innerHTML = "";
+  if (!experts.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="7"><div class="tbl-empty">Nenhum expert cadastrado.</div></td>';
+    expBody.appendChild(tr);
+    return;
+  }
+  const { parts, ultimo } = statsDoHistorico();
+  experts.forEach((e, i) => {
+    const drawn = jaSorteado(e);
+    const tr = document.createElement("tr");
+    tr.className = (e.active ? "" : "inactive") + (drawn ? " done" : "");
+    const tdIx = document.createElement("td");
+    tdIx.className = "r num"; tdIx.textContent = (i + 1);
+    const tdNm = document.createElement("td");
+    tdNm.appendChild(fazCellNome(e));
+    const tdSt = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex;align-items:center;gap:8px";
+    wrap.appendChild(fazSwitchAtivo(e));
+    if (drawn){
+      const tg = document.createElement("span");
+      tg.className = "tag tag-ok"; tg.textContent = "Sorteado";
+      wrap.appendChild(tg);
+    } else if (!e.active){
+      const tg = document.createElement("span");
+      tg.className = "tag tag-mut"; tg.textContent = "Inativo";
+      wrap.appendChild(tg);
+    }
+    tdSt.appendChild(wrap);
+    const tdTm = document.createElement("td");
+    tdTm.className = "r num";
+    tdTm.textContent = minutesFor(e) + " min";
+    tdTm.title = e.minutes ? "Tempo próprio deste expert" : "Usando o tempo padrão";
+    if (!e.minutes) tdTm.style.color = "var(--t4)";
+    const k = normNome(e.name);
+    const tdPt = document.createElement("td");
+    tdPt.className = "r num"; tdPt.textContent = parts.get(k) || 0;
+    const tdUl = document.createElement("td");
+    tdUl.className = "num"; tdUl.textContent = ultimo.get(k) || "—";
+    if (!ultimo.get(k)) tdUl.style.color = "var(--t4)";
+    const tdAc = document.createElement("td");
+    const acts = document.createElement("div"); acts.className = "acts";
+    const bT = document.createElement("button");
+    bT.className = "icon-btn" + (drawn ? " on" : ""); bT.type = "button";
+    bT.title = drawn ? "Já sorteado — clique para voltar ao sorteio" : "Marcar como já sorteado";
+    bT.innerHTML = SVG_CHECK;
+    bT.addEventListener("click", () => alternaSorteado(e));
+    const bE = document.createElement("button");
+    bE.className = "icon-btn"; bE.type = "button"; bE.setAttribute("aria-label","Editar "+e.name);
+    bE.title = "Editar";
+    bE.innerHTML = SVG_EDIT;
+    bE.addEventListener("click", () => editarExpert(e));
+    const bD = document.createElement("button");
+    bD.className = "icon-btn del"; bD.type = "button"; bD.setAttribute("aria-label","Remover "+e.name);
+    bD.title = "Remover";
+    bD.innerHTML = SVG_DEL;
+    bD.addEventListener("click", () => removerExpert(e));
+    acts.append(bT, bE, bD);
+    tdAc.appendChild(acts);
+    tr.append(tdIx, tdNm, tdSt, tdTm, tdPt, tdUl, tdAc);
+    expBody.appendChild(tr);
+  });
+}
+
+function renderTimesTable(){
+  if (!timesBody) return;
+  timesBody.innerHTML = "";
+  const tc = document.getElementById("timesCount");
+  if (tc) tc.textContent = experts.length ? experts.length + (experts.length === 1 ? " expert" : " experts") : "";
+  if (!experts.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="4"><div class="tbl-empty">Nenhum expert cadastrado.</div></td>';
+    timesBody.appendChild(tr);
+    return;
+  }
+  experts.forEach(e => {
+    const tr = document.createElement("tr");
+    tr.className = e.active ? "" : "inactive";
+    const tdNm = document.createElement("td");
+    tdNm.appendChild(fazCellNome(e));
+    const tdTm = document.createElement("td");
+    tdTm.className = "r";
+    const inp = document.createElement("input");
+    inp.type = "number"; inp.min = "1"; inp.max = "180"; inp.step = "1";
+    inp.className = "cell-min"; inp.inputMode = "numeric";
+    inp.value = e.minutes || "";
+    inp.placeholder = String(cfg.minutes);
+    inp.title = e.minutes ? "Tempo próprio deste expert" : "Sem tempo próprio — usa o padrão (" + cfg.minutes + " min)";
+    inp.setAttribute("aria-label", "Tempo de " + e.name + " em minutos");
+    inp.addEventListener("change", () => {
+      const raw = inp.value.trim();
+      if (raw === ""){
+        if (e.minutes != null){ e.minutes = null; persistExperts(e); toast(e.name + " voltou ao tempo padrão."); }
+        return;
+      }
+      const m = parseInt(raw, 10);
+      if (!(m >= 1 && m <= 180)){
+        toast("O tempo deve ficar entre 1 e 180 minutos.");
+        inp.value = e.minutes || "";
+        return;
+      }
+      if (m === e.minutes) return;
+      e.minutes = m; persistExperts(e);
+      toast("Tempo de " + e.name + ": " + m + " min.");
+    });
+    tdTm.appendChild(inp);
+    const tdAt = document.createElement("td");
+    tdAt.className = "c";
+    tdAt.appendChild(fazSwitchAtivo(e));
+    const tdAc = document.createElement("td");
+    tdAc.className = "r";
+    if (e.minutes){
+      const b = document.createElement("button");
+      b.className = "btn btn-sm"; b.type = "button"; b.textContent = "Usar padrão";
+      b.title = "Remove o tempo próprio e volta ao padrão";
+      b.addEventListener("click", () => { e.minutes = null; persistExperts(e); toast(e.name + " voltou ao tempo padrão."); });
+      tdAc.appendChild(b);
+    }
+    tr.append(tdNm, tdTm, tdAt, tdAc);
+    timesBody.appendChild(tr);
+  });
+}
+
+function render(){
+  renderChips();
+  if (typeof renderHist === "function") renderHist();
+  if (typeof backupAutomatico === "function") backupAutomatico();  // rede de seguranca, 1x por navegador
+  if (typeof renderListas === "function") renderListas();   // mantem o "no ar" das listas em dia
+  cfgMinutes.value = cfg.minutes;
+  cfgWait.value = cfg.waitSec;
+  cfgSpinSec.value = cfg.spinSec ?? "";
+  cfgRounds.value = cfg.rounds ?? "";
+  cfgIdle.value = String(cfg.idle);
+  swAuto.checked = cfg.autoNext;
+  swConfetti.checked = cfg.confetti;
+  swSound.checked = cfg.sfx;
+  const cur = fForce.value;
+  fForce.innerHTML = '<option value="">Sorteio aleatório</option>';
+  /* So oferece quem ainda pode sair (quem ja foi sorteado nao aparece). */
+  activeExperts().forEach(e => {
+    if (jaSorteado(e)) return;
+    const o = document.createElement("option");
+    o.value = e.id;
+    o.textContent = e.name;
+    fForce.appendChild(o);
+  });
+  const aindaExiste = [...fForce.options].some(o => o.value === cur);
+  fForce.value = aindaExiste ? cur : "";      // se o escolhido saiu, volta pra aleatorio
+  if (!aindaExiste && cur) syncSend({ type:"force", id:"" });
+  renderExpertsTable();
+  renderTimesTable();
+  if (typeof aplicarStatFilter === "function") aplicarStatFilter();   // reaplica o filtro
+  if (typeof aplicarBusca === "function") aplicarBusca();             // reaplica a busca
+}
+
+/* Remove duplicatas por id E por nome (mantém a 1ª ocorrência). Blindagem contra
+   qualquer duplicata — nunca deve chegar à roleta um nome/id repetido. */
+function dedupeExperts(list){
+  const norm = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const vistosId = new Set(), vistosNome = new Set(), out = [];
+  for (const e of list){
+    const nid = e.id, nn = norm(e.name);
+    if (vistosId.has(nid) || vistosNome.has(nn)) continue;
+    vistosId.add(nid); vistosNome.add(nn); out.push(e);
+  }
+  return out;
+}
+/* Grava a lista e propaga. Devolve { ok, entregue }:
+     ok=false      -> o localStorage recusou (cota estourada). Desfaz tudo e
+                      avisa, em vez de mostrar "salvo" e perder no reload.
+     entregue=false-> gravou aqui, mas a roleta nao recebeu agora; fica na fila
+                      e sai sozinho quando a conexao voltar.
+   `alterados` recebe os experts tocados nesta acao para carimbar o relogio. */
+function persistExperts(alterados){
+  const backExperts = JSON.stringify(experts);
+  const backTumbas  = JSON.stringify(tumbas);
+  const backSort    = JSON.stringify(sorteados);
+  const backRelogio = relogio;
+
+  const agora = tick(0);
+  (Array.isArray(alterados) ? alterados : (alterados ? [alterados] : []))
+    .forEach(e => { if (e) e.updatedAt = agora; });
+
+  experts = dedupeExperts(experts);
+  if (!save(LS_EXPERTS, experts) || !salvarTumbas()){
+    experts   = JSON.parse(backExperts);       // desfaz: memoria volta ao gravado
+    tumbas    = JSON.parse(backTumbas);
+    sorteados = JSON.parse(backSort);
+    relogio   = backRelogio;
+    try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+    render();
+    toast("Sem espaço no navegador para salvar. Remova fotos antigas e tente de novo.");
+    return { ok:false, entregue:false };
+  }
+  const ids = experts.map(e => e.id);
+  sorteados = sorteados.filter(id => ids.includes(id));
+  save(LS_RODADA, sorteados);
+
+  const entregue = sendState(); sendStateR();
+  if (!entregue) marcarPendente(); else limparPendente();
+  render();
+  return { ok:true, entregue };
+}
+
+/* ---- fila de reenvio: nada se perde se a sincronizacao cair no meio ---- */
+let envioPendente = false;
+function marcarPendente(){ envioPendente = true; updateConn(); }
+function limparPendente(){ if (envioPendente){ envioPendente = false; updateConn(); } }
+function flushPendente(){
+  if (!envioPendente || !syncOn) return;
+  if (sendState()){ sendStateR(); limparPendente(); toast("Alterações pendentes enviadas à roleta."); }
+}
+/* Date.now() sozinho colide: duas maquinas adicionando no mesmo milissegundo
+   geravam o MESMO id e o dedupe descartava um dos dois experts. */
+function novoIdExpert(){
+  const usados = new Set(experts.map(e => e.id).concat(Object.keys(tumbas)));
+  let id;
+  do { id = "e" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  while (usados.has(id));
+  return id;
+}
+/* ================= Editor de recorte da foto ================= */
+const SAIDA = 240;                                   // lado final da foto
+const cropModal  = document.getElementById("cropModal");
+const cropStage  = document.getElementById("cropStage");
+const cropCanvas = document.getElementById("cropCanvas");
+const cropZoom   = document.getElementById("cropZoom");
+
+let cropImg = null, cropEscala = 1, cropBase = 1, cropX = 0, cropY = 0, cropGiro = 0;
+let cropResolve = null, cropArrastando = false, cropUltimo = null, cropPinca = null;
+
+/* dimensoes da imagem considerando o giro atual */
+function cropDims(){
+  const girado = cropGiro % 180 !== 0;
+  return { w: girado ? cropImg.naturalHeight : cropImg.naturalWidth,
+           h: girado ? cropImg.naturalWidth  : cropImg.naturalHeight };
+}
+/* escala minima: a imagem precisa COBRIR o quadrado, nunca sobrar buraco */
+function cropEscalaBase(lado){
+  const d = cropDims();
+  return Math.max(lado / d.w, lado / d.h);
+}
+/* prende o deslocamento para que o quadrado fique sempre preenchido */
+function cropPrende(lado){
+  const d = cropDims();
+  const lw = d.w * cropEscala, lh = d.h * cropEscala;
+  const maxX = Math.max(0, (lw - lado) / 2), maxY = Math.max(0, (lh - lado) / 2);
+  cropX = Math.min(maxX, Math.max(-maxX, cropX));
+  cropY = Math.min(maxY, Math.max(-maxY, cropY));
+}
+/* desenha no canvas informado, com o lado pedido (tela ou exportacao) */
+function cropDesenhaEm(ctx, lado, escala, dx, dy){
+  ctx.clearRect(0, 0, lado, lado);
+  ctx.save();
+  ctx.translate(lado/2 + dx, lado/2 + dy);
+  ctx.rotate(cropGiro * Math.PI / 180);
+  ctx.scale(escala, escala);
+  ctx.drawImage(cropImg, -cropImg.naturalWidth/2, -cropImg.naturalHeight/2);
+  ctx.restore();
+}
+function cropRender(){
+  if (!cropImg) return;
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (cropCanvas.width !== lado * dpr){ cropCanvas.width = lado * dpr; cropCanvas.height = lado * dpr; }
+  const ctx = cropCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cropPrende(lado);
+  cropDesenhaEm(ctx, lado, cropEscala, cropX, cropY);
+}
+function cropAplicaZoom(novo, ancoraX, ancoraY){
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  const base = cropEscalaBase(lado);
+  const antes = cropEscala;
+  cropEscala = Math.min(base * 6, Math.max(base, novo));
+  /* mantem o ponto sob o cursor no lugar ao aproximar */
+  if (ancoraX != null){
+    const k = cropEscala / antes;
+    cropX = ancoraX + (cropX - ancoraX) * k;
+    cropY = ancoraY + (cropY - ancoraY) * k;
+  }
+  cropZoom.value = String(cropEscala / base);
+  cropRender();
+}
+function cropRedefine(){
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropGiro = 0;
+  cropBase = cropEscalaBase(lado);
+  cropEscala = cropBase; cropX = 0; cropY = 0;
+  cropZoom.value = "1";
+  cropRender();
+}
+
+/* Abre o editor. Resolve com o dataURL recortado, ou null se cancelar. */
+function abrirCropper(file){
+  return new Promise(resolve => {
+    const fr = new FileReader();
+    fr.onerror = () => { toast("Não foi possível ler a imagem."); resolve(null); };
+    fr.onload = () => {
+      const im = new Image();
+      im.onerror = () => { toast("Arquivo de imagem inválido."); resolve(null); };
+      im.onload = () => {
+        cropImg = im; cropResolve = resolve;
+        cropModal.classList.add("show");
+        /* espera o modal existir na tela para medir o palco */
+        requestAnimationFrame(() => { cropRedefine(); });
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function fecharCropper(valor){
+  cropModal.classList.remove("show");
+  const r = cropResolve; cropResolve = null; cropImg = null;
+  if (r) r(valor);
+}
+function cropExporta(){
+  const ladoTela = Math.max(1, Math.round(cropStage.clientWidth));
+  const k = SAIDA / ladoTela;                       // mesma transformacao, em escala de saida
+  const c = document.createElement("canvas");
+  c.width = c.height = SAIDA;
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+  cropDesenhaEm(ctx, SAIDA, cropEscala * k, cropX * k, cropY * k);
+  return c.toDataURL("image/jpeg", .88);
+}
+
+/* ---- interacoes ---- */
+cropStage.addEventListener("pointerdown", e => {
+  if (!cropImg) return;
+  cropStage.setPointerCapture(e.pointerId);
+  cropArrastando = true; cropUltimo = { x:e.clientX, y:e.clientY };
+});
+cropStage.addEventListener("pointermove", e => {
+  if (!cropArrastando || !cropUltimo) return;
+  cropX += e.clientX - cropUltimo.x;
+  cropY += e.clientY - cropUltimo.y;
+  cropUltimo = { x:e.clientX, y:e.clientY };
+  cropRender();
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev =>
+  cropStage.addEventListener(ev, () => { cropArrastando = false; cropUltimo = null; }));
+cropStage.addEventListener("wheel", e => {
+  if (!cropImg) return;
+  e.preventDefault();
+  const r = cropStage.getBoundingClientRect();
+  const ax = e.clientX - r.left - r.width/2, ay = e.clientY - r.top - r.height/2;
+  cropAplicaZoom(cropEscala * (e.deltaY < 0 ? 1.12 : 1/1.12), ax, ay);
+}, { passive:false });
+/* pinca no celular */
+cropStage.addEventListener("touchmove", e => {
+  if (e.touches.length !== 2 || !cropImg) return;
+  e.preventDefault();
+  const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                       e.touches[0].clientY - e.touches[1].clientY);
+  if (cropPinca) cropAplicaZoom(cropEscala * (d / cropPinca), 0, 0);
+  cropPinca = d;
+}, { passive:false });
+cropStage.addEventListener("touchend", () => { cropPinca = null; });
+
+cropZoom.addEventListener("input", () => {
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropAplicaZoom(cropEscalaBase(lado) * parseFloat(cropZoom.value || "1"), 0, 0);
+});
+document.getElementById("cropMais").addEventListener("click", () => cropAplicaZoom(cropEscala * 1.2, 0, 0));
+document.getElementById("cropMenos").addEventListener("click", () => cropAplicaZoom(cropEscala / 1.2, 0, 0));
+document.getElementById("cropGirar").addEventListener("click", () => {
+  if (!cropImg) return;
+  cropGiro = (cropGiro + 90) % 360;
+  const lado = Math.max(1, Math.round(cropStage.clientWidth));
+  cropBase = cropEscalaBase(lado);
+  if (cropEscala < cropBase) cropEscala = cropBase;   // o giro pode exigir mais escala para cobrir
+  cropZoom.value = String(cropEscala / cropBase);
+  cropRender();
+});
+document.getElementById("cropReset").addEventListener("click", cropRedefine);
+document.getElementById("cropCancel").addEventListener("click", () => fecharCropper(null));
+document.getElementById("cropOk").addEventListener("click", () => {
+  let out = null;
+  try { out = cropExporta(); } catch { toast("Não foi possível recortar a imagem."); }
+  fecharCropper(out);
+});
+document.addEventListener("keydown", e => {
+  if (!cropModal.classList.contains("show")) return;
+  if (e.key === "Escape"){ e.preventDefault(); fecharCropper(null); }
+  if (e.key === "Enter"){ e.preventDefault(); document.getElementById("cropOk").click(); }
+});
+window.addEventListener("resize", () => { if (cropModal.classList.contains("show")) cropRender(); });
+
+/* ---- ligacao com o campo de arquivo ---- */
+const fotoPrevia = document.getElementById("fotoPrevia");
+const fotoPreviaImg = document.getElementById("fotoPreviaImg");
+let fotoRecortada = null;      // dataURL pronto, definido pelo editor
+let fotoArquivo = null;        // ultimo arquivo escolhido, para o "Reajustar"
+
+function mostraPrevia(dataURL){
+  fotoRecortada = dataURL;
+  if (dataURL){ fotoPreviaImg.src = dataURL; fotoPrevia.classList.add("show"); }
+  else { fotoPreviaImg.removeAttribute("src"); fotoPrevia.classList.remove("show"); }
+}
+function limpaFoto(){
+  fotoRecortada = null; fotoArquivo = null;
+  fPhoto.value = "";
+  mostraPrevia(null);
+}
+fPhoto.addEventListener("change", async () => {
+  const f = fPhoto.files && fPhoto.files[0];
+  if (!f){ limpaFoto(); return; }
+  if (!/^image\//.test(f.type)){ toast("Escolha um arquivo de imagem."); limpaFoto(); return; }
+  fotoArquivo = f;
+  const out = await abrirCropper(f);
+  if (out) mostraPrevia(out);
+  else limpaFoto();                                  // cancelou: nao fica foto pela metade
+});
+document.getElementById("btnReeditarFoto").addEventListener("click", async () => {
+  if (!fotoArquivo) return;
+  const out = await abrirCropper(fotoArquivo);
+  if (out) mostraPrevia(out);
+});
+document.getElementById("btnRemoverFoto").addEventListener("click", limpaFoto);
+
+function resizePhoto(file){
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const S = 240, c = document.createElement("canvas");
+        c.width = c.height = S;
+        const x = c.getContext("2d");
+        const r = Math.max(S/im.width, S/im.height);
+        x.drawImage(im, (S-im.width*r)/2, (S-im.height*r)/2, im.width*r, im.height*r);
+        res(c.toDataURL("image/jpeg", .85));
+      };
+      im.onerror = rej;
+      im.src = fr.result;
+    };
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+let salvandoExpert = false;
+btnSaveExpert.addEventListener("click", async () => {
+  if (salvandoExpert) return;            // o resize da foto e async: sem trava, 2 cliques = 2 experts
+  const name = fName.value.trim();
+  if (!name){ toast("Informe o nome do expert."); return; }
+  /* Bloqueia nome repetido (ignorando maiúsculas/acentos comuns e o próprio, se editando) */
+  const jaExiste = experts.some(e => normNome(e.name) === normNome(name) && e.id !== editingId);
+  if (jaExiste){ toast("Já existe um expert com esse nome na roleta."); fName.focus(); return; }
+  let minutes = null;
+  if (fMinutes.value.trim() !== ""){
+    const m = parseInt(fMinutes.value, 10);
+    if (!(m >= 1 && m <= 180)){ toast("O tempo do expert deve ficar entre 1 e 180 minutos."); return; }
+    minutes = m;
+  }
+  let photo = null;
+  salvandoExpert = true; btnSaveExpert.disabled = true;
+  try {
+    if (fotoRecortada){
+      photo = fotoRecortada;                          // ja veio pronto do editor de recorte
+    } else if (fPhoto.files[0]){
+      /* rede de seguranca: se por algum motivo o editor nao rodou, mantem o
+         corte automatico em vez de perder a foto */
+      try { photo = await resizePhoto(fPhoto.files[0]); }
+      catch { toast("Não foi possível ler a imagem."); return; }
+    }
+    let tocado = null, criando = false;
+    if (editingId){
+      const e = experts.find(x => x.id === editingId);
+      if (!e){ toast("Este expert não existe mais — a lista foi atualizada."); cancelEdit(); render(); return; }
+      e.name = name; e.minutes = minutes; if (photo) e.photo = photo;
+      tocado = e;
+    } else {
+      tocado = { id: novoIdExpert(), name, photo, active:true, minutes };
+      experts.push(tocado); criando = true;
+    }
+    const r = persistExperts(tocado);
+    if (!r.ok){                                // cota estourou: persistExperts ja desfez e avisou
+      if (criando) experts = experts.filter(x => x.id !== tocado.id);
+      render(); return;
+    }
+    if (criando){
+      toast(r.entregue ? "Expert adicionado à roleta." : "Expert adicionado aqui — falta enviar à roleta (sem conexão).");
+    } else {
+      toast(r.entregue ? "Expert atualizado." : "Expert atualizado aqui — falta enviar à roleta (sem conexão).");
+    }
+    cancelEdit();
+  } finally { salvandoExpert = false; btnSaveExpert.disabled = false; }
+});
+/* Enter em Nome ou Tempo aciona Adicionar/Salvar (fluxo mais rápido no teclado). */
+[fName, fMinutes].forEach(inp => inp.addEventListener("keydown", e => {
+  if (e.key === "Enter"){ e.preventDefault(); btnSaveExpert.click(); }
+}));
+
+/* Filtro rápido: all / left (no sorteio) / done (já sorteados). */
+let statFilter = "all";
+const CHIPS_FILTRO = ".seg [data-filter]";
+function aplicarStatFilter(){
+  document.querySelectorAll(CHIPS_FILTRO).forEach(c =>
+    c.setAttribute("aria-pressed", String(c.dataset.filter === statFilter)));
+  document.querySelectorAll("#expBody tr").forEach(r => {
+    if (!r.querySelector(".cell-nm")) return;      // linha de "vazio"
+    const done = r.classList.contains("done"), inativo = r.classList.contains("inactive");
+    let mostra = true;
+    if (statFilter === "done") mostra = done;
+    else if (statFilter === "left") mostra = !done && !inativo;   // no sorteio = ativo e não sorteado
+    r.classList.toggle("hiddenByStat", !mostra);
+  });
+}
+document.querySelectorAll(CHIPS_FILTRO).forEach(c => {
+  c.addEventListener("click", () => {
+    statFilter = (statFilter === c.dataset.filter) ? "all" : c.dataset.filter;   // clicar de novo limpa
+    aplicarStatFilter();
+  });
+});
+/* Atalho de teclado: "S" dispara Sortear agora (fora de campos de texto). */
+document.addEventListener("keydown", e => {
+  if (e.key !== "s" && e.key !== "S") return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const el = document.activeElement, tag = el ? el.tagName : "";
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;   // não atrapalha digitação
+  if (document.getElementById("loginOverlay").classList.contains("show")) return;
+  if (document.getElementById("cmodal").classList.contains("show")) return;
+  const b = document.getElementById("btnSpinNow");
+  if (b){ e.preventDefault(); b.click(); }
+});
+function cancelEdit(){
+  editingId = null; editBase = null;
+  formTitle.textContent = "Adicionar expert";
+  btnSaveExpert.textContent = "Adicionar";
+  fName.value=""; fMinutes.value="";
+  if (typeof limpaFoto === "function") limpaFoto(); else fPhoto.value="";
+  abreForm(false);
+}
+btnCancelEdit.addEventListener("click", async () => {
+  if (edicaoTemMudanca() && !(await confirmModal("Descartar as alterações desta edição?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+  cancelEdit();
+});
+/* botão do cabeçalho da tela Experts: abre o formulário em modo "adicionar" */
+document.getElementById("btnAddExpert").addEventListener("click", async () => {
+  if (expForm.classList.contains("show") && !editingId){ abreForm(false); return; }
+  if (editingId && edicaoTemMudanca()){
+    if (!(await confirmModal("Você tem uma edição não salva. Descartar e adicionar um novo expert?", { title:"Edição em andamento", okText:"Descartar", danger:true }))) return;
+  }
+  cancelEdit();
+  abreForm(true);
+  fName.focus();
+});
+/* ações em massa */
+document.getElementById("btnAtivarTodos").addEventListener("click", () => {
+  const alvo = experts.filter(e => !e.active);
+  if (!alvo.length){ toast("Todos os experts já estão ativos."); return; }
+  alvo.forEach(e => { e.active = true; });
+  persistExperts(alvo);
+  toast(alvo.length === 1 ? "1 expert ativado." : alvo.length + " experts ativados.");
+});
+document.getElementById("btnDesativarTodos").addEventListener("click", async () => {
+  const alvo = experts.filter(e => e.active);
+  if (!alvo.length){ toast("Nenhum expert ativo para desativar."); return; }
+  const temAoVivo = alvo.some(emOperacao);
+  if (!(await confirmModal("Desativar todos os " + alvo.length + " experts ativos? A roleta fica sem participantes até reativar."
+        + (temAoVivo ? " A operação em andamento também será encerrada." : ""),
+        { title:"Desativar todos", okText:"Desativar" }))) return;
+  if (temAoVivo) sendCmd({ type:"endOp" });
+  alvo.forEach(e => { e.active = false; });
+  persistExperts(alvo);
+  toast("Todos os experts foram desativados.");
+});
+document.getElementById("btnGoListas").addEventListener("click", () => goView("lists"));
+
+/* Ultimo recurso: ninguem respondeu ao pedido de lista, entao este navegador e
+   mesmo a primeira instalacao. Ai sim semeia os 16 padrao. */
+let timerSemear = null, jaPerguntouSemear = false;
+function semearSePrecisar(){
+  if (timerSemear || !aguardandoListaInicial) return;
+  timerSemear = setTimeout(async () => {
+    timerSemear = null;
+    if (!aguardandoListaInicial || listaPropria) return;   // alguem respondeu no meio tempo
+    if (jaPerguntouSemear) return;
+    jaPerguntouSemear = true;
+    /* NUNCA semear e publicar sozinho: se a roleta so estiver demorando a
+       responder, uma lista padrao criada aqui iria para o ar por cima da real.
+       Quem decide e o operador. */
+    const ok = await confirmModal(
+      "Nenhuma roleta ou painel respondeu com a lista atual. Isso costuma ser conexão: " +
+      "se você sabe que já existe uma lista no ar, cancele e recarregue. " +
+      "Criar a lista inicial padrão (16 experts) e publicar?",
+      { title:"Nenhuma lista encontrada", okText:"Criar lista inicial" });
+    if (!ok){
+      toast("Nada foi criado. Recarregue quando a roleta estiver no ar.");
+      jaPerguntouSemear = false;                 // permite tentar de novo numa proxima conexao
+      return;
+    }
+    if (listaPropria) return;                    // chegou lista enquanto o modal estava aberto
+    experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
+    aguardandoListaInicial = false;
+    listaPropria = true;
+    try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+    save(LS_EXPERTS, experts);
+    render();
+    sendState();
+    toast("Lista inicial criada e publicada.");
+  }, 5000);
+}
+
+/* ================= Listas salvas de experts =================
+   Guardam formacoes inteiras para poder testar a vontade e voltar exatamente ao
+   que estava. Aplicar uma lista NAO e uma substituicao cega: ela e traduzida em
+   carimbos e lapides com o relogio atual, senao a mesclagem de outra maquina
+   desfaria a troca. */
+const LS_LISTAS = "cj_listas_v1";
+let listas = load(LS_LISTAS, []);
+if (!Array.isArray(listas)) listas = [];
+
+const fListaNome     = document.getElementById("fListaNome");
+const btnSalvarLista = document.getElementById("btnSalvarLista");
+const listasBody     = document.getElementById("listasBody");
+
+function salvarListas(){
+  if (!save(LS_LISTAS, listas)){
+    toast("Sem espaco no navegador para guardar a lista. Apague uma lista antiga.");
+    return false;
+  }
+  return true;
+}
+/* Copia profunda: a lista salva nao pode mudar junto com a lista viva. */
+const clonar = v => JSON.parse(JSON.stringify(v));
+
+function snapshotAtual(nome){
+  return {
+    id: "L" + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    nome: nome,
+    criadoEm: new Date().toISOString(),
+    experts: clonar(experts),
+    tumbas: clonar(tumbas)
+  };
+}
+/* true se a lista salva bate exatamente com a formacao que esta no ar agora */
+function ehAtual(l){
+  const norm = arr => (arr || []).map(e => e.id).sort().join(",");
+  return norm(l.experts) === norm(experts);
+}
+
+function renderListas(){
+  if (!listasBody) return;
+  listasBody.innerHTML = "";
+  const lc = document.getElementById("listasCount");
+  if (lc) lc.textContent = listas.length ? listas.length + (listas.length === 1 ? " lista" : " listas") : "";
+  if (!listas.length){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="5"><div class="tbl-empty">Nenhuma lista salva ainda. Salve a formação atual antes de fazer testes.</div></td>';
+    listasBody.appendChild(tr);
+    return;
+  }
+  listas.forEach(l => {
+    const noAr = ehAtual(l);
+    const n = (l.experts || []).length;
+    const ativos = (l.experts || []).filter(e => e.active).length;
+    const d = new Date(l.criadoEm);
+    const quando = isNaN(d) ? "—" : d.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+
+    const tr = document.createElement("tr");
+    const tdNm = document.createElement("td");
+    const nm = document.createElement("span");
+    nm.style.cssText = "font-weight:500;color:var(--text)";
+    nm.textContent = l.nome;
+    tdNm.appendChild(nm);
+    const tdQt = document.createElement("td");
+    tdQt.className = "r num";
+    tdQt.textContent = n;
+    tdQt.title = ativos + (ativos === 1 ? " ativo" : " ativos");
+    const tdDt = document.createElement("td");
+    tdDt.className = "num"; tdDt.textContent = quando;
+    const tdSt = document.createElement("td");
+    tdSt.innerHTML = noAr ? '<span class="tag tag-brand">No ar</span>' : '<span class="tag tag-mut">Guardada</span>';
+    const tdAc = document.createElement("td");
+    const acts = document.createElement("div"); acts.className = "acts";
+
+    const bAp = document.createElement("button");
+    bAp.className = "btn btn-sm"; bAp.type = "button"; bAp.textContent = "Aplicar";
+    bAp.disabled = noAr;
+    bAp.title = noAr ? "Esta lista já está no ar" : "Colocar esta lista no ar";
+    bAp.addEventListener("click", () => aplicarLista(l));
+
+    const bUp = document.createElement("button");
+    bUp.className = "btn btn-sm"; bUp.type = "button"; bUp.textContent = "Atualizar";
+    bUp.title = "Regravar com a formação atual";
+    bUp.addEventListener("click", async () => {
+      if (!await confirmModal('Regravar "' + l.nome + '" com a formacao que esta no ar agora?', { title:"Atualizar lista", okText:"Atualizar" })) return;
+      l.experts = clonar(experts); l.tumbas = clonar(tumbas); l.criadoEm = new Date().toISOString();
+      if (salvarListas()){ toast("Lista atualizada."); renderListas(); }
+    });
+
+    const bRn = document.createElement("button");
+    bRn.className = "btn btn-sm"; bRn.type = "button"; bRn.textContent = "Renomear";
+    bRn.addEventListener("click", async () => {
+      const novo = await promptModal("Novo nome da lista:", l.nome);
+      if (novo === null) return;
+      const nome = novo.trim();
+      if (!nome){ toast("O nome nao pode ficar vazio."); return; }
+      if (listas.some(x => x.id !== l.id && x.nome.toLowerCase() === nome.toLowerCase())){
+        toast("Ja existe uma lista com esse nome."); return;
+      }
+      l.nome = nome.slice(0,60);
+      if (salvarListas()){ toast("Lista renomeada."); renderListas(); }
+    });
+
+    const bDl = document.createElement("button");
+    bDl.className = "btn btn-sm btn-danger"; bDl.type = "button"; bDl.textContent = "Apagar";
+    bDl.addEventListener("click", async () => {
+      if (!await confirmModal('Apagar a lista salva "' + l.nome + '"? A roleta nao muda.', { title:"Apagar lista", okText:"Apagar", danger:true })) return;
+      const backup = listas;
+      listas = listas.filter(x => x.id !== l.id);
+      if (salvarListas()){ toast("Lista apagada."); renderListas(); }
+      else { listas = backup; }
+    });
+
+    acts.append(bAp, bUp, bRn, bDl);
+    tdAc.appendChild(acts);
+    tr.append(tdNm, tdQt, tdDt, tdSt, tdAc);
+    listasBody.appendChild(tr);
+  });
+}
+
+/* Troca a formacao no ar pela lista escolhida, de um jeito que sobrevive a
+   mesclagem: todo mundo que sai ganha lapide com o relogio de agora, e todo
+   mundo que entra ganha carimbo de agora (vence qualquer versao antiga que
+   outra maquina ainda tenha). */
+async function aplicarLista(l){
+  const qtd = (l.experts || []).length;
+  if (!await confirmModal(
+        'Colocar a lista "' + l.nome + '" no ar? A roleta passa a ter ' + qtd + (qtd === 1 ? " expert" : " experts") +
+        " e a rodada reinicia do zero (sorteados e últimos sorteados são limpos).",
+        { title:"Aplicar lista", okText:"Aplicar" })) return;
+
+  const backExperts = clonar(experts), backTumbas = clonar(tumbas);
+  const backSorteados = clonar(sorteados), backHist = clonar(hist);
+  /* formação nova = rodada nova: sem isso os "últimos sorteados" da formação
+     anterior continuavam na tela da roleta (mesma surpresa do Reiniciar). */
+  sorteados = [];
+  hist = []; save(LS_HIST, hist);
+  const agora = tick(0);
+  const novos = clonar(l.experts || []).map(e => Object.assign({}, e, { updatedAt: agora }));
+  const idsNovos = new Set(novos.map(e => e.id));
+
+  experts.forEach(e => { if (!idsNovos.has(e.id)) tumbas[e.id] = agora; });  // quem sai, sai de verdade
+  novos.forEach(e => { delete tumbas[e.id]; });                             // quem entra, some a lapide
+  experts = dedupeExperts(novos);
+
+  const r = persistExperts();
+  if (!r.ok){
+    experts = backExperts; tumbas = backTumbas;
+    sorteados = backSorteados; save(LS_RODADA, sorteados);
+    hist = backHist; save(LS_HIST, hist);
+    render(); renderListas(); return;
+  }
+  toast(r.entregue ? 'Lista "' + l.nome + '" aplicada na roleta. Rodada zerada.'
+                   : "Lista aplicada aqui - falta enviar a roleta (sem conexao).");
+  renderListas();
+}
+
+btnSalvarLista.addEventListener("click", () => {
+  const nome = (fListaNome.value || "").trim();
+  if (!nome){ toast("De um nome para a lista."); fListaNome.focus(); return; }
+  if (listas.some(l => l.nome.toLowerCase() === nome.toLowerCase())){
+    toast("Ja existe uma lista com esse nome."); fListaNome.focus(); return;
+  }
+  if (!experts.length){ toast("A roleta esta sem experts - nao ha o que salvar."); return; }
+  listas.unshift(snapshotAtual(nome.slice(0,60)));
+  if (salvarListas()){
+    fListaNome.value = "";
+    toast('Lista "' + nome + '" salva.');
+    renderListas();
+  } else {
+    listas.shift();
+  }
+});
+fListaNome.addEventListener("keydown", e => {
+  if (e.key === "Enter"){ e.preventDefault(); btnSalvarLista.click(); }
+});
+
+/* Rede de seguranca: na primeira vez que este navegador tem uma lista de verdade,
+   guarda sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la. */
+function backupAutomatico(){
+  const FLAG = "cj_listas_auto_v1";
+  try {
+    if (localStorage.getItem(FLAG)) return;
+    if (!listaPropria || !experts.length) return;      // ainda sem base real
+    listas.unshift(snapshotAtual("Backup automático (formação encontrada no ar)"));
+    if (salvarListas()){
+      localStorage.setItem(FLAG, "1");
+      renderListas();
+      toast("Formação atual guardada em Listas salvas.");
+    } else {
+      listas.shift();
+    }
+  } catch {}
+}
+
+/* ================= Configurações (auto-save) ================= */
+function numCfg(input, key, min, max, label, nullable){
+  input.addEventListener("change", () => {
+    const raw = input.value.trim();
+    if (nullable && raw === ""){
+      cfg[key] = null; saveCfg();
+      toast(label + ": modo variável.");
+      return;
+    }
+    const v = parseInt(raw, 10);
+    if (isNaN(v) || v < min || v > max){
+      toast(label + ": use um valor entre " + min + " e " + max + (nullable ? " (ou deixe em branco)." : "."));
+      input.value = cfg[key] ?? "";
+      return;
+    }
+    cfg[key] = v; saveCfg(); render();
+    toast("Configuração salva.");
+  });
+}
+numCfg(cfgMinutes, "minutes", 1, 180, "Tempo padrão (min)", false);
+numCfg(cfgWait, "waitSec", 0, 300, "Espera para o próximo giro (s)", false);
+numCfg(cfgSpinSec, "spinSec", 2, 30, "Duração do giro (s)", true);
+numCfg(cfgRounds, "rounds", 2, 16, "Voltas do giro", true);
+cfgIdle.addEventListener("change", () => {
+  cfg.idle = parseInt(cfgIdle.value, 10) || 0; saveCfg();
+  toast("Giro ocioso: " + cfgIdle.options[cfgIdle.selectedIndex].text.toLowerCase() + ".");
+});
+swAuto.addEventListener("change", () => {
+  cfg.autoNext = swAuto.checked; saveCfg();
+  toast(cfg.autoNext ? "Sorteio automático ligado." : "Sorteio automático desligado.");
+});
+swConfetti.addEventListener("change", () => {
+  cfg.confetti = swConfetti.checked; saveCfg();
+  toast(cfg.confetti ? "Confete ligado." : "Confete desligado.");
+});
+swSound.addEventListener("change", () => {
+  cfg.sfx = swSound.checked; saveCfg();
+  toast(cfg.sfx ? "Som ligado." : "Som desligado.");
+});
+
+/* ================= Rodada & sorteio ================= */
+fForce.addEventListener("change", () => {
+  if (!fForce.value) return;
+  const e = experts.find(x => x.id === fForce.value);
+  if (sendCmd({ type:"force", id: fForce.value }))
+    toast("Próximo sorteado: " + (e ? e.name : "?") + ".");
+  else fForce.value = "";
+});
+document.getElementById("btnSpinNow").addEventListener("click", () => {
+  sendCmd({ type:"spin", forcedId: fForce.value || null });
+  fForce.value = "";
+});
+document.getElementById("btnEndOp").addEventListener("click", () => {
+  sendCmd({ type:"endOp" });
+});
+document.getElementById("btnPauseOp").addEventListener("click", () => {
+  sendCmd({ type: (live && live.status === "paused") ? "resumeOp" : "pauseOp" });
+});
+
+/* ================= Link da transmissão (botão "Entrar na live" do /corujao) ================= */
+const fLiveUrl    = document.getElementById("fLiveUrl");
+const liveUrlNow  = document.getElementById("liveUrlNow");
+const liveUrlTag  = document.getElementById("liveUrlTag");
+function safeLiveUrl(u){
+  try { const p = new URL(String(u)); return (p.protocol === "https:" || p.protocol === "http:") ? p.href : null; }
+  catch { return null; }
+}
+function showLiveUrl(){
+  const u = localStorage.getItem(LS_LIVE_URL);
+  liveUrlNow.textContent = u ? u : "padrão (Google Meet)";
+  if (liveUrlTag){
+    liveUrlTag.textContent = u ? "Personalizado" : "Padrão";
+    liveUrlTag.className = "tag " + (u ? "tag-brand" : "tag-mut");
+  }
+  if (u && !fLiveUrl.value) fLiveUrl.value = u;
+}
+/* reenvia o link atual (para a página do Corujão que acabou de conectar) */
+function sendLiveUrl(){
+  const u = localStorage.getItem(LS_LIVE_URL);
+  if (u) syncSend({ type:"liveUrl", url:u });
+}
+document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
+  const raw = fLiveUrl.value.trim();
+  if (!raw){ toast("Informe o link da live."); return; }
+  const url = safeLiveUrl(raw);
+  if (!url){ toast("Link inválido — use um endereço http(s) completo."); return; }
+  localStorage.setItem(LS_LIVE_URL, url);
+  showLiveUrl();
+  // vai direto pelo canal (o alvo é a página do Corujão, não a roleta):
+  if (syncSend({ type:"liveUrl", url }))
+    toast("Link da live atualizado na página do Corujão.");
+  else
+    toast("Sincronização offline — o link foi salvo e será enviado ao reconectar.");
+});
+document.getElementById("btnCopyLiveUrl").addEventListener("click", async () => {
+  const u = localStorage.getItem(LS_LIVE_URL);
+  if (!u){ toast("O link em uso é o padrão da página do Corujão — nada para copiar."); return; }
+  try { await navigator.clipboard.writeText(u); toast("Link copiado."); }
+  catch {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = u; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+      toast("Link copiado.");
+    } catch { toast("Não foi possível copiar o link."); }
+  }
+});
+showLiveUrl();
+
+/* Estas duas acoes eram imediatas: um clique acidental durante a live devolvia
+   todo mundo ao sorteio sem aviso. So perguntamos quando ha algo a perder. */
+async function reiniciarRodada(){
+  /* Rodada nova = tudo zerado: quem já saiu volta ao sorteio E a lista de
+     últimos sorteados some da tela da roleta. Antes o histórico ficava e
+     parecia que o reinício não tinha funcionado. */
+  const n = sorteados.length, h = hist.length;
+  const partes = [];
+  if (n) partes.push(n === 1 ? "1 expert já sorteado volta para o sorteio"
+                             : n + " experts já sorteados voltam para o sorteio");
+  if (h) partes.push("a lista de últimos sorteados sai da tela da roleta");
+  if (partes.length && !await confirmModal(
+        partes.join(" e ") + ". Reiniciar a rodada?",
+        { title:"Reiniciar rodada", okText:"Reiniciar" })) return;
+  sorteados = []; save(LS_RODADA, sorteados);
+  hist = []; save(LS_HIST, hist);
+  sendStateR();
+  render();
+  toast(partes.length ? "Rodada reiniciada do zero." : "A rodada já estava zerada.");
+}
+document.getElementById("btnResetRound").addEventListener("click", reiniciarRodada);
+document.getElementById("btnResetRoundTop").addEventListener("click", reiniciarRodada);
+document.getElementById("btnClearHist").addEventListener("click", async () => {
+  const n = hist.length;
+  if (n && !await confirmModal(
+        n === 1 ? "O histórico tem 1 sorteio registrado. Apagar?"
+                : "O histórico tem " + n + " sorteios registrados. Apagar?",
+        { title:"Limpar histórico", okText:"Limpar", danger:true })) return;
+  hist = []; save(LS_HIST, hist);
+  sendStateR();
+  render();
+  toast(n ? "Histórico limpo." : "O histórico já estava vazio.");
+});
+
+/* ================= Backup & reset ================= */
+function baixarJson(data, nomeArquivo){
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nomeArquivo;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+/* O backup (completo ou parcial) usa sempre o mesmo kind; a importacao aplica
+   somente os campos presentes no arquivo. Backups antigos continuam validos. */
+function exportarBackup(campos, sufixo){
+  const data = { kind:"cj_roleta_backup", version:2, exportedAt:new Date().toISOString() };
+  if (campos.includes("experts"))  data.experts = experts;
+  if (campos.includes("cfg"))      data.cfg = cfg;
+  if (campos.includes("rodada")){  data.sorteados = sorteados; data.hist = hist; }
+  if (campos.includes("listas"))   data.listas = listas;
+  baixarJson(data, "roleta-corujao-" + sufixo + ".json");
+  toast("Arquivo exportado.");
+}
+document.getElementById("btnExport").addEventListener("click", () =>
+  exportarBackup(["experts","cfg","rodada","listas"], "backup"));
+document.getElementById("btnExportExperts").addEventListener("click", () =>
+  exportarBackup(["experts"], "experts"));
+document.getElementById("btnExportCfg").addEventListener("click", () =>
+  exportarBackup(["cfg"], "configuracoes"));
+document.getElementById("btnExportListas").addEventListener("click", () =>
+  exportarBackup(["listas"], "listas"));
+document.getElementById("btnExportRodada").addEventListener("click", () =>
+  exportarBackup(["rodada"], "rodada"));
+
+document.getElementById("fImport").addEventListener("change", ev => {
+  const file = ev.target.files[0];
+  ev.target.value = "";
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = async () => {
+    try {
+      const data = JSON.parse(fr.result);
+      if (!data || data.kind !== "cj_roleta_backup") throw new Error("formato");
+      const tem = [];
+      if (Array.isArray(data.experts)) tem.push("experts");
+      if (data.cfg) tem.push("configurações");
+      if (Array.isArray(data.sorteados) || Array.isArray(data.hist)) tem.push("rodada e histórico");
+      if (Array.isArray(data.listas)) tem.push("listas salvas");
+      if (!tem.length) throw new Error("vazio");
+      if (!(await confirmModal("O arquivo substitui: " + tem.join(", ") + ". Continuar?", { title:"Importar backup", okText:"Importar" }))) return;
+      if (Array.isArray(data.experts)){ experts = data.experts; save(LS_EXPERTS, experts); listaPropria = true; }
+      if (data.cfg){ cfg = Object.assign({}, CFG_DEF, data.cfg); save(LS_CFG, cfg); }
+      if (Array.isArray(data.sorteados)){ sorteados = data.sorteados; save(LS_RODADA, sorteados); }
+      if (Array.isArray(data.hist)){ hist = data.hist; save(LS_HIST, hist); }
+      if (Array.isArray(data.listas)){ listas = data.listas; salvarListas(); }
+      sendState(); sendStateR();
+      render();
+      toast("Backup importado com sucesso.");
+    } catch {
+      toast("Arquivo inválido. Use um backup exportado deste painel.");
+    }
+  };
+  fr.readAsText(file);
+});
+document.getElementById("btnResetCfg").addEventListener("click", async () => {
+  if (!(await confirmModal("Voltar tempos, giro e efeitos aos valores padrão? Os experts não mudam.", { title:"Resetar configurações", okText:"Resetar", danger:true }))) return;
+  cfg = Object.assign({}, CFG_DEF);
+  saveCfg();
+  render();
+  toast("Configurações restauradas ao padrão.");
+});
+document.getElementById("btnRestoreDefaults").addEventListener("click", async () => {
+  if (!(await confirmModal("Isso apaga experts personalizados, fotos e configurações, voltando aos 16 padrão.", { title:"Restaurar estado inicial", okText:"Restaurar", danger:true }))) return;
+  experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
+  cfg = Object.assign({}, CFG_DEF);
+  sorteados = []; hist = [];
+  save(LS_EXPERTS, experts); saveCfg(); save(LS_RODADA, sorteados); save(LS_HIST, hist);
+  sendState(); sendStateR();
+  render();
+  toast("Padrão restaurado.");
+});
+
+/* ================= Sincronização vinda da roleta ================= */
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_RODADA){ sorteados = load(LS_RODADA, []); render(); }
+  else if (ev.key === LS_EXPERTS){ experts = dedupeExperts(load(LS_EXPERTS, [])); render(); }
+  else if (ev.key === LS_CFG){ cfg = Object.assign({}, CFG_DEF, load(LS_CFG, {})); render(); }
+  else if (ev.key === LS_HIST){ hist = load(LS_HIST, []); }
+  else if (ev.key === LS_LIVE){ live = load(LS_LIVE, { status:"idle" }); renderLive(); }
+});
+
+/* ================= Navegação (sidebar → telas) ================= */
+const VIEWS = {
+  live:    { el:"view-live",    titulo:"Ao vivo" },
+  round:   { el:"view-round",   titulo:"Rodada e sorteio" },
+  times:   { el:"view-times",   titulo:"Tempos e giro" },
+  experts: { el:"view-experts", titulo:"Experts" },
+  lists:   { el:"view-lists",   titulo:"Listas salvas" },
+  fx:      { el:"view-fx",      titulo:"Efeitos" },
+  backup:  { el:"view-backup",  titulo:"Backup e reset" },
+};
+let viewAtual = null;
+function goView(nome, semHash){
+  if (!VIEWS[nome]) nome = "live";
+  if (viewAtual === nome) { if (!semHash && location.hash !== "#/" + nome) history.replaceState(null, "", "#/" + nome); return; }
+  viewAtual = nome;
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === VIEWS[nome].el));
+  document.querySelectorAll(".sb-item[data-view]").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === nome));
+  const tb = document.getElementById("tbTitle");
+  if (tb) tb.textContent = VIEWS[nome].titulo;
+  if (!semHash && location.hash !== "#/" + nome) history.replaceState(null, "", "#/" + nome);
+  window.scrollTo({ top:0 });
+  if (MOBILE()) fechaMenuMobile();
+}
+function viewDoHash(){
+  const m = (location.hash || "").match(/^#\/([a-z]+)/);
+  return m && VIEWS[m[1]] ? m[1] : "live";
+}
+window.addEventListener("hashchange", () => goView(viewDoHash(), true));
+document.querySelectorAll(".sb-item[data-view]").forEach(btn => {
+  btn.addEventListener("click", () => goView(btn.dataset.view));
+});
+
+/* ================= Sidebar (recolher/expandir) ================= */
+const MOBILE = () => window.matchMedia("(max-width:900px)").matches;
+if (load(LS_SB, false) && !MOBILE()) document.body.classList.add("sb-min");
+document.getElementById("sbHandle").addEventListener("click", () => {
+  document.body.classList.toggle("sb-min");
+  save(LS_SB, document.body.classList.contains("sb-min"));
+});
+document.getElementById("sbBg").addEventListener("click", () => fechaMenuMobile());
+
+/* ---- barra superior (telas <=900px) ---- */
+const tbBurger = document.getElementById("tbBurger");
+function sincronizaAriaMenu(){
+  const aberto = document.body.classList.contains("sb-open");
+  tbBurger.setAttribute("aria-expanded", String(aberto));
+  tbBurger.setAttribute("aria-label", aberto ? "Fechar o menu" : "Abrir o menu");
+}
+function fechaMenuMobile(){ document.body.classList.remove("sb-open"); sincronizaAriaMenu(); }
+tbBurger.addEventListener("click", () => {
+  document.body.classList.toggle("sb-open");
+  sincronizaAriaMenu();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.body.classList.contains("sb-open")) fechaMenuMobile();
+});
+sincronizaAriaMenu();
+
+/* ================= Login ================= */
+const loginOverlay = document.getElementById("loginOverlay");
+const loginCard = document.getElementById("loginCard");
+const loginEmail = document.getElementById("loginEmail");
+const loginPass = document.getElementById("loginPass");
+/* Botão de olho: mostra/oculta a senha no login. */
+(function(){
+  const btn = document.getElementById("togglePass");
+  if (!btn) return;
+  const on = btn.querySelector(".eye-on"), off = btn.querySelector(".eye-off");
+  btn.addEventListener("click", () => {
+    const mostrar = loginPass.type === "password";
+    loginPass.type = mostrar ? "text" : "password";
+    on.style.display  = mostrar ? "none" : "";
+    off.style.display = mostrar ? "" : "none";
+    btn.setAttribute("aria-pressed", String(mostrar));
+    btn.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+    loginPass.focus();
+  });
+})();
+function unlock(){
+  document.body.classList.remove("locked");
+  loginOverlay.classList.remove("show");
+  render(); renderLive();
+  /* So depois de entrar: se este navegador nunca teve lista, pede a de quem
+     estiver no ar e, se ninguem responder, pergunta ao operador. Antes isso so
+     acontecia com a sincronizacao pela internet no ar. */
+  if (!listaPropria){ syncSend({ type:"reqExperts" }); semearSePrecisar(); }
+}
+loginCard.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!SB){ toast("Autenticação indisponível — verifique a internet."); return; }
+  const btn = loginCard.querySelector(".gate-btn");
+  btn.disabled = true; btn.textContent = "Entrando…";
+  const { error } = await SB.auth.signInWithPassword({
+    email: loginEmail.value.trim(),
+    password: loginPass.value
+  });
+  btn.disabled = false; btn.textContent = "Entrar no painel";
+  if (error){
+    ofereceModoLocal();
+    loginCard.classList.add("wrong");
+    loginPass.classList.remove("err"); void loginPass.offsetWidth; loginPass.classList.add("err");
+    loginPass.select();
+  } else {
+    unlock();
+  }
+});
+document.getElementById("btnLogout").addEventListener("click", async () => {
+  try { if (SB) await SB.auth.signOut(); } catch {}
+  location.reload();
+});
+/* MODO LOCAL (18/09/2026)
+   O login depende do servidor de autenticacao. Quando ele nao responde — foi o
+   que aconteceu com o projeto do Supabase — o painel ficava inutilizavel e a
+   live perdia o controle da roleta. O modo local libera o painel para comandar
+   a roleta aberta NESTE navegador (canal BroadcastChannel, que nao sai da
+   maquina). Nao e um furo de seguranca: de fora ninguem alcanca esse canal. */
+const btnLocal = document.getElementById("btnLocal");
+const gateLocalTxt = document.getElementById("gateLocalTxt");
+function ofereceModoLocal(){
+  if (!CMD_CH || !btnLocal || !loginOverlay.classList.contains("show")) return;
+  btnLocal.hidden = false; gateLocalTxt.hidden = false;
+}
+btnLocal.addEventListener("click", () => {
+  modoLocal = true; authTok = null;
+  unlock();
+  toast("Modo local: comandando a roleta deste navegador.");
+  syncSend({ type:"hello", role:"admin" }); syncSend({ type:"ping" });
+});
+(async function checkSession(){
+  try {
+    if (!SB){ loginEmail.focus(); ofereceModoLocal(); return; }
+    const { data } = await SB.auth.getSession();
+    if (data && data.session) unlock();
+    else loginEmail.focus();
+  } catch { loginEmail.focus(); }
+})();
+/* Se em 6s a sincronizacao nao subiu, o servidor esta fora: oferece o modo local. */
+setTimeout(() => { if (!syncOn) ofereceModoLocal(); }, 6000);
+
+/* ================= Toast ================= */
+/* `var` de proposito: toast() e chamado ja na inicializacao (initSync avisa
+   quando o supabase nao carrega). Com `let`, essa chamada acontecia antes da
+   declaracao (TDZ), o ReferenceError matava o script inteiro e o painel
+   ficava morto — inclusive o login. */
+var toastT = null;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), 2600);
+}
+/* Toast com botão "Desfazer" (para remoção acidental de expert). */
+function toastUndo(msg, onUndo, ms){
+  const t = document.getElementById("toast");
+  t.textContent = msg + " ";
+  const b = document.createElement("button");
+  b.className = "undo"; b.type = "button"; b.textContent = "Desfazer";
+  b.addEventListener("click", () => { clearTimeout(toastT); t.classList.remove("show"); onUndo(); });
+  t.appendChild(b);
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), ms || 6000);
+}
+
+/* Modal de confirmação no estilo do painel — Promise<boolean>. Substitui confirm(). */
+function confirmModal(msg, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    const m = document.getElementById("cmodal");
+    document.getElementById("cmTitle").textContent = opts.title || "Confirmar";
+    document.getElementById("cmMsg").textContent = msg;
+    const ok = document.getElementById("cmOk"), cancel = document.getElementById("cmCancel");
+    const inp = document.getElementById("cmInput");
+    if (inp) inp.style.display = "none";        // confirm nunca mostra campo de texto
+    ok.textContent = opts.okText || "Confirmar";
+    ok.classList.toggle("danger", !!opts.danger);
+    m.classList.add("show");
+    const close = (val) => {
+      m.classList.remove("show");
+      ok.removeEventListener("click", onOk); cancel.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+      resolve(val);
+    };
+    const onOk = () => close(true), onCancel = () => close(false);
+    const onKey = e => { if (e.key === "Escape") close(false); if (e.key === "Enter") close(true); };
+    ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+/* Igual ao confirmModal, mas com um campo de texto. Resolve com a string
+   digitada, ou null se cancelar. */
+function promptModal(msg, valorInicial, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    const m = document.getElementById("cmodal");
+    const inp = document.getElementById("cmInput");
+    document.getElementById("cmTitle").textContent = opts.title || "Renomear";
+    document.getElementById("cmMsg").textContent = msg;
+    const ok = document.getElementById("cmOk"), cancel = document.getElementById("cmCancel");
+    ok.textContent = opts.okText || "Salvar";
+    ok.classList.remove("danger");
+    inp.style.display = "";
+    inp.value = valorInicial == null ? "" : String(valorInicial);
+    m.classList.add("show");
+    setTimeout(() => { inp.focus(); inp.select(); }, 30);
+    const close = val => {
+      m.classList.remove("show");
+      inp.style.display = "none";
+      ok.removeEventListener("click", onOk); cancel.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+      resolve(val);
+    };
+    const onOk = () => close(inp.value);
+    const onCancel = () => close(null);
+    const onKey = e => {
+      if (e.key === "Escape") close(null);
+      if (e.key === "Enter" && document.activeElement === inp){ e.preventDefault(); close(inp.value); }
+    };
+    ok.addEventListener("click", onOk); cancel.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+/* Busca: filtra visualmente as linhas da tabela de experts (não toca em dados). */
+let aplicarBusca = null;
+(function(){
+  const inp = document.getElementById("expSearch");
+  if (!inp) return;
+  aplicarBusca = function(){
+    const q = normNome(inp.value);
+    const rows = [...document.querySelectorAll("#expBody tr")];
+    let visiveis = 0;
+    rows.forEach(r => {
+      const cel = r.querySelector(".cell-nm .nm");
+      if (!cel) return;
+      const hit = !q || normNome(cel.textContent).includes(q);
+      r.classList.toggle("hiddenByFilter", !hit);
+      if (hit) visiveis++;
+    });
+    let vazio = document.getElementById("expEmpty");
+    if (!visiveis && q){
+      if (!vazio){
+        vazio = document.createElement("tr"); vazio.id = "expEmpty";
+        document.getElementById("expBody").appendChild(vazio);
+      }
+      vazio.innerHTML = '<td colspan="7"><div class="tbl-empty">Nenhum expert encontrado para "' + escHTML(inp.value.trim()) + '".</div></td>';
+    } else if (vazio){ vazio.remove(); }
+  };
+  inp.addEventListener("input", aplicarBusca);
+})();
+
+goView(viewDoHash(), true);
+render(); renderLive();
+</script>
+</body></html>

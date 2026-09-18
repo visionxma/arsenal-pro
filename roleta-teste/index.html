@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>[TESTE] Roleta dos Experts — Corujão de Traders</title>
+<link rel="icon" type="image/svg+xml" href="../assets/safirion-icon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+<meta name="description" content="Roleta de sorteio dos experts do Corujão de Traders da Safirion." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,800;0,900;1,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#070d1a;
+    --bg-2:#04060c;
+    --brand:#00A7FF;
+    --brand-2:#4dc3ff;
+    --brand-3:#a5e3ff;
+    --btn:linear-gradient(180deg,#3ec0ff,#0079d0);
+    --btn-ink:#02223a;
+    --up:#2ec16b;
+    --down:#e2556a;
+    --panel:rgba(11,18,32,.72);
+    --panel-solid:#0d1524;
+    --line:rgba(255,255,255,.09);
+    --line-2:rgba(0,167,255,.22);
+    --ink:#ffffff;
+    --muted:#9dabc7;
+    --muted-2:#75829f;
+
+    /* ---- sistema glass ---- */
+    --glass-tint:rgba(10,17,30,.52);
+    --glass-film:
+      radial-gradient(130% 80% at 10% -10%, rgba(255,255,255,.10) 0%, transparent 46%),
+      linear-gradient(158deg, rgba(255,255,255,.085) 0%, rgba(255,255,255,.026) 38%,
+                              rgba(255,255,255,.012) 64%, rgba(255,255,255,.06) 100%);
+    --glass-blur:saturate(170%) blur(22px);
+    --glass-shadow:0 26px 64px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.28);
+    --glass-inset:inset 0 1px 0 rgba(255,255,255,.15), inset 0 -1px 0 rgba(255,255,255,.035);
+    --hairline:linear-gradient(150deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.10) 26%,
+                                       rgba(255,255,255,.02) 52%, rgba(0,167,255,.34) 100%);
+  }
+
+  /* superfícies de vidro: tint + blur, borda hairline em gradiente e realce interno */
+  .glass{
+    position:relative;
+    background-color:var(--glass-tint);
+    background-image:var(--glass-film);
+    backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+    border:none;
+    box-shadow:var(--glass-shadow), var(--glass-inset);
+  }
+  .glass::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:var(--hairline); opacity:.7;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  .glass--soft{
+    background-color:rgba(255,255,255,.045);
+    background-image:linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015) 60%);
+    backdrop-filter:saturate(150%) blur(12px); -webkit-backdrop-filter:saturate(150%) blur(12px);
+    border:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 4px 14px rgba(0,0,0,.22);
+  }
+  .glass--soft::after{ content:""; position:absolute; inset:0; border-radius:inherit; padding:1px;
+    pointer-events:none; background:var(--hairline); opacity:.5;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .glass{ background-color:rgba(11,18,32,.93); }
+    .glass--soft{ background-color:rgba(255,255,255,.08); }
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; scroll-behavior:smooth; }
+  body{
+    font-family:'Poppins', system-ui, -apple-system, sans-serif;
+    color:var(--ink); min-height:100vh; overflow-x:hidden; position:relative;
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(0,167,255,.10) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 78%);
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(0,167,255,.35); }
+  ::-webkit-scrollbar{ width:9px }
+  ::-webkit-scrollbar-track{ background:#05070d }
+  ::-webkit-scrollbar-thumb{ background:linear-gradient(180deg,#00A7FF,#005791); border-radius:10px; border:2px solid #05070d }
+
+  /* ================= FUNDO: glow + grade + gráfico de candles ================= */
+  .bg{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  /* halo do asset contido no topo — sem lavar o resto da tela */
+  .bg-glow{
+    position:absolute; top:-32vh; left:50%; transform:translateX(-50%);
+    height:96vh; width:auto; max-width:none; opacity:.34; mix-blend-mode:screen;
+    mask-image:radial-gradient(ellipse 52% 46% at 50% 52%, #000 12%, transparent 72%);
+    -webkit-mask-image:radial-gradient(ellipse 52% 46% at 50% 52%, #000 12%, transparent 72%);
+  }
+  /* foto de ambiente de trader ao fundo */
+  .bg-photo{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 32%;
+    opacity:.34; filter:saturate(.9) contrast(1.06);
+    mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.62) 52%, rgba(0,0,0,.18) 82%, transparent 97%);
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.62) 52%, rgba(0,0,0,.18) 82%, transparent 97%);
+  }
+  .bg-grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(0,167,255,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,167,255,.055) 1px,transparent 1px),
+      linear-gradient(rgba(0,167,255,.028) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,167,255,.028) 1px,transparent 1px);
+    background-size:96px 96px,96px 96px,24px 24px,24px 24px;
+    mask-image:radial-gradient(ellipse 85% 75% at 50% 35%, #000 15%, transparent 72%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 75% at 50% 35%, #000 15%, transparent 72%);
+  }
+  /* gráfico de candles montado no JS */
+  .bg-chart{ position:absolute; left:0; right:0; bottom:0; height:46vh; min-height:300px; opacity:.9;
+    overflow:hidden;
+    mask-image:linear-gradient(180deg, transparent 0%, #000 34%, #000 100%);
+    -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 34%, #000 100%); }
+  /* níveis de preço */
+  .bg-chart::before{
+    content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(0deg, rgba(160,200,255,.055) 0 1px, transparent 1px 84px);
+  }
+  .bg-chart .candles{ position:absolute; inset:0; }
+  .bg-chart .candles i{
+    position:absolute; bottom:0; width:.62%; border-radius:1px; display:block; color:#2ec16b;
+    background:linear-gradient(180deg, rgba(46,193,107,.42), rgba(46,193,107,.2));
+    border:1px solid rgba(46,193,107,.5);
+  }
+  .bg-chart .candles i.dn{
+    color:#e2556a;
+    background:linear-gradient(180deg, rgba(226,85,106,.36), rgba(226,85,106,.16));
+    border-color:rgba(226,85,106,.44);
+  }
+  .bg-chart .candles i::before{
+    content:""; position:absolute; left:50%; transform:translateX(-50%);
+    width:1px; top:-34%; bottom:-12%; background:currentColor; opacity:.42;
+  }
+  /* trilho com duas cópias iguais: rola sem emenda, como um gráfico ao vivo */
+  .chart-track{ position:absolute; inset:0; width:200%;
+    animation:chartScroll 95s linear infinite; will-change:transform; }
+  @keyframes chartScroll{ from{ transform:translateX(0) } to{ transform:translateX(-50%) } }
+  .bg-chart svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .bg-chart .trend{ fill:none; stroke:url(#lg); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+    filter:drop-shadow(0 0 7px rgba(0,167,255,.5)); }
+  .bg-chart .trend-fill{ fill:url(#fg); }
+  /* pulso de luz correndo pela linha */
+  .bg-chart .trend-pulse{ fill:none; stroke:#cdefff; stroke-width:2.6; stroke-linecap:round;
+    filter:drop-shadow(0 0 9px rgba(160,225,255,.9)); animation:pulseRun 7s linear infinite; }
+  @keyframes pulseRun{ from{ stroke-dashoffset:var(--len) } to{ stroke-dashoffset:0 } }
+  .bg-scan{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(180deg, rgba(255,255,255,.014) 0 1px, transparent 1px 3px);
+  }
+  .bg-vignette{ position:absolute; inset:0;
+    background:radial-gradient(ellipse 90% 65% at 50% 45%, transparent 40%, rgba(3,5,10,.72) 100%); }
+
+  /* ================= LAYOUT ================= */
+  /* controle de som flutuante (sem navbar) + zona invisível de acesso ao admin */
+  .admin-hot{ position:fixed; top:14px; left:14px; z-index:6; width:44px; height:36px; display:block; cursor:default; }
+  .mute{ position:fixed; top:14px; right:16px; z-index:6;
+    display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; cursor:pointer;
+    border-radius:999px; color:#b6c2dd; transition:.2s; }
+  .mute:hover{ color:#fff; background-color:rgba(0,167,255,.16); }
+  .mute svg{ width:17px; height:17px; }
+
+  .wrap{ position:relative; z-index:2; max-width:1220px; margin:0 auto; padding:22px 24px 48px; }
+
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--up); flex:none; box-shadow:0 0 0 0 rgba(46,193,107,.6);
+    animation:ping 2s ease-out infinite; }
+  @keyframes ping{ 0%{box-shadow:0 0 0 0 rgba(46,193,107,.55)} 70%{box-shadow:0 0 0 9px rgba(46,193,107,0)} 100%{box-shadow:0 0 0 0 rgba(46,193,107,0)} }
+
+  .cols{
+    display:grid; gap:38px; align-items:center; min-height:calc(100vh - 130px);
+    grid-template-columns:minmax(0,1.02fr) minmax(330px,.78fr);
+  }
+  .col-wheel{ display:flex; flex-direction:column; align-items:center; }
+
+  /* ================= RODA ================= */
+  .wheel-wrap{ position:relative; width:min(84vw,58vh,470px); aspect-ratio:1; margin:0 auto;
+    display:flex; align-items:center; justify-content:center; }
+  .wheel-wrap::before{
+    content:""; position:absolute; inset:-16%; border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(0,167,255,.26) 0%, rgba(0,167,255,.08) 46%, transparent 70%);
+    animation:glowPulse 4.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse{ 0%,100%{opacity:.6} 50%{opacity:1} }
+  body.spinning .wheel-wrap::before{ animation-duration:1.1s; }
+  .rim{ position:absolute; inset:-4.5%; border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 61.5%, #16233c 62.5%, #0b1526 78%, #05080f 100%),
+      conic-gradient(from 200deg, #1d3050, #0a1220, #1d3050, #0a1220, #1d3050);
+    box-shadow:0 0 0 1px rgba(255,255,255,.07), 0 0 60px rgba(0,167,255,.14), 0 26px 60px rgba(0,0,0,.65); }
+  .rim-lights{ position:absolute; inset:0; }
+  .rim-lights i{ position:absolute; top:50%; left:50%; width:7px; height:7px; border-radius:50%;
+    margin:-3.5px 0 0 -3.5px; background:#fff; box-shadow:0 0 6px 1px currentColor; opacity:.85;
+    animation:lightBlink 1.5s ease-in-out infinite alternate; }
+  body.spinning .rim-lights i{ animation-duration:.32s; }
+  @keyframes lightBlink{ from{opacity:.2} to{opacity:1} }
+
+  .wheel{ position:absolute; inset:7.5%; border-radius:50%; overflow:hidden; border:5px solid #060a13;
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.07), inset 0 0 46px rgba(0,0,0,.62);
+    transition:transform 6.2s cubic-bezier(.12,.72,.03,1); will-change:transform; }
+  .wheel::after{ content:""; position:absolute; inset:0; border-radius:50%; pointer-events:none; z-index:4;
+    background:radial-gradient(circle at 50% 18%, rgba(255,255,255,.11), transparent 46%); }
+
+  .seg-item{ position:absolute; top:0; left:50%; width:0; height:50%; transform-origin:bottom center;
+    z-index:3; pointer-events:none; }
+  .seg-photo{ position:absolute; left:50%; transform:translateX(-50%); border-radius:50%; object-fit:cover;
+    display:block; background:#0a1120; border:2px solid rgba(255,255,255,.9);
+    box-shadow:0 3px 10px rgba(0,0,0,.6); transition:filter .3s, opacity .3s, border-color .3s, box-shadow .3s; }
+  .seg-name{ position:absolute; left:50%; transform:translateX(-50%);
+    writing-mode:vertical-rl; text-orientation:mixed; overflow:hidden; text-align:center;
+    font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:.2px; text-transform:uppercase;
+    line-height:1.12; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.7); }
+  /* já sorteado: fatia apagada, foto em cinza e selo de conferido */
+  .seg-check{ position:absolute; left:50%; border-radius:50%;
+    display:none; align-items:center; justify-content:center; color:#04120a;
+    background:linear-gradient(180deg,#4ded93,#20a862); border:2px solid #071120; box-sizing:border-box;
+    box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .seg-check svg{ width:62%; height:62%; }
+  .seg-item.done .seg-check{ display:flex; }
+  .seg-item.done .seg-photo{ filter:grayscale(.85) brightness(.72); opacity:.78;
+    border-color:rgba(255,255,255,.2); box-shadow:none; }
+  .seg-item.done .seg-name{ color:rgba(255,255,255,.34); text-decoration:line-through;
+    text-decoration-thickness:1.5px; }
+  .seg-item.current .seg-photo{ border-color:var(--up);
+    box-shadow:0 0 0 3px rgba(46,193,107,.3), 0 0 20px rgba(46,193,107,.6); }
+  .spokes{ position:absolute; inset:0; border-radius:50%; z-index:2; pointer-events:none; }
+  .spokes i{ position:absolute; top:0; left:50%; width:2px; height:50%; background:rgba(0,0,0,.42);
+    transform-origin:bottom center; }
+
+  .pointer{ position:absolute; top:-6.5%; left:50%; transform:translateX(-50%); z-index:6; width:36px; height:48px;
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.6)); }
+  .pointer div{ width:0; height:0; margin:0 auto;
+    border-left:15px solid transparent; border-right:15px solid transparent; border-top:32px solid var(--brand-2); }
+  .pointer::after{ content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+    width:20px; height:20px; border-radius:50%; background:var(--brand); border:3px solid #060a13;
+    box-shadow:0 0 14px rgba(0,167,255,.75); }
+  body.spinning .pointer{ animation:tick .12s linear infinite; }
+  @keyframes tick{ 0%,100%{transform:translateX(-50%) rotate(0)} 50%{transform:translateX(-50%) rotate(-7deg)} }
+
+  .hub{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:23%; height:23%; border-radius:50%;
+    z-index:5; display:grid; place-items:center; cursor:pointer;
+    background:radial-gradient(circle at 50% 30%, #16223a, #080d18); border:4px solid #060a13;
+    box-shadow:0 8px 20px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); transition:transform .12s ease; }
+  .hub:hover{ transform:translate(-50%,-50%) scale(1.04); }
+  .hub:active{ transform:translate(-50%,-50%) scale(.94); }
+  .hub-core{ width:74%; height:74%; border-radius:50%; display:grid; place-items:center;
+    background:var(--btn); color:var(--btn-ink); box-shadow:0 0 22px rgba(0,167,255,.45); }
+  .hub-core svg{ width:46%; height:46%; }
+  body.spinning .hub-core svg{ animation:hubSpin 1s linear infinite; }
+  @keyframes hubSpin{ to{ transform:rotate(360deg) } }
+
+  /* ================= CTA ================= */
+  .cta{
+    margin-top:30px; width:100%; max-width:400px; position:relative; border:none; cursor:pointer;
+    font-family:'Montserrat',sans-serif; font-weight:900;
+    font-size:clamp(16px,2.2vw,20px); letter-spacing:.6px; text-transform:uppercase; color:var(--btn-ink);
+    padding:19px 40px; border-radius:14px; background:var(--btn); overflow:hidden;
+    box-shadow:0 10px 26px rgba(0,0,0,.42), 0 0 30px rgba(0,167,255,.28);
+    transition:transform .1s, filter .15s, box-shadow .25s; animation:ctaGlow 3.2s ease-in-out infinite;
+  }
+  @keyframes ctaGlow{
+    0%,100%{ box-shadow:0 10px 26px rgba(0,0,0,.42), 0 0 24px rgba(0,167,255,.26); }
+    50%{ box-shadow:0 10px 26px rgba(0,0,0,.42), 0 0 52px rgba(0,167,255,.55); }
+  }
+  .cta::after{ content:""; position:absolute; top:0; bottom:0; width:38%; left:-50%;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.4), transparent);
+    animation:shine 3.2s ease-in-out infinite; }
+  @keyframes shine{ 0%{left:-50%} 55%,100%{left:130%} }
+  .cta:hover{ filter:brightness(1.07); }
+  .cta:active{ transform:translateY(1px); }
+  .cta:disabled{ filter:grayscale(.6) brightness(.55); cursor:default; animation:none; }
+  .cta:disabled::after{ display:none; }
+  .hint{ margin-top:13px; font-size:12.5px; color:var(--muted-2); text-align:center; }
+  .hint b{ color:var(--brand-2); font-weight:600; }
+  .hint kbd{ font-family:inherit; font-size:11px; padding:2px 7px; border-radius:6px;
+    border:1px solid var(--line); background:rgba(255,255,255,.05); color:#c2cde5; }
+
+  /* ================= PAINEL AO VIVO (na tela, sem modal) ================= */
+  .live{ border-radius:22px; padding:26px 24px 24px; text-align:center; overflow:hidden; }
+  .live::before{ content:""; position:absolute; inset:0 0 auto; height:2px; z-index:3;
+    background:linear-gradient(90deg, transparent, var(--brand), transparent); }
+
+  /* ---------- textura do card: aurora + grade + brilho + grão ---------- */
+  .card-fx{ position:absolute; inset:0; z-index:0; overflow:hidden; border-radius:inherit; pointer-events:none; }
+  .card-fx i{ position:absolute; display:block; border-radius:50%; filter:blur(52px); will-change:transform; }
+  .fx-a{ width:52%; aspect-ratio:1; left:-10%; top:-22%;
+    background:radial-gradient(circle, rgba(0,167,255,.50), transparent 68%);
+    animation:drift1 19s ease-in-out infinite alternate; }
+  .fx-b{ width:44%; aspect-ratio:1; right:-8%; bottom:-20%;
+    background:radial-gradient(circle, rgba(46,193,107,.30), transparent 68%);
+    animation:drift2 24s ease-in-out infinite alternate; }
+  .fx-c{ width:36%; aspect-ratio:1; left:36%; top:46%;
+    background:radial-gradient(circle, rgba(96,88,255,.26), transparent 70%);
+    animation:drift3 29s ease-in-out infinite alternate; }
+  @keyframes drift1{ to{ transform:translate3d(14%,10%,0) scale(1.15) } }
+  @keyframes drift2{ to{ transform:translate3d(-12%,-9%,0) scale(1.12) } }
+  @keyframes drift3{ to{ transform:translate3d(-16%,-12%,0) scale(1.2) } }
+  .fx-grid{ position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
+    background-size:52px 52px, 52px 52px;
+    mask-image:radial-gradient(ellipse 75% 70% at 50% 40%, #000 8%, transparent 78%);
+    -webkit-mask-image:radial-gradient(ellipse 75% 70% at 50% 40%, #000 8%, transparent 78%); }
+  .fx-sheen{ position:absolute; top:-45%; bottom:-45%; width:34%; left:-45%; transform:rotate(9deg);
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.06) 45%, transparent);
+    animation:sheen 11s ease-in-out infinite; }
+  @keyframes sheen{ 0%{ left:-45% } 60%,100%{ left:125% } }
+  .fx-grain{ position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  /* conteúdo sempre acima da textura */
+  .panel-idle,.panel-winner,.fs-right,.fs-wheel,.fs-brand{ position:relative; z-index:1; }
+  .live.is-live::before{ background:linear-gradient(90deg, transparent, var(--up), transparent); }
+  .live-head{
+    display:inline-flex; align-items:center; gap:9px; padding:8px 16px; border-radius:999px;
+    font-size:10.5px; font-weight:800; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--muted); z-index:2;
+  }
+  .live.is-live .live-head{ color:var(--up); background-color:rgba(46,193,107,.12); }
+  .live.is-live .live-head::after{ background:linear-gradient(150deg, rgba(46,193,107,.6), rgba(46,193,107,.1) 60%); }
+  .live.is-done .live-head{ color:var(--brand-2); background-color:rgba(0,167,255,.12); }
+  .live-head .dot{ background:var(--muted-2); animation:none; }
+  .live.is-live .live-head .dot{ background:var(--up); animation:ping 2s ease-out infinite; }
+  .live.is-done .live-head .dot{ background:var(--brand-2); animation:none; }
+
+  .panel-idle,.panel-winner{ display:none; }
+  .live.is-idle .panel-idle{ display:block; }
+  .live.is-live .panel-winner,.live.is-done .panel-winner{ display:block; animation:pop .4s cubic-bezier(.2,1.2,.35,1); }
+  @keyframes pop{ from{ transform:scale(.94); opacity:0 } to{ transform:scale(1); opacity:1 } }
+
+  .idle-mark{ width:74px; height:74px; margin:20px auto 0; border-radius:50%; display:grid; place-items:center;
+    border:1px dashed var(--line-2); background:rgba(0,167,255,.05); color:var(--brand-2); }
+  .idle-mark svg{ width:32px; height:32px; }
+  .idle-t{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:19px; text-transform:uppercase;
+    margin-top:16px; letter-spacing:-.2px; }
+  .idle-s{ font-size:13px; color:var(--muted); margin-top:7px; }
+  .pool{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-top:20px; }
+  .pool-i{ position:relative; display:block; line-height:0; }
+  .pool img{ width:38px; height:38px; border-radius:50%; object-fit:cover; display:block;
+    border:2px solid rgba(0,167,255,.4); box-shadow:0 0 12px rgba(0,167,255,.16); }
+  .pool-i.done img{ filter:grayscale(.85) brightness(.72); opacity:.72;
+    border-color:rgba(255,255,255,.18); box-shadow:none; }
+  .pool-i i{ position:absolute; right:-2px; bottom:-2px; width:17px; height:17px; display:grid;
+    place-items:center; border-radius:50%; color:#04120a;
+    background:linear-gradient(180deg,#4ded93,#20a862); border:2px solid #0b1220; box-sizing:border-box; }
+  .pool-i i svg{ width:70%; height:70%; }
+  .pool-n{ margin-top:14px; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-2); }
+  .pool-n b{ color:var(--brand-2); }
+
+  .win-photo{ width:112px; height:112px; border-radius:50%; margin:20px auto 0; object-fit:cover; display:block;
+    border:3px solid var(--up); box-shadow:0 0 0 8px rgba(46,193,107,.12), 0 0 34px rgba(46,193,107,.42); }
+  .live.is-done .win-photo{ border-color:var(--brand); box-shadow:0 0 0 8px rgba(0,167,255,.12), 0 0 34px rgba(0,167,255,.4); }
+  .win-name{ font-family:'Montserrat',sans-serif; font-weight:900; font-size:clamp(24px,3.2vw,32px);
+    letter-spacing:-.6px; text-transform:uppercase; margin-top:15px; line-height:1.05; }
+  .win-role{ font-size:11px; letter-spacing:.2em; color:var(--muted-2); text-transform:uppercase; margin-top:6px; }
+
+  .timer-box{ margin:20px 0 0; padding:20px 16px 16px; border-radius:16px; }
+  .timer-wrap{ position:relative; width:158px; margin:0 auto; }
+  .timer-wrap svg{ width:100%; height:auto; transform:rotate(-90deg); display:block; }
+  .timer-wrap .track{ stroke:rgba(255,255,255,.09); }
+  .timer-wrap .bar{ stroke:url(#tg); stroke-linecap:round; transition:stroke-dashoffset .3s linear; }
+  .timer-txt{ position:absolute; inset:0; display:grid; place-items:center;
+    font-family:'Montserrat',sans-serif; font-weight:800; font-size:30px; letter-spacing:-.5px;
+    font-variant-numeric:tabular-nums; color:#fff; }
+  .timer-sub{ margin-top:12px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted-2); }
+  .live.is-done .timer-txt{ color:var(--up); animation:blink 1.1s steps(2) infinite; }
+  @keyframes blink{ 50%{ opacity:.3 } }
+  .end-now{ margin-top:14px; background:none; border:none; cursor:pointer; color:var(--muted-2); font-size:12.5px;
+    font-family:'Poppins',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+  .end-now:hover{ color:#b6c2dd; }
+  .live.is-done .end-now{ display:none; }
+  .done-msg{ display:none; margin-top:16px; font-size:13.5px; color:var(--brand-2); font-weight:600; }
+  .live.is-done .done-msg{ display:block; }
+
+  .fs-btn{ position:absolute; top:14px; right:14px; z-index:5; width:36px; height:36px; border-radius:11px;
+    display:grid; place-items:center; cursor:pointer; color:#dbe5f7; transition:.2s;
+    background-color:rgba(255,255,255,.08); }
+  .fs-btn::after{ opacity:.8; }
+  .fs-btn:hover{ color:#fff; background-color:rgba(0,167,255,.24); }
+  .fs-btn svg{ width:16px; height:16px; }
+  .fs-cta{ display:none; }
+  .fs-wheel{ display:none; }
+
+  /* ---------- TELA CHEIA ---------- */
+  .live-stage.fs{
+    position:fixed; inset:0; z-index:95; display:grid; place-items:center;
+    padding:clamp(20px,6vh,76px) clamp(20px,5vw,92px);
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(0,167,255,.12) 0%, transparent 60%),
+      linear-gradient(180deg,#070d1a 0%,#04060c 100%);
+  }
+  /* o fundo completo (glow + traders + candles) é movido para cá */
+  .live-stage.fs > .bg{ position:absolute; }
+  /* fundo mais presente na tela cheia: foto e gráfico aparecem em volta do card */
+  .live-stage.fs .bg-chart{ opacity:1; height:56vh; }
+  .live-stage.fs .bg-photo{ opacity:.5;
+    mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.7) 48%, rgba(0,0,0,.25) 78%, transparent 96%);
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.7) 48%, rgba(0,0,0,.25) 78%, transparent 96%); }
+  .live-stage.fs .bg-glow{ opacity:.42; }
+  .live-stage.fs .live{
+    position:relative; z-index:1; width:100%; height:auto; max-height:100%; max-width:1380px;
+    border-radius:28px; padding:clamp(22px,4.5vh,56px) clamp(22px,4vw,64px);
+    display:flex; flex-direction:column; justify-content:center;
+    background-color:rgba(9,15,27,.40);
+    backdrop-filter:saturate(180%) blur(26px); -webkit-backdrop-filter:saturate(180%) blur(26px);
+    box-shadow:0 40px 110px rgba(0,0,0,.6), var(--glass-inset);
+  }
+
+  .fs-right{ display:contents; }        /* fora da tela cheia não interfere no layout */
+
+  /* aguardando/sorteando: roleta à esquerda, chamada à direita */
+  .live-stage.fs .fs-right{ display:block; }
+  /* ordem em tela cheia: badge, vencedor e só então o botão */
+  .live-stage.fs .live-head{ order:0; }
+  .live-stage.fs .panel-winner{ order:1; }
+  .live-stage.fs .fs-right{ order:2; }
+  .live-stage.fs.st-idle .live{
+    display:grid; grid-template-columns:auto minmax(0,1fr);
+    align-items:center; justify-content:center; gap:0 clamp(26px,5vw,80px); text-align:left;
+  }
+  .live-stage.fs.st-idle .fs-wheel{ display:flex; align-items:center; justify-content:center; }
+  .live-stage.fs.st-idle .panel-idle{ text-align:left; }
+  .live-stage.fs.st-idle .idle-mark{ display:none; }
+  .live-stage.fs.st-idle .pool{ justify-content:flex-start; }
+  .live-stage.fs.st-idle .fs-cta{ margin:clamp(16px,2.6vh,30px) 0 0; }
+  .live-stage.fs .wheel-wrap{ width:min(36vw,64vh); margin:0; }
+  /* halo mais justo: o card recorta o excedente */
+  .live-stage.fs .wheel-wrap::before{ inset:-5%; }
+  /* badge: no topo da coluna de dados quando há vencedor */
+  .fs-only{ display:none; }
+  .live-stage.fs .live.is-live .fs-only,
+  .live-stage.fs .live.is-done .fs-only{ display:flex; }
+  .live-stage.fs .live.is-live .stats,
+  .live-stage.fs .live.is-done .stats{ display:grid; }
+  .live-stage.fs .live.is-live > .live-head,
+  .live-stage.fs .live.is-done > .live-head{ display:none; }
+  .live-stage.fs #liveHead2{
+    align-self:flex-start; font-size:clamp(10px,1.2vh,13px); padding:8px 18px;
+  }
+  .live-stage.fs .live-head{
+    position:static; align-self:center; margin-bottom:clamp(16px,3.4vh,34px);
+    font-size:clamp(11px,1.3vh,14px); padding:9px 20px;
+  }
+  /* aguardando: badge fixo no topo, fora do grid de duas colunas */
+  .live-stage.fs.st-idle .live{ padding-top:clamp(58px,8.5vh,96px); }
+  .live-stage.fs.st-idle .live-head{
+    position:absolute; top:clamp(18px,3.4vh,38px); left:50%; transform:translateX(-50%); margin:0;
+  }
+  .live-stage.fs .fs-btn{ top:clamp(16px,3vh,32px); right:clamp(16px,2vw,32px); width:42px; height:42px; }
+  .live-stage.fs .fs-btn svg{ width:19px; height:19px; }
+
+  /* só vira grid nos estados em que o painel do vencedor aparece */
+  .live-stage.fs .live.is-live .panel-winner,
+  .live-stage.fs .live.is-done .panel-winner{
+    display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center;
+    gap:clamp(26px,5vw,80px); text-align:left;
+  }
+  /* foto com halo e anel girando na cor do estado */
+  .live-stage.fs .w-photo{ display:grid; place-items:center; position:relative; }
+  .live-stage.fs .w-photo::before{
+    content:""; position:absolute; width:126%; aspect-ratio:1; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(46,193,107,.32) 38%, transparent 70%); filter:blur(22px);
+  }
+  /* a foto (opaca, z-index 1) cobre o miolo — sobra só o anel girando */
+  .live-stage.fs .w-photo::after{
+    content:""; position:absolute; width:107%; aspect-ratio:1; border-radius:50%; pointer-events:none;
+    background:conic-gradient(from 0turn, rgba(46,193,107,.10) 0 44%, rgba(46,193,107,.9) 72%,
+                              #eafff3 84%, rgba(46,193,107,.10) 96%);
+    animation:ringSpin 5.5s linear infinite;
+  }
+  @keyframes ringSpin{ to{ transform:rotate(1turn) } }
+  .live-stage.fs .live.is-done .w-photo::before{ background:radial-gradient(circle, rgba(0,167,255,.32) 38%, transparent 70%); }
+  .live-stage.fs .live.is-done .w-photo::after{
+    background:conic-gradient(from 0turn, rgba(0,167,255,.10) 0 44%, rgba(0,167,255,.9) 72%,
+                              #e3f6ff 84%, rgba(0,167,255,.10) 96%);
+  }
+  .live-stage.fs .win-photo{
+    width:min(28vw,50vh); height:min(28vw,50vh); margin:0; border-width:4px;
+    border-color:rgba(255,255,255,.16); box-shadow:0 24px 60px rgba(0,0,0,.55); position:relative; z-index:1;
+  }
+  .live-stage.fs .live.is-done .win-photo{ border-color:rgba(255,255,255,.16); }
+
+  .live-stage.fs .w-info{ display:flex; flex-direction:column; align-items:flex-start; }
+  .live-stage.fs .win-name{ font-size:clamp(32px,5.8vw,84px); margin-top:clamp(10px,1.8vh,18px);
+    letter-spacing:-2px; line-height:.98; }
+  .live-stage.fs .win-role{ font-size:clamp(11px,1.4vh,15px); letter-spacing:.3em; margin-top:10px;
+    color:var(--muted-2); }
+
+  /* cronômetro + dados lado a lado */
+  .live-stage.fs .w-meta{ display:flex; align-items:center; gap:clamp(18px,2.6vw,40px);
+    margin-top:clamp(16px,3vh,34px); }
+  .live-stage.fs .timer-box{ margin:0; padding:0; background:none; box-shadow:none; backdrop-filter:none;
+    -webkit-backdrop-filter:none; display:flex; flex-direction:column; align-items:center; flex:none;
+    width:min(19vw,32vh); }
+  .live-stage.fs .timer-box::after{ display:none; }
+  .live-stage.fs .timer-wrap{ width:min(19vw,32vh); }
+  .live-stage.fs .timer-wrap .track{ stroke:rgba(255,255,255,.07); }
+  .live-stage.fs .timer-wrap .bar{ stroke-width:6; filter:drop-shadow(0 0 10px rgba(0,167,255,.55)); }
+  .live-stage.fs .timer-txt{ font-size:min(4.4vw,7.4vh); letter-spacing:-1.5px; }
+  .live-stage.fs .timer-sub{ margin-top:10px; font-size:clamp(9.5px,1.15vh,12px); letter-spacing:.2em;
+    text-align:center; line-height:1.5; }
+
+  .stats{ gap:clamp(10px,1.8vh,20px); }   /* display só em tela cheia (.fs-only) */
+  .stats dt{ font-size:clamp(9px,1.1vh,11.5px); font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted-2); }
+  .stats dd{ font-family:'Montserrat',sans-serif; font-weight:800; font-variant-numeric:tabular-nums;
+    font-size:clamp(16px,2.4vh,26px); color:#e9f1ff; margin-top:3px; }
+  .stats > div{ padding-left:14px; border-left:2px solid rgba(0,167,255,.32); }
+
+  /* cantos estilo transmissão, só em tela cheia */
+  .live-stage.fs .card-fx::before,
+  .live-stage.fs .card-fx::after{
+    content:""; position:absolute; width:clamp(40px,5vw,78px); height:clamp(40px,5vw,78px);
+    border:2px solid rgba(0,167,255,.30);
+  }
+  .live-stage.fs .card-fx::before{ top:clamp(14px,2.2vh,26px); left:clamp(14px,1.6vw,26px);
+    border-right:0; border-bottom:0; border-radius:16px 0 0 0; }
+  .live-stage.fs .card-fx::after{ bottom:clamp(14px,2.2vh,26px); right:clamp(14px,1.6vw,26px);
+    border-left:0; border-top:0; border-radius:0 0 16px 0; }
+  .live-stage.fs .fx-grid{ background-size:74px 74px, 74px 74px; }
+  .live-stage.fs .card-fx i{ filter:blur(78px); }
+
+  /* marca no rodapé do card */
+  .fs-brand{ position:absolute; left:clamp(20px,3vw,44px); bottom:clamp(16px,2.6vh,30px); z-index:3;
+    align-items:center; gap:12px; opacity:.65; }
+  .live-stage.fs .fs-brand{ display:flex; }   /* visível em todos os estados da tela cheia */
+  .fs-brand img{ height:clamp(20px,2.6vh,30px); width:auto; display:block; }
+  .fs-brand span{ font-size:clamp(9px,1.1vh,11.5px); font-weight:700; letter-spacing:.24em;
+    text-transform:uppercase; color:var(--muted-2); border-left:1px solid var(--line); padding-left:12px; }
+  .live-stage.fs .timer-sub{ font-size:clamp(10px,1.4vh,14px); }
+  /* ação como botão fantasma, não link solto */
+  .live-stage.fs .end-now{
+    margin-top:clamp(16px,2.8vh,28px); align-self:flex-start; text-decoration:none;
+    font-family:'Montserrat',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:.14em;
+    font-size:clamp(10.5px,1.3vh,13px); color:#c6d2ea;
+    padding:clamp(10px,1.6vh,14px) clamp(20px,2.4vw,30px); border-radius:11px;
+    background:rgba(255,255,255,.05); border:1px solid var(--line); transition:.2s;
+  }
+  .live-stage.fs .end-now:hover{ color:#fff; border-color:rgba(226,85,106,.5); background:rgba(226,85,106,.14); }
+  .live-stage.fs .done-msg{ font-size:clamp(12px,1.6vh,16px); align-self:flex-start; text-align:left;
+    margin-top:clamp(14px,2.4vh,22px); }
+
+  .live-stage.fs .panel-idle{ text-align:center; }
+  .live-stage.fs .idle-mark{ width:clamp(80px,14vh,130px); height:clamp(80px,14vh,130px); }
+  .live-stage.fs .idle-mark svg{ width:44%; height:44%; }
+  .live-stage.fs .idle-t{ font-size:clamp(22px,4vw,46px); margin-top:0; }
+  .live-stage.fs .idle-s{ font-size:clamp(13px,1.9vh,18px); }
+  .live-stage.fs .pool img{ width:clamp(38px,6.4vh,60px); height:clamp(38px,6.4vh,60px); }
+  .live-stage.fs .pool-n{ font-size:clamp(11px,1.5vh,14px); }
+  .live-stage.fs .fs-cta{
+    display:block; margin:clamp(18px,3vh,32px) auto 0; border:none; cursor:pointer;
+    font-family:'Montserrat',sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    font-size:clamp(15px,2.2vh,21px); color:var(--btn-ink); padding:clamp(14px,2.2vh,20px) clamp(32px,5vw,64px);
+    border-radius:14px; background:var(--btn); box-shadow:0 10px 26px rgba(0,0,0,.42), 0 0 30px rgba(0,167,255,.28);
+  }
+  .live-stage.fs .live.is-live .fs-cta{ display:none; }
+  .live-stage.fs .fs-cta:disabled{ filter:grayscale(.6) brightness(.55); cursor:default; }
+  /* só empilha quando não há largura para as duas colunas (retrato) */
+  @media (orientation:portrait), (max-width:560px){
+    .live-stage.fs.st-idle .live{ grid-template-columns:minmax(0,1fr); gap:clamp(16px,3vh,28px) 0;
+      justify-items:center; text-align:center; }
+    .live-stage.fs.st-idle .panel-idle{ text-align:center; }
+    .live-stage.fs.st-idle .pool{ justify-content:center; }
+    .live-stage.fs.st-idle .fs-cta{ margin-left:auto; margin-right:auto; }
+    .live-stage.fs .wheel-wrap{ width:min(76vw,42vh); }
+    .live-stage.fs .live.is-live .panel-winner,
+    .live-stage.fs .live.is-done .panel-winner{ grid-template-columns:1fr; gap:clamp(14px,3vh,26px);
+      text-align:center; justify-items:center; }
+    .live-stage.fs .win-photo{ width:min(48vw,28vh); height:min(48vw,28vh); }
+    .live-stage.fs .win-name{ font-size:clamp(28px,7.4vw,64px); }
+    .live-stage.fs .timer-wrap{ width:min(40vw,20vh); }
+    .live-stage.fs .timer-txt{ font-size:min(8vw,5vh); }
+    .live-stage.fs .w-info{ align-items:center; }
+    .live-stage.fs .w-meta{ flex-direction:column; gap:clamp(12px,2vh,20px); }
+    .live-stage.fs .stats{ grid-template-columns:repeat(3,auto); gap:clamp(8px,1.6vw,18px); text-align:center; }
+    .live-stage.fs .stats > div{ padding:0; border-left:none; }
+    .live-stage.fs #liveHead2,.live-stage.fs .end-now,.live-stage.fs .done-msg{ align-self:center; }
+    .live-stage.fs .done-msg{ text-align:center; }
+    .live-stage.fs .fs-brand{ left:50%; transform:translateX(-50%); }
+  }
+
+  .confetti{ position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .confetti i{ position:absolute; top:-14px; width:7px; height:13px; opacity:.9; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(560px) rotate(560deg); opacity:0; } }
+
+  /* histórico */
+  .hist{ margin-top:18px; border-radius:18px; padding:18px 20px; }
+  .hist h3{ font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--muted-2); }
+  .hist ol{ list-style:none; margin-top:12px; display:grid; gap:8px; }
+  .hist li{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:#cbd5ea; }
+  .hist li img{ width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid var(--line); flex:none; }
+  .hist li .nm{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .hist li .hh{ font-size:11.5px; color:var(--muted-2); font-variant-numeric:tabular-nums; flex:none; }
+  .hist .empty{ font-size:12.5px; color:var(--muted-2); margin-top:10px; }
+
+  /* Roleta reserva (redundância principal + reserva) */
+  .standby-bar{ display:none; position:fixed; top:0; left:0; right:0; z-index:80;
+    align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    background:rgba(5,9,18,.96); border-bottom:1px solid rgba(0,167,255,.4);
+    padding:9px 14px; font-size:12.5px; color:#c8d1e6; text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  body.standby .standby-bar{ display:flex; }
+  .standby-bar b{ color:var(--brand-2); letter-spacing:.14em; }
+  .standby-bar button{ border:1px solid var(--line-2); background:rgba(0,167,255,.12); color:var(--brand-2);
+    font-family:'Poppins',sans-serif; font-weight:700; font-size:12px; padding:6px 13px; border-radius:999px; cursor:pointer; }
+  .standby-bar button:hover{ background:rgba(0,167,255,.22); }
+  body.standby .wrap{ opacity:.55; }
+
+  .toast{ position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px); z-index:99;
+    color:#e7ecfa; padding:13px 22px; border-radius:14px; font-weight:600; font-size:13.5px;
+    opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; }
+  .toast.show{ opacity:1; transform:translateX(-50%); }
+
+  /* ================= RESPONSIVO ================= */
+  @media (max-width:980px){
+    .cols{ grid-template-columns:1fr; gap:28px; min-height:0; margin-top:14px; }
+    .col-live{ max-width:470px; margin:0 auto; width:100%; }
+    .wheel-wrap{ width:min(88vw,56vh,430px); }
+  }
+  @media (max-width:600px){
+    .wrap{ padding:16px 16px 44px; }
+    .wheel-wrap{ width:min(90vw,52vh,400px); }
+    .cta{ padding:18px 26px; }
+    .live{ padding:22px 18px 20px; }
+    .bg-chart{ height:34vh; opacity:.55; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wheel{ transition-duration:1.2s; }
+    .rim-lights i,.cta,.cta::after,.dot,.bg-chart .trend{ animation:none; }
+    .live.is-live .panel-winner,.live.is-done .panel-winner{ animation:none; }
+  }
+</style>
+</head>
+<body class="ready">
+<style>
+  .aviso-teste{
+    position:fixed; top:max(8px, env(safe-area-inset-top)); right:max(8px, env(safe-area-inset-right));
+    z-index:2147483647; pointer-events:none; user-select:none;
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 10px; border-radius:999px;
+    background:#b45309; color:#fff; border:1px solid #f59e0b;
+    font:700 clamp(10px, 9px + .25vw, 12px)/1 Inter, system-ui, sans-serif;
+    letter-spacing:.06em; text-transform:uppercase;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  .aviso-teste::before{
+    content:""; width:7px; height:7px; border-radius:50%; background:#fde68a; flex:none;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .aviso-teste::before{ animation:aviso-pisca 1.6s ease-in-out infinite; }
+    @keyframes aviso-pisca{ 50%{ opacity:.25 } }
+  }
+  .aviso-teste .longo{ display:none; }
+  @media (min-width:600px){ .aviso-teste .longo{ display:inline; } }
+</style>
+<div class="aviso-teste" role="status" aria-label="Ambiente de teste">TESTE<span class="longo">&nbsp;· não é a roleta do ar</span></div>
+
+
+  <div class="standby-bar" id="standbyBar">
+    <b>RESERVA</b> Esta roleta está em espera e assume automaticamente se a principal cair.
+    <button id="btnTakeover" type="button">Assumir agora</button>
+  </div>
+
+  <div class="bg" aria-hidden="true">
+    <img class="bg-photo" src="../assets/corujao/background.webp" alt="" />
+    <img class="bg-glow" src="../assets/corujao/brilho-azul.webp" alt="" />
+    <div class="bg-grid"></div>
+    <div class="bg-chart">
+      <div class="chart-track" id="chartTrack">
+        <svg viewBox="0 0 2000 400" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#0079d0"/><stop offset="55%" stop-color="#00A7FF"/><stop offset="100%" stop-color="#7fd8ff"/>
+            </linearGradient>
+            <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(0,167,255,.20)"/>
+              <stop offset="45%" stop-color="rgba(0,167,255,.05)"/>
+              <stop offset="100%" stop-color="rgba(0,167,255,0)"/>
+            </linearGradient>
+          </defs>
+          <path class="trend-fill" id="trendFill" d=""></path>
+          <path class="trend" id="trendLine" d=""></path>
+          <path class="trend-pulse" id="trendPulse" d=""></path>
+        </svg>
+        <div class="candles" id="candles"></div>
+      </div>
+    </div>
+    <div class="bg-scan"></div>
+    <div class="bg-vignette"></div>
+  </div>
+
+  <!-- zona discreta: 2 cliques abrem o Painel Admin em outra aba (também no atalho Shift+A) -->
+  <span class="admin-hot" id="adminHot" title="Painel Admin" aria-hidden="true"></span>
+  <button id="muteBtn" class="mute glass--soft" type="button" aria-label="Ativar ou desativar som"></button>
+
+  <main class="wrap">
+    <div class="cols">
+      <section class="col-wheel">
+        <div class="wheel-wrap">
+          <div class="rim"><div class="rim-lights" id="lights"></div></div>
+          <div class="wheel" id="wheel"></div>
+          <div class="pointer"><div></div></div>
+          <div class="hub" id="hubBtn" role="button" tabindex="0" aria-label="Sortear expert"><div class="hub-core">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+          </div></div>
+        </div>
+        <button class="cta" id="spinBtn">Sortear Expert</button>
+        <p class="hint" id="hintLine">Tempo padrão por expert: <b id="cfgTimeLabel">30 min</b> · <kbd>espaço</kbd> sorteia · <kbd>F</kbd> tela cheia</p>
+      </section>
+
+      <aside class="col-live">
+       <div class="live-stage" id="liveStage">
+        <div class="live glass is-idle" id="liveCard">
+          <div class="card-fx" aria-hidden="true">
+            <i class="fx-a"></i><i class="fx-b"></i><i class="fx-c"></i>
+            <span class="fx-grid"></span>
+            <span class="fx-sheen"></span>
+            <span class="fx-grain"></span>
+          </div>
+          <div class="confetti" id="confetti"></div>
+          <button class="fs-btn glass--soft" id="btnFs" type="button" aria-label="Abrir em tela cheia" title="Tela cheia"></button>
+          <span class="live-head glass--soft" id="liveHead"><span class="dot"></span> <span id="liveHeadTxt">Aguardando sorteio</span></span>
+
+          <!-- em tela cheia a roleta é movida para cá -->
+          <div class="fs-wheel" id="fsWheel"></div>
+
+          <!-- fs-right: em tela cheia vira a coluna da direita (display:contents fora dela) -->
+          <div class="fs-brand fs-only">
+            <span>Corujão de Traders</span>
+          </div>
+
+          <div class="fs-right">
+          <div class="panel-idle">
+            <div class="idle-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div class="idle-t">Pronto para sortear</div>
+            <div class="idle-s">O expert sorteado aparece aqui, com o cronômetro rodando.</div>
+            <div class="pool" id="pool"></div>
+            <div class="pool-n"><b id="poolN">0</b> ainda na roleta · <b id="poolDone">0</b> já sortearam</div>
+          </div>
+          <button class="fs-cta" id="fsSpin" type="button">Sortear Expert</button>
+          </div>
+
+          <div class="panel-winner" aria-live="polite">
+            <div class="w-photo"><img class="win-photo" id="winPhoto" src="" alt="" /></div>
+            <div class="w-info">
+              <span class="live-head glass--soft fs-only" id="liveHead2"><span class="dot"></span> <span id="liveHeadTxt2">Operando ao vivo</span></span>
+              <div class="win-name" id="winName">—</div>
+              <div class="win-role" id="winRole">assume a operação ao vivo</div>
+              <div class="w-meta">
+                <div class="timer-box glass--soft">
+                  <div class="timer-wrap">
+                    <svg viewBox="0 0 160 160" aria-hidden="true">
+                      <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#7fd8ff"/><stop offset="100%" stop-color="#0077cc"/>
+                      </linearGradient></defs>
+                      <circle class="track" cx="80" cy="80" r="70" fill="none" stroke-width="9"/>
+                      <circle class="bar" id="timerBar" cx="80" cy="80" r="70" fill="none" stroke-width="9"/>
+                    </svg>
+                    <div class="timer-txt" id="timerTxt">00:00</div>
+                  </div>
+                  <div class="timer-sub" id="timerSub">Tempo de operação em andamento</div>
+                </div>
+                <dl class="stats fs-only">
+                  <div><dt>Início</dt><dd id="stStart">--:--</dd></div>
+                  <div><dt>Término previsto</dt><dd id="stEnd">--:--</dd></div>
+                  <div><dt>Tempo total</dt><dd id="stTotal">--</dd></div>
+                </dl>
+              </div>
+              <button class="end-now" id="btnEnd" type="button">Encerrar agora</button>
+              <p class="done-msg">Tempo encerrado — pode sortear o próximo expert.</p>
+            </div>
+          </div>
+        </div>
+       </div>
+
+        <div class="hist glass">
+          <h3>Últimos sorteados</h3>
+          <ol id="histList"></ol>
+          <p class="empty" id="histEmpty">Nenhum sorteio ainda nesta sessão.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="toast glass" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
+<script>
+"use strict";
+/* ================= Auto-refresh quando há versão nova (cross-platform: Mac/Windows) ================= */
+/* A cada 60s consulta version.json. Se mudou, recarrega — MAS nunca durante um
+   sorteio (spinning) ou operação (timerRAF): espera terminar para não piscar na live.
+   Usa só fetch + location.reload (padrão em Chrome/Safari/Firefox, Mac e Windows). */
+(function(){
+  var MY_VER = null;
+  var check = function(){
+    fetch("version.json?cb=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (!d || !d.v) return;
+        if (MY_VER === null){ MY_VER = d.v; return; }         // 1ª leitura: guarda a versão atual
+        if (d.v !== MY_VER){
+          if (!window.__roletaBusy) location.reload();         // só recarrega com a roleta ociosa
+        }
+      })
+      .catch(function(){});                                    // rede falhou: ignora, tenta de novo depois
+  };
+  setInterval(check, 60000);
+  check();
+})();
+/* ================= Dados ================= */
+const LS_EXPERTS = "cj_experts_v6";
+const LS_CFG     = "cj_cfg_v2";
+const LS_HIST    = "cj_hist_v1";
+const LS_RODADA  = "cj_rodada_v1";
+const LS_LIVE    = "cj_live_state_v1";
+
+/* Os 16 experts = uma foto para cada arquivo em assets/experts/ */
+const DEFAULT_EXPERTS = [
+  ["Taylon",         "taylon"],
+  ["Patrick",        "patrick"],
+  ["Miriele",        "mirieli"],
+  ["Julin",          "julinho"],
+  ["Thon Carvalho",  "thon"],
+  ["Ed Trader",      "edlaine"],   // Ed Trader = Edlaine (edlaine.webp)
+  ["Vitor Lela",     "vitor-lela"],
+  ["Eduardo Bastos", "eduardo-bastos"],
+  ["Tio Vitão",      "vitao"],
+  ["Gustavo",        "gustavo"],
+  ["Lucas Bemfica",  "lucas-bemfica"],
+  ["Allan",          "allan"],
+  ["Big Boss",       "bigboos"],
+  ["Mineirinho",     "mineirinho"],
+  ["Molina",         "molina"],
+  ["Trader Estoico", "trader-estoico"],
+].map(([n,slug],i) => ({
+  id:"d"+i, name:n, photo: slug ? "../assets/experts/"+slug+".webp" : null,
+  active:true, minutes:null
+}));
+
+const load = (k,f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? f; } catch { return f; } };
+const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+
+/* Remove duplicatas por id E por nome (mantém a 1ª). Garante que a roda NUNCA
+   mostre nome/imagem repetidos, mesmo que algo chegue duplicado por qualquer via. */
+function dedupeExperts(list){
+  const norm = s => (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const vistosId = new Set(), vistosNome = new Set(), out = [];
+  for (const e of (Array.isArray(list) ? list : [])){
+    const nn = norm(e.name);
+    if (vistosId.has(e.id) || vistosNome.has(nn)) continue;
+    vistosId.add(e.id); vistosNome.add(nn); out.push(e);
+  }
+  return out;
+}
+
+/* A roleta NUNCA gera a lista padrão sozinha. Se o storage estiver vazio, sobe
+   vazia e o Painel Admin (autoridade) preenche via sync — assim um reload da
+   roleta jamais "ressuscita" experts que o painel removeu. */
+let experts   = dedupeExperts(load(LS_EXPERTS, []));
+/* (A migração aditiva dos 16 foi removida: já cumpriu o papel de completar a lista
+   durante a live. Mantê-la fazia remoções "voltarem" ao recarregar, porque cada
+   página recompletava a lista com os experts padrão. Agora a lista salva é a
+   fonte única da verdade — remover no painel é definitivo.) */
+let cfg       = Object.assign(
+  { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+  load(LS_CFG, {})
+);
+let hist      = load(LS_HIST, []);
+let sorteados = load(LS_RODADA, []);   // ids já sorteados no ciclo atual
+
+function initials(name){ return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
+function avatarURI(name){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>`+
+    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>`+
+    `<stop offset='0%' stop-color='#0090df'/><stop offset='100%' stop-color='#004e82'/></linearGradient></defs>`+
+    `<rect width='240' height='240' fill='url(#g)'/>`+
+    `<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' `+
+    `font-family='Montserrat,Arial,sans-serif' font-weight='800' font-size='86' fill='#fff'>${initials(name)}</text></svg>`;
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+const photoOf = e => e.photo || avatarURI(e.name);
+const activeExperts = () => experts.filter(e => e.active);
+/* quem ainda não saiu neste ciclo — ninguém repete até todos passarem */
+const jaSorteado = e => sorteados.includes(e.id);
+const disponiveis = () => activeExperts().filter(e => !jaSorteado(e));
+function marcaSorteado(id){
+  if (!sorteados.includes(id)) sorteados.push(id);
+  save(LS_RODADA, sorteados);
+  syncStateR();
+}
+function reiniciaRodada(){ sorteados = []; save(LS_RODADA, sorteados); syncStateR(); }
+/* tempo do expert: usa o dele quando definido, senão o padrão do painel */
+function minutesFor(e){
+  const m = parseInt(e && e.minutes, 10);
+  return (m >= 1 && m <= 180) ? m : cfg.minutes;
+}
+
+/* ================= Fundo: gráfico de candles ================= */
+(function buildChart(){
+  const N = 84;                                   // velas por volta
+  const host = document.getElementById("candles");
+  const line = document.getElementById("trendLine");
+  const fill = document.getElementById("trendFill");
+  const pulse = document.getElementById("trendPulse");
+
+  // 1. caminhada aleatória (N+1 preços, em % da altura)
+  let p = [16];
+  for (let i=0;i<N;i++){
+    const move = (Math.random()-0.46)*5.4 + 0.36;
+    p.push(Math.max(5, Math.min(56, p[i] + move)));
+  }
+  // 2. remove a tendência para o último preço voltar ao primeiro: o loop não emenda torto
+  const desvio = p[N] - p[0];
+  p = p.map((v,i) => v - desvio*(i/N));
+
+  // 3. duas cópias lado a lado dentro do trilho de 200%
+  const COPIAS = 2, TOT = N*COPIAS, STEP = 100/TOT;
+  const frag = document.createDocumentFragment();
+  const pts = [];
+  for (let k=0;k<COPIAS;k++){
+    for (let i=0;i<N;i++){
+      const open = p[i], close = p[i+1];
+      const lo = Math.min(open, close), hi = Math.max(open, close);
+      const x = (k*N + i)*STEP;
+      const c = document.createElement("i");
+      if (close < open) c.className = "dn";
+      c.style.left = (x + STEP*0.2) + "%";
+      c.style.bottom = lo + "%";
+      c.style.height = Math.max(0.8, hi-lo) + "%";
+      frag.appendChild(c);
+      pts.push([ x + STEP*0.5, (open+close)/2 ]);
+    }
+  }
+  host.appendChild(frag);
+
+  // 4. linha: viewBox 2000x400 cobre o trilho inteiro
+  const toSvg = q => [ q[0]*20, 400 - q[1]*4 ];
+  const d = pts.map((q,i) => (i ? "L" : "M") + toSvg(q).map(v=>v.toFixed(1)).join(" ")).join(" ");
+  line.setAttribute("d", d);
+  pulse.setAttribute("d", d);
+  fill.setAttribute("d", d + ` L${(pts[pts.length-1][0]*20).toFixed(1)} 400 L${(pts[0][0]*20).toFixed(1)} 400 Z`);
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    pulse.style.display = "none";
+    return;
+  }
+  // 5. pulso de luz percorrendo a linha
+  const len = pulse.getTotalLength();
+  pulse.style.setProperty("--len", len);
+  pulse.style.strokeDasharray = (len*0.055) + " " + len;
+  const total = line.getTotalLength();
+  line.style.strokeDasharray = total;
+  line.style.strokeDashoffset = total;
+  line.animate([{ strokeDashoffset: total },{ strokeDashoffset: 0 }],
+    { duration: 3200, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+})();
+
+/* ================= Roda ================= */
+const wheel = document.getElementById("wheel");
+const COL_A = ["#0e5fa8","#0a2440","#071527"];
+const COL_CURRENT = "#0f5c39";
+const COL_DONE = "#070c15";
+let rotation = 0, spinning = false, pendingIdx = -1, pendingId = null, currentOpId = null, spinGuard = null;
+let spinEndAt = 0;   // relogio de parede do fim do giro: backstop p/ aba em 2º plano
+
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const IDLE_SPEEDS = [0, 0.02, 0.045, 0.1];   // desligado · lento · normal · rápido
+let spinDur = REDUCED ? 1.2 : 8;   // duração do giro atual (sorteada a cada rodada)
+let idleRAF = null;
+function startIdle(){
+  const sp = IDLE_SPEEDS[cfg.idle] ?? 0.045;
+  if (REDUCED || spinning || idleRAF || sp === 0) return;
+  wheel.style.transition = "none";
+  (function step(){
+    rotation += sp;
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    idleRAF = requestAnimationFrame(step);
+  })();
+}
+function stopIdle(){ if (idleRAF){ cancelAnimationFrame(idleRAF); idleRAF = null; } }
+function restartIdle(){ stopIdle(); startIdle(); }
+
+function buildWheel(){
+  const list = activeExperts();
+  const N = list.length;
+  wheel.innerHTML = "";
+  if (N === 0){ wheel.style.background = "#0a1120"; return; }
+  const SEG = 360/N;
+  const estado = e => e.id === currentOpId ? "current" : (jaSorteado(e) ? "done" : "");
+  const stops = list.map((e,i) => {
+    const st = estado(e);
+    const c = st === "current" ? COL_CURRENT : st === "done" ? COL_DONE : COL_A[i % COL_A.length];
+    return `${c} ${(i*SEG).toFixed(3)}deg ${((i+1)*SEG).toFixed(3)}deg`;
+  }).join(", ");
+  wheel.style.background = `conic-gradient(from ${(-SEG/2).toFixed(3)}deg, ${stops})`;
+  list.forEach((e,i) => {
+    const st = estado(e);
+    const el = document.createElement("div");
+    el.className = "seg-item" + (st ? " " + st : "");
+    el.style.transform = `rotate(${i*SEG}deg)`;
+    const img = document.createElement("img");
+    img.className = "seg-photo"; img.src = photoOf(e); img.alt = ""; img.draggable = false;
+    const chk = document.createElement("span");
+    chk.className = "seg-check";
+    chk.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
+    const span = document.createElement("span");
+    span.className = "seg-name"; span.textContent = e.name;
+    el.append(img, chk, span);
+    wheel.appendChild(el);
+  });
+  const spokes = document.createElement("div");
+  spokes.className = "spokes";
+  for (let i=0;i<N;i++){
+    const sp = document.createElement("i");
+    sp.style.transform = `rotate(${i*SEG - SEG/2}deg)`;
+    spokes.appendChild(sp);
+  }
+  wheel.appendChild(spokes);
+  layoutSegments();
+}
+
+/* Encaixa foto e nome de cada fatia no tamanho real da roda e na largura do setor */
+function layoutSegments(){
+  const items = wheel.querySelectorAll(".seg-item");
+  const N = items.length;
+  const R = wheel.clientWidth / 2;            // raio útil = altura de cada fatia
+  if (!N || !R) return;
+  const half = Math.PI / N;                   // meio-ângulo do setor
+  const gap  = R * 0.06;                      // folga entre o aro e a foto
+  const rEst = R - gap - R * 0.11;            // raio aproximado do centro da foto
+  const avs  = Math.max(R * 0.10, Math.min(R * 0.22, 0.78 * 2 * rEst * Math.sin(half)));
+  const nameTop = gap + avs + R * 0.035;
+  const hubR    = R * 0.28 + 6;               // miolo central da roda
+  const nameLen = Math.max(R * 0.16, R - nameTop - hubR);
+  const rName   = Math.max(1, R - (nameTop + nameLen / 2));
+  const maxTan  = Math.max(12, 2 * rName * Math.sin(half) * 0.92);
+  const fsBase  = Math.max(8, Math.min(13.5, R * 0.078, maxTan * 0.42));
+  items.forEach(it => {
+    const p = it.querySelector(".seg-photo");
+    p.style.width = p.style.height = avs.toFixed(1) + "px";
+    p.style.top = gap.toFixed(1) + "px";
+    const ck = it.querySelector(".seg-check");
+    if (ck){                                   // selo no canto, sem tapar o rosto
+      const s = Math.max(14, avs*0.44);
+      ck.style.width = ck.style.height = s.toFixed(1) + "px";
+      ck.style.top = (gap + avs - s*0.82).toFixed(1) + "px";
+      ck.style.transform = `translateX(calc(-50% + ${(avs*0.32).toFixed(1)}px))`;
+    }
+    const n = it.querySelector(".seg-name");
+    n.style.top = nameTop.toFixed(1) + "px";
+    n.style.height = nameLen.toFixed(1) + "px";
+    let f = fsBase, guard = 14;
+    n.style.fontSize = f.toFixed(1) + "px";
+    while (guard-- > 0 && f > 7.5 &&
+           (n.scrollHeight > n.clientHeight + 1 || n.offsetWidth > maxTan)){
+      f -= 0.5;
+      n.style.fontSize = f.toFixed(1) + "px";
+    }
+  });
+}
+if (window.ResizeObserver) new ResizeObserver(layoutSegments).observe(wheel);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutSegments);
+
+/* luzes do aro */
+(function(){
+  const lights = document.getElementById("lights"), LN = 30, RR = 48.6;
+  const LC = ["#00A7FF","#4dc3ff","#ffffff"];
+  for (let i=0;i<LN;i++){
+    const a = (i/LN)*Math.PI*2, x = 50+Math.cos(a)*RR, y = 50+Math.sin(a)*RR;
+    const b = document.createElement("i");
+    b.style.left = x+"%"; b.style.top = y+"%";
+    const c = LC[i%LC.length]; b.style.color = c; b.style.background = c;
+    b.style.animationDelay = (i*0.07)+"s";
+    lights.appendChild(b);
+  }
+})();
+
+/* ================= Sorteio (100% aleatório) ================= */
+const spinBtn = document.getElementById("spinBtn");
+const hubBtn  = document.getElementById("hubBtn");
+
+function randInt(max){
+  // faixa uniforme: descarta o resto que enviesaria o módulo (2^32 valores possíveis)
+  const limit = Math.floor(4294967296 / max) * max;
+  const a = new Uint32Array(1);
+  do { crypto.getRandomValues(a); } while (a[0] >= limit);
+  return a[0] % max;
+}
+
+let forcedId = null;   // definido pelo Painel Admin, vale para um único giro
+let nextT = null;      // contagem do sorteio automático
+async function spin(){
+  if (!isPrimary){ toast("Esta é a roleta reserva — a principal está no ar."); return; }
+  if (spinning) return;
+  if (pausedLeft){ toast("Operação pausada — retome ou encerre pelo Painel Admin."); return; }
+  clearInterval(nextT); nextT = null;
+  const list = activeExperts();
+  if (list.length === 0){ toast("Cadastre experts no Painel Admin."); return; }
+
+  spinning = true;                    // trava antes do await: evita clique duplo
+  stopIdle();
+  setCta("Girando…", true);
+  setLiveCard("idle");
+  setIdleText(true);
+  await enterFs();                    // o sorteio já acontece em tela cheia
+
+  // sorteia entre quem ainda não saiu; se todos já passaram, começa novo ciclo
+  let pool = disponiveis();
+  let novoCiclo = false;
+  if (pool.length === 0){
+    const ultimo = sorteados[sorteados.length-1];
+    reiniciaRodada(); buildWheel(); renderPool();
+    pool = activeExperts();
+    // no ciclo novo, evita repetir logo quem fechou o anterior
+    if (pool.length > 1) pool = pool.filter(e => e.id !== ultimo);
+    novoCiclo = true;
+  }
+  /* REGRA DURA: enquanto a rodada nao reiniciar, a roleta NUNCA pode parar em
+     quem ja foi sorteado. O "forcar proximo" tambem obedece — antes ele era
+     procurado em activeExperts() (a lista toda) e conseguia cair em alguem ja
+     sorteado. Agora so vale se a pessoa ainda estiver no pool disponivel. */
+  let escolhido = null;
+  if (forcedId){
+    escolhido = pool.find(e => e.id === forcedId) || null;
+    if (!escolhido){
+      const forcadoJaSaiu = list.find(e => e.id === forcedId);
+      if (forcadoJaSaiu) toast(forcadoJaSaiu.name + " já foi sorteado nesta rodada — sorteio segue aleatório.");
+    }
+    forcedId = null;
+  }
+  if (!escolhido) escolhido = pool[randInt(pool.length)];
+  if (!escolhido){ spinning = false; document.body.classList.remove("spinning"); setCta("Sortear Expert", false); setIdleText(false); toast("Ninguém disponível para sortear."); return; }
+  const idx = list.findIndex(e => e.id === escolhido.id);
+  pendingIdx = idx;
+  pendingId = escolhido.id;   // guarda o ID do escolhido: se a lista mudar durante o
+                              // giro (sync de outro painel), o ganhador é achado pelo ID,
+                              // nunca por um índice que pode ter se desalinhado.
+  if (novoCiclo) toast("Todos já passaram — novo ciclo iniciado.");
+  document.body.classList.add("spinning");
+  // voltas, duração e ponto de parada variam a cada giro: dois sorteios nunca
+  // têm o mesmo movimento, senão a animação parece roteirizada
+  const dur    = REDUCED ? 1.2 : (cfg.spinSec >= 2 ? cfg.spinSec : 6.8 + Math.random()*2.9);
+  const rounds = REDUCED ? 2   : (cfg.rounds >= 2 ? cfg.rounds : 6 + randInt(6));
+  spinDur = dur;
+  SFX.spin(dur);
+  wheel.style.transition = `transform ${dur.toFixed(2)}s cubic-bezier(.12,.72,.03,1)`;
+  void wheel.offsetWidth; // aplica a transição antes do novo transform
+  const N = list.length, SEG = 360/N;
+  const jitter = (Math.random()-0.5)*(SEG*0.8);                // para longe do centro do setor
+  const curMod = ((rotation%360)+360)%360;
+  const desMod = ((360 - idx*SEG)%360+360)%360;
+  let delta = (desMod - curMod + 360)%360;
+  delta += rounds*360 - jitter;
+  rotation += delta;
+  wheel.style.transform = `rotate(${rotation}deg)`;
+  clearTimeout(spinGuard);
+  spinGuard = setTimeout(acabouGiro, dur*1000 + 600);   // rede de segurança
+  spinEndAt = Date.now() + dur*1000 + 600;              // backstop por relogio de parede
+}
+spinBtn.addEventListener("click", spin);
+hubBtn.addEventListener("click", spin);
+hubBtn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); spin(); } });
+document.addEventListener("keydown", e => {
+  const isSpin = e.code === "Space" || e.key === "Enter";
+  const isFull = e.key === "f" || e.key === "F";
+  if (!isSpin && !isFull) return;
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+  if (isFull){ e.preventDefault(); toggleFs(); return; }
+  if (spinBtn.disabled) return;
+  e.preventDefault(); spin();
+});
+/* Conclui o giro. Chamado pelo fim da transição OU pela rede de segurança —
+   mover a roda entre a página e a tela cheia cancela a transição, e sem isso
+   o sorteio ficava travado e o som do giro continuava sozinho. */
+function acabouGiro(){
+  spinEndAt = 0;
+  if (!spinning || pendingIdx < 0) return;
+  clearTimeout(spinGuard); spinGuard = null;
+  const list = activeExperts();
+  // Ganhador SEMPRE pelo ID guardado no início do giro (imune a mudanças na lista
+  // durante o giro por sincronização). Índice só como fallback se o expert sumiu.
+  /* Ganhador pelo ID guardado no inicio do giro. O fallback por indice so pode
+     cair em quem AINDA nao foi sorteado: se a lista mudou durante o giro, um
+     indice solto podia apontar para alguem ja sorteado. */
+  const winner = list.find(e => e.id === pendingId)
+              || (list[pendingIdx] && !sorteados.includes(list[pendingIdx].id) ? list[pendingIdx] : null)
+              || list.find(e => !sorteados.includes(e.id))
+              || null;
+  pendingIdx = -1; pendingId = null;
+  document.body.classList.remove("spinning");
+  SFX.stop();                       // corta qualquer tique restante
+  finishFsExit();                   // saida da tela cheia adiada durante o giro
+  if (!winner){ spinning = false; if (pendingRebuild){ pendingRebuild = false; buildWheel(); renderPool(); } setIdleText(false); setCta("Sortear Expert", false); return; }
+  currentOpId = winner.id;
+  marcaSorteado(winner.id);        // sai do sorteio até o ciclo reiniciar
+  buildWheel();
+  pendingRebuild = false;          // já reconstruímos com o estado final
+  showWinner(winner);
+}
+wheel.addEventListener("transitionend", e => {
+  if (e.target !== wheel || e.propertyName !== "transform") return;
+  acabouGiro();
+});
+
+/* ================= Painel ao vivo + cronômetro ================= */
+const liveCard  = document.getElementById("liveCard");
+const liveHeadT = document.getElementById("liveHeadTxt");
+const winPhoto  = document.getElementById("winPhoto");
+const winName   = document.getElementById("winName");
+const timerBar  = document.getElementById("timerBar");
+const timerTxt  = document.getElementById("timerTxt");
+const timerSub  = document.getElementById("timerSub");
+const btnEnd    = document.getElementById("btnEnd");
+const confetti  = document.getElementById("confetti");
+const CIRC = 2*Math.PI*70;
+timerBar.style.strokeDasharray = CIRC;
+
+let timerRAF = null, timerEndAt = 0, timerTotal = 0;
+let pausedLeft = 0;   // >0 = operação pausada, com este tanto de segundos restantes
+/* Estado "ocupado" para o auto-refresh: true enquanto a roda gira ou um expert
+   opera. O verificador de versão (topo do script) só recarrega quando isto é false,
+   evitando reload no meio de um sorteio/operação. Lido via getter, sempre atual. */
+Object.defineProperty(window, "__roletaBusy", { get(){ return !!spinning || !!timerRAF || !!pausedLeft; } });
+const fmt = s => { s = Math.max(0, Math.ceil(s));
+  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
+
+/* ---------- Tela cheia do painel (foto à esquerda, dados à direita) ---------- */
+const liveStage = document.getElementById("liveStage");
+const btnFs = document.getElementById("btnFs");
+const fsSpin = document.getElementById("fsSpin");
+const IC_FULL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+const IC_EXIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3a2 2 0 0 0 2-2V3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M21 16h-3a2 2 0 0 0-2 2v3"/></svg>';
+const fsWheel = document.getElementById("fsWheel");
+const bgLayer = document.querySelector(".bg");
+const wheelWrap = document.querySelector(".wheel-wrap");
+const colWheel = document.querySelector(".col-wheel");
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+const fsOn = () => fsEl() === liveStage || liveStage.classList.contains("theater");
+
+/* leva a roleta e o fundo para dentro da tela cheia (e devolve ao sair) */
+function mountFs(on){
+  if (on){
+    if (bgLayer.parentElement !== liveStage) liveStage.insertBefore(bgLayer, liveStage.firstChild);
+    if (wheelWrap.parentElement !== fsWheel) fsWheel.appendChild(wheelWrap);
+  } else {
+    if (bgLayer.parentElement !== document.body) document.body.insertBefore(bgLayer, document.body.firstChild);
+    if (wheelWrap.parentElement !== colWheel) colWheel.insertBefore(wheelWrap, colWheel.firstChild);
+  }
+}
+/* Sair da tela cheia COM A RODA AINDA GIRANDO cancelava a transicao CSS —
+   mountFs troca o pai do wheelWrap e o navegador descarta a animacao — e a
+   roda congelava visualmente ate o fim do sorteio (a logica seguia pelo
+   spinGuard, mas o operador via a roleta parada). Agora a saida fica
+   PENDENTE: o modo teatro (mesmo visual da tela cheia, so CSS) segura o
+   palco sem re-parentear nada, e a desmontagem acontece em acabouGiro().
+   A janela "roda em movimento" e exatamente a classe `spinning` do body
+   (posta antes do transform do giro, removida em acabouGiro). */
+let fsExitPending = false;
+const rodaGirando = () => document.body.classList.contains("spinning");
+function syncFs(){
+  let on = fsOn();
+  if (!on && rodaGirando()){
+    liveStage.classList.add("theater");
+    fsExitPending = true;
+    on = true;
+  }
+  liveStage.classList.toggle("fs", on);
+  mountFs(on);
+  btnFs.innerHTML = on ? IC_EXIT : IC_FULL;
+  btnFs.setAttribute("aria-label", on ? "Sair da tela cheia" : "Abrir em tela cheia");
+  btnFs.title = on ? "Sair da tela cheia" : "Tela cheia";
+  layoutSegments();
+}
+function finishFsExit(){
+  if (!fsExitPending) return;
+  fsExitPending = false;
+  liveStage.classList.remove("theater");
+  syncFs();
+}
+async function enterFs(){
+  if (fsOn()){ fsExitPending = false; return; }  // desistiu de sair no meio do giro
+  const req = liveStage.requestFullscreen || liveStage.webkitRequestFullscreen;
+  try {
+    if (!req) throw new Error("sem API");
+    await req.call(liveStage, { navigationUI: "hide" });
+  } catch { liveStage.classList.add("theater"); }  // fallback: ocupa a tela por CSS
+  syncFs();
+}
+async function exitFs(){
+  if (rodaGirando()) fsExitPending = true;         // teatro segura ate o giro acabar
+  else liveStage.classList.remove("theater");
+  try { if (fsEl()) await (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch {}
+  syncFs();
+}
+const toggleFs = () => fsOn() ? exitFs() : enterFs();
+btnFs.addEventListener("click", toggleFs);
+document.addEventListener("fullscreenchange", syncFs);
+document.addEventListener("webkitfullscreenchange", syncFs);
+fsSpin.addEventListener("click", () => spin());
+syncFs();
+
+/* mantém os dois botões de sorteio com o mesmo estado */
+function setCta(text, off){
+  spinBtn.textContent = text; spinBtn.disabled = off;
+  fsSpin.textContent = text; fsSpin.disabled = off;
+}
+
+const idleT = document.querySelector(".idle-t");
+const idleS = document.querySelector(".idle-s");
+function setIdleText(girando){
+  idleT.textContent = girando ? "Sorteando…" : "Pronto para sortear";
+  idleS.textContent = girando ? "A roleta está girando entre os experts ativos."
+                              : "O expert sorteado aparece aqui, com o cronômetro rodando.";
+}
+function setLiveCard(state){ // idle | live | done
+  liveCard.classList.remove("is-idle","is-live","is-done");
+  liveCard.classList.add("is-" + state);
+  liveStage.classList.remove("st-idle","st-live","st-done");
+  liveStage.classList.add("st-" + state);
+  const rotulo = state === "live" ? "Operando ao vivo"
+               : state === "done" ? "Tempo encerrado"
+               : "Aguardando sorteio";
+  liveHeadT.textContent = rotulo;
+  document.getElementById("liveHeadTxt2").textContent = rotulo;
+}
+function setLive(state){
+  save(LS_LIVE, state);
+  try { new BroadcastChannel("cj-live").postMessage(state); } catch {}
+  syncSend(Object.assign({ type:"live" }, state));
+}
+function showWinner(e){
+  winPhoto.src = photoOf(e);
+  winPhoto.alt = "Foto de " + e.name;
+  winName.textContent = e.name;
+  timerSub.textContent = "Tempo de operação em andamento";
+  setLiveCard("live");
+  launchConfetti();
+  SFX.win(false);
+  setCta("Expert operando…", true);
+  pushHist(e);
+  renderPool();
+  const mins = minutesFor(e);
+  timerTotal = mins*60;
+  timerEndAt = Date.now() + timerTotal*1000;
+  const hhmm = ms => { const d = new Date(ms);
+    return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+  document.getElementById("stStart").textContent = hhmm(Date.now());
+  document.getElementById("stEnd").textContent   = hhmm(timerEndAt);
+  document.getElementById("stTotal").textContent = mins + " min";
+  setLive({ status:"running", name:e.name, photo:photoOf(e), endsAt:timerEndAt, total:timerTotal });
+  tick();
+}
+function tick(){
+  const left = (timerEndAt - Date.now())/1000;
+  timerTxt.textContent = fmt(left);
+  timerBar.style.strokeDashoffset = CIRC * (1 - Math.max(0,left)/timerTotal);
+  if (left <= 0){ timeUp(); return; }
+  timerRAF = requestAnimationFrame(tick);
+}
+/* Guarda-costas do cronometro: requestAnimationFrame nao roda com a aba em
+   segundo plano, entao uma operacao podia passar do tempo sem nunca encerrar.
+   setInterval e desacelerado nessa situacao, mas continua disparando. */
+setInterval(() => {
+  if (timerRAF && timerEndAt && Date.now() >= timerEndAt) timeUp();
+  /* Giro disparado pelo painel com esta aba em segundo plano: o setTimeout
+     do spinGuard e o transitionend podem ser adiados pelo navegador. Este
+     relogio de parede garante a conclusao do sorteio mesmo assim. */
+  if (spinEndAt && Date.now() >= spinEndAt) acabouGiro();
+}, 1000);
+/* ---------- Pausar / retomar a operação (comandos do Painel Admin) ---------- */
+function pauseOp(){
+  if (!timerRAF || pausedLeft) return false;
+  pausedLeft = Math.max(1, (timerEndAt - Date.now()) / 1000);
+  cancelAnimationFrame(timerRAF); timerRAF = null;
+  timerEndAt = 0;                                  // backstop do cronômetro não dispara
+  timerTxt.textContent = fmt(pausedLeft);
+  timerSub.textContent = "Operação pausada";
+  const lv = load(LS_LIVE, {}) || {};
+  setLive({ status:"paused", name: lv.name || winName.textContent, photo: lv.photo || "",
+            left: pausedLeft, total: timerTotal || lv.total || 0 });
+  return true;
+}
+function resumeOp(){
+  if (!pausedLeft) return false;
+  timerEndAt = Date.now() + pausedLeft * 1000;
+  pausedLeft = 0;
+  timerSub.textContent = "Tempo de operação em andamento";
+  const lv = load(LS_LIVE, {}) || {};
+  setLive({ status:"running", name: lv.name || winName.textContent, photo: lv.photo || "",
+            endsAt: timerEndAt, total: timerTotal || lv.total || 0 });
+  document.getElementById("stEnd").textContent = (ms => { const d = new Date(ms);
+    return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); })(timerEndAt);
+  tick();
+  return true;
+}
+function timeUp(){
+  pausedLeft = 0;
+  if (timerRAF){ cancelAnimationFrame(timerRAF); timerRAF = null; }
+  timerTxt.textContent = "00:00";
+  timerBar.style.strokeDashoffset = CIRC;
+  timerSub.textContent = "Operação finalizada";
+  setLiveCard("done");
+  setLive({ status:"idle" });
+  SFX.lose();
+  // roleta liberada para o próximo sorteio, sem sortear sozinha
+  currentOpId = null;
+  buildWheel();
+  spinning = false;
+  setIdleText(false);
+  setCta("Sortear Expert", false);
+  startIdle();
+  // ciclo automático (opcional, ligado no Painel Admin)
+  if (cfg.autoNext && isPrimary && activeExperts().length){
+    let left = Math.max(0, Math.round(cfg.waitSec));
+    clearInterval(nextT);
+    if (left === 0){ nextT = setTimeout(() => spin(), 500); return; }
+    timerSub.textContent = "Próximo sorteio em " + left + "s";
+    nextT = setInterval(() => {
+      left--;
+      if (left <= 0){ clearInterval(nextT); nextT = null; spin(); return; }
+      timerSub.textContent = "Próximo sorteio em " + left + "s";
+    }, 1000);
+  }
+}
+btnEnd.addEventListener("click", () => { if (timerRAF || pausedLeft){ timerEndAt = Date.now(); timeUp(); } });
+
+function launchConfetti(){
+  if (REDUCED || !cfg.confetti) return;
+  confetti.innerHTML = "";
+  const CC = ["#00A7FF","#4dc3ff","#ffffff","#2ec16b"];
+  for (let i=0;i<46;i++){
+    const p = document.createElement("i");
+    p.style.left = Math.random()*100+"%";
+    p.style.background = CC[i%CC.length];
+    p.style.animationDuration = (1.7+Math.random()*1.7)+"s";
+    p.style.animationDelay = (Math.random()*0.5)+"s";
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    confetti.appendChild(p);
+  }
+}
+
+/* ================= Pool + histórico ================= */
+const poolEl = document.getElementById("pool");
+const poolN  = document.getElementById("poolN");
+const cfgTimeLabel = document.getElementById("cfgTimeLabel");
+const histList = document.getElementById("histList");
+const histEmpty = document.getElementById("histEmpty");
+
+function renderPool(){
+  const list = activeExperts();
+  poolEl.innerHTML = "";
+  list.slice(0,14).forEach(e => {
+    const wrap = document.createElement("span");
+    wrap.className = "pool-i" + (jaSorteado(e) ? " done" : "");
+    wrap.title = e.name + (jaSorteado(e) ? " — já sorteado" : "");
+    const im = document.createElement("img");
+    im.src = photoOf(e); im.alt = e.name;
+    wrap.appendChild(im);
+    if (jaSorteado(e)){
+      const i = document.createElement("i");
+      i.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
+      wrap.appendChild(i);
+    }
+    poolEl.appendChild(wrap);
+  });
+  const restam = disponiveis().length, jaForam = list.length - restam;
+  poolN.textContent = restam;
+  document.getElementById("poolDone").textContent = jaForam;
+  cfgTimeLabel.textContent = cfg.minutes + " min";
+}
+function pushHist(e){
+  const d = new Date();
+  hist.unshift({ name:e.name, photo:photoOf(e),
+    at: String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0") });
+  hist = hist.slice(0,6);
+  save(LS_HIST, hist);
+  renderHist();
+  syncStateR();
+}
+function renderHist(){
+  histList.innerHTML = "";
+  histEmpty.style.display = hist.length ? "none" : "";
+  hist.forEach(h => {
+    const li = document.createElement("li");
+    const im = document.createElement("img"); im.src = h.photo; im.alt = "";
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = h.name;
+    const hh = document.createElement("span"); hh.className = "hh"; hh.textContent = h.at;
+    li.append(im, nm, hh);
+    histList.appendChild(li);
+  });
+}
+
+/* ================= SFX ================= */
+const SFX = (function(){
+  let ctx=null, master=null, comp=null, conv=null, wet=null, noiseBuf=null, muted=false;
+  const vivos = new Set();   // fontes tocando/agendadas
+  let tickTimer = null;
+  const R = () => Math.random();
+  function makeIR(sec,decay){
+    const rate=ctx.sampleRate, len=Math.max(1,Math.floor(rate*sec)), b=ctx.createBuffer(2,len,rate);
+    for (let c=0;c<2;c++){ const d=b.getChannelData(c);
+      for (let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); }
+    return b;
+  }
+  function init(){
+    if (ctx) return;
+    try{
+      const AC = window.AudioContext||window.webkitAudioContext; if (!AC) return;
+      ctx = new AC();
+      comp = ctx.createDynamicsCompressor();
+      comp.threshold.value=-6; comp.knee.value=6; comp.ratio.value=8; comp.attack.value=0.003; comp.release.value=0.2;
+      comp.connect(ctx.destination);
+      master = ctx.createGain(); master.gain.value=0.62; master.connect(comp);
+      conv = ctx.createConvolver(); conv.buffer = makeIR(1.9,2.4);
+      wet = ctx.createGain(); wet.gain.value=0.26; conv.connect(wet).connect(master);
+      const len = Math.floor(ctx.sampleRate*1.4);
+      noiseBuf = ctx.createBuffer(1,len,ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i=0;i<len;i++) d[i]=Math.random()*2-1;
+    } catch(e){ ctx=null; }
+  }
+  function on(){ init(); if (ctx && ctx.state==="suspended") ctx.resume(); }
+  function tocando(){ return !!ctx && ctx.state === "running"; }
+  function out(node,rev){ node.connect(master); if (rev) node.connect(conv); }
+  function noiseSrc(){ const s=ctx.createBufferSource(); s.buffer=noiseBuf; return s; }
+  /* guarda as fontes tocando para conseguir cortar tudo depois */
+  function viva(node){
+    vivos.add(node);
+    node.onended = () => { vivos.delete(node); try{ node.disconnect(); }catch{} };
+  }
+  function stop(){
+    if (tickTimer){ clearInterval(tickTimer); tickTimer = null; }
+    vivos.forEach(n => { try{ n.stop(); }catch{} try{ n.disconnect(); }catch{} });
+    vivos.clear();
+  }
+  function tickSnd(t,g){
+    const s=noiseSrc();
+    const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1700+R()*1100; bp.Q.value=5.5;
+    const a=ctx.createGain(); a.gain.setValueAtTime(g,t); a.gain.exponentialRampToValueAtTime(0.0001,t+0.028);
+    s.connect(bp).connect(a); out(a,true); s.start(t,R()*0.6); s.stop(t+0.05); viva(s);
+    const o=ctx.createOscillator(), og=ctx.createGain();
+    o.type="triangle"; o.frequency.setValueAtTime(290+R()*50,t);
+    og.gain.setValueAtTime(g*0.5,t); og.gain.exponentialRampToValueAtTime(0.0001,t+0.06);
+    o.connect(og); out(og,true); o.start(t); o.stop(t+0.075); viva(o);
+  }
+  /* Agenda os tiques aos poucos (janela de ~250ms). Agendar os 8s de uma vez
+     fazia o som continuar depois do giro — ou estourar tudo junto quando o
+     contexto voltava de suspenso (aba em segundo plano). */
+  function spinS(duration){
+    on(); stop();
+    if (!tocando() || muted) return;
+    const t0 = ctx.currentTime, total = 48;
+    let i = 0;
+    tickTimer = setInterval(() => {
+      if (!tocando() || muted){ stop(); return; }
+      while (i < total){
+        const af = (i+1)/total, p = 1-Math.pow(1-af,1/3.2), t = t0 + p*duration;
+        if (t > ctx.currentTime + 0.25) break;
+        if (t >= ctx.currentTime - 0.05) tickSnd(t, 0.42*(1-af*0.5));
+        i++;
+      }
+      if (i >= total){ clearInterval(tickTimer); tickTimer = null; }
+    }, 70);
+  }
+  function bell(freq,t,dur,vol){
+    const P=[[1,1],[2.01,0.5],[2.76,0.32],[3.76,0.2],[5.42,0.12]];
+    for (const [m,a] of P){
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sine"; o.frequency.value=freq*m;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(vol*a,t+0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur/(1+(m-1)*0.6));
+      o.connect(g); out(g,true); o.start(t); o.stop(t+dur+0.05); viva(o);
+    }
+  }
+  function win(big){
+    on(); if (!tocando()||muted) return;
+    const t=ctx.currentTime;
+    const seq = big ? [523.25,659.25,783.99,1046.5,1318.51] : [659.25,783.99,1046.5,1318.51];
+    seq.forEach((f,i)=> bell(f, t+i*0.13, 1.5, 0.2));
+    bell(big?2093:1567.98, t+seq.length*0.13+0.04, 1.9, 0.15);
+  }
+  function lose(){
+    on(); if (!tocando()||muted) return;
+    const t=ctx.currentTime; bell(415.3,t,0.95,0.15); bell(311.13,t+0.2,1.25,0.13);
+  }
+  function setMuted(m){ muted=m; if (m) stop(); }
+  return { on, stop, spin:spinS, win, lose, setMuted };
+})();
+/* aba em segundo plano: corta o áudio para não voltar tudo de uma vez */
+document.addEventListener("visibilitychange", () => { if (document.hidden) SFX.stop(); });
+const MUTE = (function(){
+  const btn=document.getElementById("muteBtn");
+  const ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>';
+  const OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  let m=false;
+  function set(muted){ m=muted; SFX.setMuted(m); btn.innerHTML=m?OFF:ON; btn.setAttribute("aria-pressed", m); }
+  btn.addEventListener("click", ()=> set(!m));
+  set(!cfg.sfx);
+  return { set };
+})();
+
+/* ================= Painel Admin externo (admin/) ================= */
+function openAdminPage(){ window.open("admin/", "_blank", "noopener"); }
+document.getElementById("adminHot").addEventListener("dblclick", openAdminPage);
+document.addEventListener("keydown", e => {
+  if ((e.key === "A" || e.key === "a") && e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    e.preventDefault(); openAdminPage();
+  }
+  if (e.key === "Escape" && liveStage.classList.contains("theater")){
+    if (rodaGirando()) fsExitPending = true;  // sai quando o giro terminar
+    else liveStage.classList.remove("theater");
+    syncFs();
+  }
+});
+
+/* ================= Sincronização com o Painel Admin ================= */
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_EXPERTS){
+    experts = dedupeExperts(load(LS_EXPERTS, []));
+    const ids = experts.map(e => e.id);
+    sorteados = sorteados.filter(id => ids.includes(id));
+    buildWheel(); renderPool();
+  } else if (ev.key === LS_CFG){
+    cfg = Object.assign(
+      { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+      load(LS_CFG, {})
+    );
+    renderPool(); restartIdle(); MUTE.set(!cfg.sfx);
+  } else if (ev.key === LS_RODADA){
+    sorteados = load(LS_RODADA, []);
+    buildWheel(); renderPool();
+  } else if (ev.key === LS_HIST){
+    hist = load(LS_HIST, []);
+    renderHist();
+  }
+});
+const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_ROOM = "cj-TESTE";
+const SYNC_KEY  = "TESTE-NAO-PRODUCAO";
+let syncCh = null, syncOn = false;
+/* último link da live recebido de um admin autenticado (url + token que o validou) */
+let LIVE_URL = { url: (function(){ try { return localStorage.getItem("cj_live_url_v1") || null; } catch { return null; } })(), t: null };
+/* CANAL LOCAL (rede de seguranca, 18/09/2026)
+   O canal pela internet (Supabase Realtime) pode estar fora do ar — foi o que
+   aconteceu: o projeto sumiu e painel e roleta ficaram sem se falar. Este
+   BroadcastChannel alcanca SO as abas deste mesmo navegador e nao depende de
+   nada externo, entao o operador continua comandando a roleta com o painel
+   aberto na mesma maquina. Como e restrito ao proprio navegador, nao precisa
+   (nem tem como) exigir token: ninguem de fora consegue falar por aqui. */
+const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd-TESTE"); } catch { return null; } })();
+function syncSend(o){
+  const msg = Object.assign({ k: SYNC_KEY }, o);
+  try { if (CMD_CH) CMD_CH.postMessage(msg); } catch {}
+  if (!syncCh || !syncOn) return;
+  try { syncCh.send({ type:"broadcast", event:"msg", payload: msg }); } catch {}
+}
+function syncStateR(){ syncSend({ type:"state-r", sorteados, hist }); }
+/* comandos privilegiados exigem sessão válida do painel (token verificado no Supabase) */
+const AUTH_CACHE = { token:null, okUntil:0 };
+async function verifyAdmin(tok){
+  if (!tok) return false;
+  if (tok === AUTH_CACHE.token && Date.now() < AUTH_CACHE.okUntil) return true;
+  try {
+    const r = await fetch(SYNC_URL + "/auth/v1/user", {
+      headers: { "apikey": SYNC_ANON, "Authorization": "Bearer " + tok }
+    });
+    if (!r.ok) return false;
+    AUTH_CACHE.token = tok;
+    AUTH_CACHE.okUntil = Date.now() + 5*60*1000;
+    return true;
+  } catch { return false; }
+}
+/* Redesenha a roda/pool — MAS nunca durante um giro. Reconstruir a roda no meio
+   da animação reposiciona os setores e faz a seta parar no expert errado (às vezes
+   um já sorteado). Se está girando, adia até o giro terminar (acabouGiro chama isso). */
+let pendingRebuild = false;
+function safeRebuild(){
+  if (spinning){ pendingRebuild = true; return; }
+  buildWheel(); renderPool();
+}
+/* Lapides e relogio logico: a roleta guarda os mesmos metadados do painel para
+   poder MESCLAR em vez de substituir. Antes ela adotava a lista de qualquer
+   painel em bloco, entao o ultimo a falar vencia — com varias maquinas no mesmo
+   login, uma desatualizada apagava o que a outra tinha acabado de corrigir. */
+const LS_TUMBAS = "cj_experts_tumbas_v1";
+/* Maior relogio logico ja visto. A roleta nao edita nada, mas precisa guardar
+   isso para entregar a um painel recem-aberto: sem esse numero ele comecaria do
+   zero e TODA edicao dele perderia para as outras maquinas. */
+const LS_REV_VISTO = "cj_rev_visto_v1";
+let revVisto = parseInt(localStorage.getItem(LS_REV_VISTO) || "0", 10) || 0;
+function anotarRev(v){
+  const n = parseInt(v, 10) || 0;
+  if (n > revVisto){ revVisto = n; try { localStorage.setItem(LS_REV_VISTO, String(revVisto)); } catch {} }
+}
+let tumbas = load(LS_TUMBAS, {});
+if (!tumbas || typeof tumbas !== "object" || Array.isArray(tumbas)) tumbas = {};
+const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
+function mesclarExperts(listaA, tumbasA, listaB, tumbasB){
+  const porId = new Map();
+  const absorve = lista => (Array.isArray(lista) ? lista : []).forEach(e => {
+    if (!e || !e.id) return;
+    const atual = porId.get(e.id);
+    if (!atual || carimbo(e) > carimbo(atual)) porId.set(e.id, e);
+  });
+  absorve(listaA); absorve(listaB);
+  const tum = Object.assign({}, tumbasA || {});
+  Object.entries(tumbasB || {}).forEach(([id, q]) => {
+    const v = parseInt(q, 10) || 0;
+    if (v > (parseInt(tum[id], 10) || 0)) tum[id] = v;
+  });
+  const vivos = [];
+  porId.forEach((e, id) => { if ((parseInt(tum[id], 10) || 0) <= carimbo(e)) vivos.push(e); });
+  return { experts: dedupeExperts(vivos), tumbas: tum };
+}
+function applyAdminState(m){
+  anotarRev(m.rev);
+  /* O painel continua sendo a autoridade, mas a adocao agora e por MESCLAGEM:
+     o resultado independe da ordem de chegada e nenhuma maquina apaga o que
+     nao conhece. */
+  if (Array.isArray(m.experts)){
+    const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
+    experts = r.experts; tumbas = r.tumbas;
+    save(LS_EXPERTS, experts); save(LS_TUMBAS, tumbas);
+    const ids = experts.map(e => e.id);
+    sorteados = sorteados.filter(id => ids.includes(id));
+    save(LS_RODADA, sorteados);
+    if (currentOpId && !ids.includes(currentOpId)) currentOpId = null;
+  }
+  if (m.cfg){
+    cfg = Object.assign(
+      { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true },
+      m.cfg
+    );
+    save(LS_CFG, cfg);
+    MUTE.set(!cfg.sfx);
+    if (!spinning) restartIdle();
+  }
+  safeRebuild();
+}
+/* ============ ESTADO GUARDADO NO SERVIDOR (18/09/2026) ============
+   A roleta so LE. Quem grava e o painel, que tem sessao — a politica do banco
+   recusa escrita anonima. Serve para a roleta subir ja com a lista certa quando
+   e aberta num computador novo e nao ha painel no ar para responder. Sem a
+   tabela, nada muda: ela percebe uma vez e nao tenta mais. */
+const EST_REST = SYNC_URL + "/rest/v1/roleta_estado_teste";
+const EST_ID   = "cj-TESTE";
+let estadoNoServidor = null;
+async function adotarDoServidor(){
+  if (estadoNoServidor === false) return false;
+  try {
+    const r = await fetch(EST_REST + "?id=eq." + encodeURIComponent(EST_ID) + "&select=*",
+                          { headers: { "apikey": SYNC_ANON } });
+    if (r.status === 404 || r.status === 406){ estadoNoServidor = false; return false; }
+    if (!r.ok) return false;
+    const linhas = await r.json();
+    estadoNoServidor = true;
+    const linha = Array.isArray(linhas) && linhas.length ? linhas[0] : null;
+    if (!linha) return false;
+    const rev = parseInt(linha.rev, 10) || 0;
+    /* o relogio de ANTES: applyAdminState ja anota o do servidor, e comparar
+       depois daria empate — a rodada guardada nunca seria adotada. */
+    const revAntes = revVisto;
+    if (Array.isArray(linha.experts) && linha.experts.length)
+      applyAdminState({ experts: linha.experts, tumbas: linha.tumbas, cfg: linha.cfg, rev });
+    if (rev > revAntes || !sorteados.length)
+      applyStateR({ sorteados: linha.sorteados, hist: linha.hist });
+    anotarRev(rev);
+    return true;
+  } catch { return false; }
+}
+
+function applyStateR(m){
+  if (Array.isArray(m.sorteados)){ sorteados = m.sorteados; save(LS_RODADA, sorteados); }
+  if (Array.isArray(m.hist)){ hist = m.hist; save(LS_HIST, hist); renderHist(); }
+  safeRebuild();
+}
+/* Tratador unico das mensagens do painel. Vem por dois caminhos:
+   `local=false` pela internet (Supabase), com token conferido; `local=true`
+   pelo BroadcastChannel deste navegador, que ja e restrito por origem. */
+async function tratarMsg(m, local){
+    // tipos sem privilégio
+    if (m.type === "ping"){ syncSend({ type:"pong", standby: !isPrimary }); return; }
+    if (m.type === "hello"){
+      if (m.role === "admin" && isPrimary){
+        syncStateR();
+        /* TROCA DE TURNO (18/09/2026): manda tambem a LISTA que esta no ar.
+           Antes so ia a rodada (state-r), entao o painel do turno seguinte —
+           que ja tinha lista salva no navegador dele — continuava exibindo a
+           lista do turno passado e ninguem percebia a divergencia. */
+        if (Array.isArray(experts) && experts.length)
+          syncSend({ type:"state", experts, tumbas, cfg, rev: revVisto, deRoleta:true });
+        syncSend(Object.assign({ type:"live" }, load(LS_LIVE, { status:"idle" })));
+      }
+      return;
+    }
+    /* painel sem lista propria pediu a atual: a roleta devolve a que esta no ar,
+       para ele adotar em vez de publicar uma lista padrao por cima */
+    if (m.type === "reqExperts"){
+      if (isPrimary && Array.isArray(experts) && experts.length)
+        syncSend({ type:"state", experts, tumbas, cfg, rev: revVisto, deRoleta:true });
+      return;
+    }
+    // a página do Corujão pediu o link atual da live — a roleta reencaminha o último
+    // link que recebeu de um admin autenticado (guarda o token junto para o Corujão validar)
+    if (m.type === "getLiveUrl"){
+      if (isPrimary && LIVE_URL.url && LIVE_URL.t)
+        syncSend({ type:"liveUrl", url: LIVE_URL.url, t: LIVE_URL.t });
+      return;
+    }
+    // daqui em diante, só com sessão válida do painel
+    if (!local && !(await verifyAdmin(m.t))){
+      if (m.type === "spin" || m.type === "endOp" || m.type === "state")
+        syncSend({ type:"ack", cmd:m.type, ok:false, reason:"Sessão do painel inválida — faça login novamente." });
+      return;
+    }
+    switch (m.type){
+      case "state":
+        applyAdminState(m);
+        syncSend({ type:"ack", cmd:"state", ok:true });   // painel limpa a fila de pendencia
+        break;
+      case "state-r": applyStateR(m); break;
+      case "liveUrl": {
+        // guarda o link + o token que o autenticou, para reencaminhar ao Corujão
+        const u = (function(x){ try { const p = new URL(String(x)); return (p.protocol==="https:"||p.protocol==="http:") ? p.href : null; } catch { return null; } })(m.url);
+        if (u){ LIVE_URL = { url:u, t:m.t }; try { localStorage.setItem("cj_live_url_v1", u); } catch {} }
+        break;
+      }
+      case "force":
+        if (!isPrimary) break;
+        forcedId = m.id || null;
+        if (forcedId) toast("Painel: próximo sorteado definido.");
+        break;
+      case "spin":
+        if (!isPrimary) break;
+        if (m.forcedId) forcedId = m.forcedId;
+        if (spinning){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"A roleta já está girando." }); break; }
+        if (timerRAF){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"Há uma operação em andamento." }); break; }
+        if (pausedLeft){ syncSend({ type:"ack", cmd:"spin", ok:false, reason:"Há uma operação pausada — retome ou encerre antes." }); break; }
+        spin(); syncSend({ type:"ack", cmd:"spin", ok:true });
+        break;
+      case "pauseOp":
+        if (!isPrimary) break;
+        if (pauseOp()) syncSend({ type:"ack", cmd:"pauseOp", ok:true });
+        else syncSend({ type:"ack", cmd:"pauseOp", ok:false,
+          reason: pausedLeft ? "A operação já está pausada." : "Nenhuma operação em andamento." });
+        break;
+      case "resumeOp":
+        if (!isPrimary) break;
+        if (resumeOp()) syncSend({ type:"ack", cmd:"resumeOp", ok:true });
+        else syncSend({ type:"ack", cmd:"resumeOp", ok:false, reason:"Não há operação pausada." });
+        break;
+      case "endOp":
+        if (!isPrimary) break;
+        if (!timerRAF && !pausedLeft){ syncSend({ type:"ack", cmd:"endOp", ok:false, reason:"Nenhuma operação em andamento." }); break; }
+        /* Antes so ajustava timerEndAt e esperava o tick() perceber. Mas tick()
+           roda em requestAnimationFrame, que o navegador PAUSA em aba de fundo:
+           com a roleta minimizada o comando respondia "ok" e nada acontecia.
+           Agora encerra direto. */
+        timerEndAt = Date.now(); timeUp();
+        syncSend({ type:"ack", cmd:"endOp", ok:true });
+        break;
+    }
+}
+/* A roleta e a tela que fica na transmissao: nada aqui dentro pode derrubar o
+   resto do script (18/09/2026). Se a sincronizacao em tempo real explodir — rede
+   estranha, WebSocket bloqueado —, a roda continua girando pelo canal local e
+   pela memoria do servidor em vez de a pagina morrer no meio da live. */
+(function initSync(){
+ try {
+  if (!window.supabase) return;
+  const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+  syncCh = sb.channel(SYNC_ROOM, { config: { broadcast: { self:false } } });
+  syncCh.on("broadcast", { event:"msg" }, ({ payload }) => {
+    const m = payload || {};
+    if (m.k !== SYNC_KEY) return;
+    tratarMsg(m, false);
+  }).subscribe(st => {
+    syncOn = st === "SUBSCRIBED";
+    if (syncOn){
+      /* Ao conectar/reconectar, a roleta anuncia presença E pede a lista atual
+         ao painel. Reenvia algumas vezes para vencer qualquer corrida de timing
+         (admin ainda carregando, rede lenta) — o painel responde a cada pedido. */
+      let tries = 0;
+      const askAdmin = () => {
+        if (!syncOn) return;
+        syncSend({ type:"hello", role:"roleta" });
+        syncSend({ type:"reqState" });
+        if (++tries < 6) setTimeout(askAdmin, 1200);
+      };
+      askAdmin();
+    }
+  });
+ } catch (err){ console.error("Sincronização em tempo real fora do ar:", err); syncOn = false; }
+})();
+/* Mesmo sem internet, a roleta ouve e responde ao painel deste navegador. */
+if (CMD_CH){
+  CMD_CH.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.k !== SYNC_KEY) return;
+    tratarMsg(m, true);
+  };
+  /* anuncia presenca no canal local: o painel ja aberto encontra a roleta */
+  setTimeout(() => { syncSend({ type:"hello", role:"roleta" }); syncSend({ type:"reqState" }); }, 900);
+}
+
+/* A memoria do servidor nao depende de ninguem estar no ar: consulta sempre. */
+setTimeout(adotarDoServidor, 1200);
+
+/* ================= Redundância: principal + reserva ================= */
+const LS_HB = "cj_roleta_hb";
+const INST_ID = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+let isPrimary = false;
+const readHB = () => load(LS_HB, null);
+const hbStale = hb => !hb || (Date.now() - hb.t) > 4000;
+function becomePrimary(silent){
+  isPrimary = true;
+  save(LS_HB, { id: INST_ID, t: Date.now() });
+  document.body.classList.remove("standby");
+  startIdle();
+  if (!silent) toast("Esta roleta assumiu como principal.");
+  resumeLive();
+}
+function becomeStandby(silent){
+  isPrimary = false;
+  document.body.classList.add("standby");
+  stopIdle();
+  clearInterval(nextT); nextT = null;
+  if (!silent) toast("Outra roleta assumiu como principal.");
+}
+/* Se a principal caiu no meio de uma operação, a nova principal retoma o cronômetro */
+function resumeLive(){
+  const lv = load(LS_LIVE, null);
+  if (lv && lv.status === "running" && lv.endsAt && lv.endsAt > Date.now() && !timerRAF){
+    winPhoto.src = lv.photo || "";
+    winPhoto.alt = "Foto de " + (lv.name || "Expert");
+    winName.textContent = lv.name || "Expert";
+    timerSub.textContent = "Tempo de operação em andamento";
+    setLiveCard("live");
+    setCta("Expert operando…", true);
+    const e = experts.find(x => x.name === lv.name);
+    currentOpId = e ? e.id : null;
+    timerTotal = lv.total || Math.max(1, (lv.endsAt - Date.now()) / 1000);
+    timerEndAt = lv.endsAt;
+    const hhmm = ms => { const d = new Date(ms);
+      return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+    document.getElementById("stStart").textContent = hhmm(timerEndAt - timerTotal*1000);
+    document.getElementById("stEnd").textContent   = hhmm(timerEndAt);
+    document.getElementById("stTotal").textContent = Math.round(timerTotal/60) + " min";
+    buildWheel(); renderPool();
+    tick();
+  }
+  /* operação PAUSADA sobrevive a reload/troca de principal: restaura congelada */
+  else if (lv && lv.status === "paused" && lv.left > 0 && !timerRAF && !pausedLeft){
+    winPhoto.src = lv.photo || "";
+    winPhoto.alt = "Foto de " + (lv.name || "Expert");
+    winName.textContent = lv.name || "Expert";
+    pausedLeft = lv.left;
+    timerTotal = lv.total || lv.left;
+    timerEndAt = 0;
+    timerTxt.textContent = fmt(pausedLeft);
+    timerSub.textContent = "Operação pausada";
+    setLiveCard("live");
+    setCta("Expert operando…", true);
+    const e = experts.find(x => x.name === lv.name);
+    currentOpId = e ? e.id : null;
+    document.getElementById("stTotal").textContent = Math.round(timerTotal/60) + " min";
+    buildWheel(); renderPool();
+  }
+}
+(function initRole(){
+  if (hbStale(readHB())) becomePrimary(true);
+  else becomeStandby(true);
+})();
+setInterval(() => {
+  const hb = readHB();
+  if (isPrimary){
+    if (hb && hb.id !== INST_ID && !hbStale(hb)) becomeStandby(false); // outra instância venceu a disputa
+    else save(LS_HB, { id: INST_ID, t: Date.now() });
+  } else if (hbStale(hb)){
+    becomePrimary(false); // principal caiu → reserva assume
+  }
+}, 1500);
+window.addEventListener("storage", ev => {
+  if (ev.key === LS_HB && !isPrimary && hbStale(readHB())) becomePrimary(false);
+});
+window.addEventListener("beforeunload", () => {
+  if (isPrimary){ try { localStorage.removeItem(LS_HB); } catch {} }
+});
+document.getElementById("btnTakeover").addEventListener("click", () => becomePrimary(false));
+
+/* ================= Toast + init ================= */
+let toastT = null;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+buildWheel();
+renderPool();
+renderHist();
+if (!timerRAF) setLiveCard("idle");
+if (isPrimary && !timerRAF) setLive({ status:"idle" });
+if (isPrimary) startIdle();
+</script>
+</body></html>
