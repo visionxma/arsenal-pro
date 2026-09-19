@@ -106,3 +106,24 @@ jobs:
               *) echo "::error::$U respondeu $COD"; exit 1 ;;
             esac
           done
+
+  # Repositório PÚBLICO: o GitHub desliga toda rotina agendada depois de 60 dias
+  # sem commit — e com ela iriam o backup diário e este pulso, calados. Reativar
+  # pela API a cada rodada (a cada 2 dias) zera essa contagem. Job separado: se o
+  # pulso acima falhar, este roda do mesmo jeito. (19/09/2026)
+  manter-agendas:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Reativar as rotinas agendadas
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for W in pulso-roleta.yml supabase-backup.yml security.yml; do
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/$W/enable"
+            ESTADO=$(gh api "repos/${{ github.repository }}/actions/workflows/$W" -q .state)
+            echo "$W: $ESTADO"
+            test "$ESTADO" = "active" || { echo "::error::$W ficou $ESTADO"; exit 1; }
+          done
