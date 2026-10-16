@@ -15,11 +15,12 @@ const SEC_HEADERS = {
   "Cross-Origin-Opener-Policy": "same-origin",
   "Content-Security-Policy": [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    // static.cloudflareinsights.com: beacon do Web Analytics que a Cloudflare injeta na zona (16/10/2026)
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com https://cloudflareinsights.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
