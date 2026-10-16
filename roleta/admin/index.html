@@ -608,6 +608,8 @@
     min-width:0; display:grid; gap:3px; text-align:center; transition:transform .3s cubic-bezier(.22,1,.36,1); }
   .dp-time .pos{ font-size:11.5px; font-weight:600; color:var(--t4); }
   .dp-time .nm{ font-size:13.5px; color:var(--t2); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* celular: nome do time inteiro em até 2 linhas, com a mesma altura nos cartões vizinhos ("Time do Fechamento" cortava a 360px) */
+  @media (max-width:47.99rem){ .dp-time .nm{ white-space:normal; text-overflow:clip; line-height:1.25; min-height:2.5em; display:flex; align-items:center; justify-content:center; text-wrap:balance; } }
   .dp-time .vl{ font-size:clamp(20px, 2.2vw, 26px); font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
   .dp-time .qt{ font-size:12.5px; color:var(--t3); }
   .dp-time.lider{ border-color:var(--warn-line); background:linear-gradient(180deg, rgba(251,191,36,.08), var(--s1) 70%); }
