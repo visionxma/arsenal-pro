@@ -630,6 +630,8 @@
   @media (max-width:600px){
     .wrap{ padding:16px 16px 44px; }
     .wheel-wrap{ width:min(90vw,52vh,400px); }
+    /* halo da roleta cabe na margem lateral (o -16% passava 37px da tela a 390px) */
+    .wheel-wrap::before{ inset:-5%; }
     .cta{ padding:18px 26px; }
     .live{ padding:22px 18px 20px; }
     .bg-chart{ height:34vh; opacity:.55; }
