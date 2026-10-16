@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ranking dos Times — Corujão de Traders</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/safirion-icon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png" />
+<meta name="description" content="Ranking ao vivo dos times do Corujão de Traders da Safirion." />
+<meta name="theme-color" content="#070d1a" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Mesma família visual da roleta (roleta/index.html): vidro escuro, azul
+     Safirion, Montserrat nos títulos e números, Poppins no texto. */
+  :root{
+    --bg-1:#070d1a;
+    --bg-2:#04060c;
+    --brand:#00A7FF;
+    --brand-2:#4dc3ff;
+    --ink:#ffffff;
+    --muted:#a9b6cf;
+    --muted-2:#97a4be;
+    --line:rgba(255,255,255,.09);
+    --ouro:#ffd166;
+    --prata:#d7e1ee;
+    --bronze:#e0a073;
+
+    --glass-tint:rgba(10,17,30,.56);
+    --glass-film:
+      radial-gradient(130% 80% at 10% -10%, rgba(255,255,255,.10) 0%, transparent 46%),
+      linear-gradient(158deg, rgba(255,255,255,.085) 0%, rgba(255,255,255,.026) 38%,
+                              rgba(255,255,255,.012) 64%, rgba(255,255,255,.06) 100%);
+    --glass-blur:saturate(170%) blur(18px);
+    --glass-shadow:0 22px 54px rgba(0,0,0,.46), 0 2px 8px rgba(0,0,0,.26);
+    --glass-inset:inset 0 1px 0 rgba(255,255,255,.15), inset 0 -1px 0 rgba(255,255,255,.035);
+    --hairline:linear-gradient(150deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.10) 26%,
+                                       rgba(255,255,255,.02) 52%, rgba(0,167,255,.34) 100%);
+
+    /* escala fluida 360 → 1920 */
+    --pad: clamp(10px, 0.4rem + 1.1vw, 40px);
+    --gap: clamp(8px, 0.25rem + 0.7vw, 22px);
+    --fs-h1: clamp(1.45rem, 1.05rem + 1.9vw, 3.4rem);
+    --fs-time: clamp(0.98rem, 0.82rem + 0.75vw, 1.85rem);
+    --fs-total: clamp(1.15rem, 0.8rem + 1.9vw, 3.5rem);
+    --fs-rank: clamp(1.25rem, 0.9rem + 1.6vw, 3.2rem);
+    --ease: cubic-bezier(.22,1,.36,1);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+  body{
+    font-family:'Poppins', system-ui, -apple-system, sans-serif;
+    color:var(--ink); min-height:100svh; position:relative;
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgba(0,167,255,.12) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 78%);
+    font-variant-numeric:tabular-nums;
+  }
+  img{ display:block; max-width:100%; }
+
+  /* ================= fundo ================= */
+  .bg{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .bg-photo{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 32%;
+    opacity:.22; filter:saturate(.9) contrast(1.06);
+    mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.55) 50%, transparent 95%);
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.55) 50%, transparent 95%);
+  }
+  .bg-grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(0,167,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,167,255,.05) 1px,transparent 1px);
+    background-size:96px 96px;
+    mask-image:radial-gradient(ellipse 85% 75% at 50% 35%, #000 15%, transparent 72%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 75% at 50% 35%, #000 15%, transparent 72%);
+  }
+  .bg-vinheta{ position:absolute; inset:0;
+    background:radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  /* grão sutil: acabamento do fundo, nunca sobre o texto */
+  .bg-grao{ position:absolute; inset:0; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* ================= vidro ================= */
+  .glass{
+    position:relative;
+    background-color:var(--glass-tint);
+    background-image:var(--glass-film);
+    backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+    box-shadow:var(--glass-shadow), var(--glass-inset);
+  }
+  .glass::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:var(--hairline); opacity:.7;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .glass{ background-color:rgba(11,18,32,.93); }
+  }
+
+  /* ================= palco ================= */
+  .palco{
+    position:relative; z-index:1;
+    min-height:100svh;
+    display:flex; flex-direction:column; gap:var(--gap);
+    padding:
+      max(var(--pad), env(safe-area-inset-top))
+      max(var(--pad), env(safe-area-inset-right))
+      max(var(--pad), env(safe-area-inset-bottom))
+      max(var(--pad), env(safe-area-inset-left));
+    width:100%; max-width:2200px; margin:0 auto;
+  }
+
+  /* cabeçalho */
+  .topo{ display:flex; align-items:center; justify-content:space-between; gap:12px 20px; flex-wrap:wrap; }
+  .marca{ display:flex; align-items:center; gap:clamp(8px, .4rem + .5vw, 18px); min-width:0; }
+  .marca img{ width:clamp(34px, 1.6rem + 1.6vw, 72px); height:auto; flex:none;
+    filter:drop-shadow(0 6px 18px rgba(0,167,255,.35)); }
+  .marca-txt{ min-width:0; }
+  .olho{ font-family:'Montserrat',sans-serif; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; font-size:clamp(.66rem, .58rem + .35vw, 1.05rem); color:var(--brand-2); }
+  h1{ font-family:'Montserrat',sans-serif; font-weight:900; font-size:var(--fs-h1);
+    line-height:1.02; letter-spacing:-.02em; text-transform:uppercase; }
+
+  .placar{ display:flex; align-items:center; gap:clamp(8px, .3rem + .8vw, 22px); margin-left:auto; }
+  .geral{ text-align:right; }
+  .geral small{ display:block; font-size:clamp(.68rem, .6rem + .3vw, 1rem); color:var(--muted); font-weight:500; }
+  .geral b{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:clamp(1rem, .8rem + 1vw, 2.2rem); letter-spacing:-.01em; white-space:nowrap; }
+  .vivo{ display:inline-flex; align-items:center; gap:8px; border-radius:999px;
+    padding:clamp(6px, .3rem + .2vw, 12px) clamp(10px, .5rem + .4vw, 20px);
+    font-size:clamp(.72rem, .64rem + .3vw, 1.05rem); font-weight:600; white-space:nowrap; }
+  .vivo i{ width:9px; height:9px; border-radius:50%; background:#ff4d5e; flex:none;
+    box-shadow:0 0 0 0 rgba(255,77,94,.6); animation:pulso 1.8s ease-out infinite; }
+  .vivo.off i{ background:#ffb020; animation:none; }
+  .vivo .hora{ color:var(--muted); font-weight:500; }
+  @keyframes pulso{ 0%{ box-shadow:0 0 0 0 rgba(255,77,94,.55);} 80%,100%{ box-shadow:0 0 0 10px rgba(255,77,94,0);} }
+
+  /* ================= lista de times ================= */
+  .lista{ list-style:none; display:flex; flex-direction:column; gap:var(--gap); flex:1 1 auto; min-height:0; }
+  .time{ flex:1 1 0; min-height:0; display:flex; will-change:transform; }
+  .cartao{
+    --cor:#00A7FF;
+    flex:1 1 auto; min-width:0; border-radius:clamp(14px, .6rem + .6vw, 26px);
+    padding:clamp(10px, .4rem + .7vw, 26px) clamp(12px, .5rem + .9vw, 32px);
+    display:grid; align-items:center;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "pos nome nome"
+      "pos total meta"
+      "barra barra barra"
+      "traders traders traders";
+    column-gap:clamp(10px, .4rem + .8vw, 30px); row-gap:6px;
+    overflow:hidden;
+    animation:entra .6s var(--ease) both; animation-delay:calc(var(--i, 0) * 70ms);
+  }
+  .cartao::before{ /* faixa de cor do time na borda esquerda */
+    content:""; position:absolute; left:0; top:14%; bottom:14%; width:4px; border-radius:0 4px 4px 0;
+    background:var(--cor); box-shadow:0 0 18px var(--cor); opacity:.9;
+  }
+  @keyframes entra{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+
+  /* líder: coroa, moldura dourada e brilho contido */
+  .time.lider .cartao{
+    background-image:
+      radial-gradient(90% 140% at 0% 50%, rgba(255,209,102,.13), transparent 60%),
+      var(--glass-film);
+  }
+  .time.lider .cartao::after{ background:linear-gradient(120deg, rgba(255,209,102,.95), rgba(255,209,102,.18) 35%, rgba(255,255,255,.06) 60%, rgba(255,209,102,.55)); opacity:1; }
+
+  .pos{ grid-area:pos; display:grid; place-items:center; position:relative;
+    width:clamp(40px, 1.6rem + 2.6vw, 104px); aspect-ratio:1; border-radius:50%;
+    font-family:'Montserrat',sans-serif; font-weight:900; font-size:var(--fs-rank); line-height:1;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#dfe8f5; }
+  .pos small{ font-size:.45em; font-weight:800; margin-left:1px; align-self:start; margin-top:.55em; }
+  .pos-n{ display:flex; }
+  .time[data-med="1"] .pos{ color:#2a1d00; background:radial-gradient(circle at 35% 30%, #fff1c2, var(--ouro) 55%, #c99a2e); border-color:rgba(255,230,160,.9);
+    box-shadow:0 0 0 6px rgba(255,209,102,.12), 0 0 34px rgba(255,209,102,.35); }
+  .time[data-med="2"] .pos{ color:#1c2430; background:radial-gradient(circle at 35% 30%, #fff, var(--prata) 55%, #95a3b5); border-color:rgba(255,255,255,.8); }
+  .time[data-med="3"] .pos{ color:#2b1608; background:radial-gradient(circle at 35% 30%, #ffd9bd, var(--bronze) 55%, #9a5a2f); border-color:rgba(255,210,180,.8); }
+  .coroa{ position:absolute; left:50%; top:0; width:58%; transform:translate(-50%,-72%); color:var(--ouro);
+    filter:drop-shadow(0 3px 8px rgba(255,209,102,.5)); opacity:0; transition:opacity .4s; }
+  .time[data-med="1"] .coroa{ opacity:1; animation:flutua 3.2s ease-in-out infinite; }
+  @keyframes flutua{ 0%,100%{ transform:translate(-50%,-72%); } 50%{ transform:translate(-50%,-82%); } }
+
+  .nome{ grid-area:nome; min-width:0; }
+  .nome h2{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:var(--fs-time); line-height:1.12;
+    text-transform:uppercase; letter-spacing:-.005em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .quando{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:3px;
+    font-size:clamp(.75rem, .68rem + .3vw, 1.1rem); color:var(--muted); }
+  .quando .faixa{ white-space:nowrap; }
+  .selo{ display:none; align-items:center; gap:6px; border-radius:999px; padding:2px 10px 2px 8px;
+    font-size:clamp(.7rem, .64rem + .25vw, 1rem); font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+    color:#fff; background:#c81e3a; white-space:nowrap; }
+  .selo i{ width:7px; height:7px; border-radius:50%; background:#fff; animation:pisca 1.2s ease-in-out infinite; }
+  @keyframes pisca{ 50%{ opacity:.25; } }
+  .time.no-ar .selo{ display:inline-flex; }
+  .time.no-ar .cartao{ box-shadow:var(--glass-shadow), var(--glass-inset), 0 0 0 1px color-mix(in srgb, var(--cor) 55%, transparent), 0 0 40px color-mix(in srgb, var(--cor) 22%, transparent); }
+  .encerrado{ display:none; font-weight:600; color:var(--muted-2); }
+  .time.fim .encerrado{ display:inline; }
+
+  .total{ grid-area:total; text-align:left; min-width:0; }
+  .total b{ display:block; font-family:'Montserrat',sans-serif; font-weight:900; font-size:var(--fs-total);
+    line-height:1; letter-spacing:-.02em; white-space:nowrap; }
+  .time[data-med="1"] .total b{ color:#fff3cf; text-shadow:0 0 26px rgba(255,209,102,.35); }
+
+  .barra{ grid-area:barra; height:clamp(6px, .25rem + .35vw, 14px); border-radius:99px; background:rgba(255,255,255,.07); overflow:hidden; }
+  .barra i{ display:block; height:100%; width:100%; border-radius:inherit; transform-origin:0 50%; transform:scaleX(0);
+    background:linear-gradient(90deg, color-mix(in srgb, var(--cor) 55%, #fff 0%), var(--cor));
+    box-shadow:0 0 16px color-mix(in srgb, var(--cor) 60%, transparent);
+    transition:transform 1.1s var(--ease); }
+
+  .meta{ grid-area:meta; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:0 10px; min-width:0; text-align:right; line-height:1.25;
+    font-size:clamp(.75rem, .68rem + .3vw, 1.1rem); color:var(--muted); }
+  .meta .dep b{ color:#fff; font-weight:700; }
+  .meta .mais{ white-space:nowrap; }
+
+  .traders{ grid-area:traders; list-style:none; display:grid; gap:6px; min-width:0;
+    grid-template-columns:repeat(3, minmax(0,1fr)); }
+  .trader{ display:flex; align-items:center; gap:6px; min-width:0; position:relative;
+    padding:4px 6px 4px 4px; border-radius:999px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.07); }
+  .trader img{ width:26px; height:26px; border-radius:50%; object-fit:cover; flex:none;
+    border:2px solid color-mix(in srgb, var(--cor) 70%, transparent); background:#0d1524; }
+  .trader .tx{ min-width:0; line-height:1.15; }
+  .trader .tn{ display:block; font-size:.75rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .trader .tv{ display:block; font-family:'Montserrat',sans-serif; font-weight:800; font-size:.75rem; white-space:nowrap; }
+  .trader .tn .nc, .trader .tv .vc{ display:none; }
+  .trader img{ width:24px; height:24px; }
+  .trader.top{ background:color-mix(in srgb, var(--cor) 16%, transparent); border-color:color-mix(in srgb, var(--cor) 50%, transparent); }
+  .trader.top .tn{ color:#fff; }
+  .trader .estrela{ display:none; position:absolute; left:-2px; top:-4px; width:14px; height:14px; color:var(--ouro);
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
+  .trader.top .estrela{ display:block; }
+  .traders .vazio{ grid-column:1 / -1; font-size:.8rem; color:var(--muted-2); padding:4px 2px; }
+
+  /* tablet: posição | nome+meta | total, e quatro traders em faixa */
+  @media (min-width:37.5rem){
+    .cartao{
+      grid-template-columns:auto minmax(0,1fr) auto;
+      grid-template-areas:
+        "pos nome total"
+        "pos barra barra"
+        "pos meta meta"
+        "pos traders traders";
+      row-gap:8px;
+    }
+    .total{ text-align:right; }
+    .meta{ flex-direction:row; justify-content:space-between; align-items:center; text-align:left; }
+    .trader .tn .nc, .trader .tv .vc{ display:inline; }
+    .trader .tn .np, .trader .tv .vp{ display:none; }
+    .traders{ grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; }
+    .trader img{ width:32px; height:32px; }
+    .trader .tn{ font-size:.8rem; }
+    .trader .tv{ font-size:.86rem; }
+  }
+
+  /* computador e live (16:9): o palco cabe na tela, sem rolagem */
+  @media (min-width:64rem){
+    .palco{ height:100svh; }
+    .lista{ overflow:visible; }
+    .cartao{
+      grid-template-columns:auto minmax(0, .95fr) minmax(0, 1.45fr);
+      grid-template-rows:auto auto auto;
+      grid-template-areas:
+        "pos nome traders"
+        "pos total traders"
+        "pos barra traders"
+        "pos meta traders";
+      row-gap:clamp(4px, .1rem + .45vh, 12px);
+      align-content:center;
+    }
+    .total{ text-align:left; }
+    .traders{ align-self:center; gap:clamp(6px, .2rem + .4vw, 14px); grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .trader{ padding:clamp(4px, .1rem + .3vh, 8px) 10px clamp(4px, .1rem + .3vh, 8px) clamp(4px, .1rem + .3vh, 8px); gap:10px; }
+    .trader img{ width:clamp(30px, 1rem + 2.6vh, 56px); height:clamp(30px, 1rem + 2.6vh, 56px); }
+    .trader .tn{ font-size:clamp(.78rem, .5rem + .9vh, 1.1rem); }
+    .trader .tv{ font-size:clamp(.86rem, .55rem + 1.05vh, 1.3rem); }
+    .trader .estrela{ width:clamp(14px, .5rem + .8vh, 22px); height:clamp(14px, .5rem + .8vh, 22px); }
+    .traders .vazio{ font-size:clamp(.85rem, .6rem + .6vh, 1.1rem); }
+  }
+
+  @media (min-width:100rem){
+    .traders{ grid-template-columns:repeat(4, minmax(0,1fr)); }
+  }
+
+  /* ================= aviso de depósito ================= */
+  .avisos{ position:fixed; z-index:20; left:50%; top:max(12px, env(safe-area-inset-top)); transform:translateX(-50%);
+    width:min(calc(100% - 24px), 680px); pointer-events:none; }
+  .aviso{ --cor:#00A7FF; display:flex; align-items:center; gap:clamp(10px, .4rem + .6vw, 18px);
+    border-radius:999px; padding:clamp(8px, .3rem + .4vw, 14px) clamp(16px, .6rem + .9vw, 28px) clamp(8px, .3rem + .4vw, 14px) clamp(8px, .3rem + .4vw, 14px);
+    background-color:#0a1222;
+    box-shadow:0 24px 60px rgba(0,0,0,.55), 0 0 0 1px color-mix(in srgb, var(--cor) 60%, transparent), 0 0 46px color-mix(in srgb, var(--cor) 30%, transparent);
+    opacity:0; transform:translateY(-130%) scale(.96); }
+  .aviso.on{ animation:avisoEntra .5s var(--ease) forwards; }
+  .aviso.out{ animation:avisoSai .4s ease-in forwards; }
+  @keyframes avisoEntra{ from{ opacity:0; transform:translateY(-130%) scale(.96);} to{ opacity:1; transform:none; } }
+  @keyframes avisoSai{ from{ opacity:1; transform:none;} to{ opacity:0; transform:translateY(-60%) scale(.97);} }
+  .aviso img{ width:clamp(44px, 1.8rem + 1.6vw, 72px); height:clamp(44px, 1.8rem + 1.6vw, 72px); border-radius:50%; object-fit:cover; flex:none;
+    border:3px solid var(--cor); }
+  .aviso .ax{ min-width:0; }
+  .aviso .an{ display:block; font-size:clamp(.8rem, .7rem + .35vw, 1.15rem); color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .aviso .av{ display:block; font-family:'Montserrat',sans-serif; font-weight:900; font-size:clamp(1.05rem, .85rem + 1vw, 2rem); line-height:1.1; }
+  .aviso .av em{ font-style:normal; color:#7dffb0; }
+  .aviso .av span{ color:var(--cor); filter:brightness(1.25); }
+
+  /* o time que acabou de receber depósito acende por um instante */
+  .time.recebeu .cartao{ animation:recebe 1.4s var(--ease); }
+  @keyframes recebe{ 0%{ filter:brightness(1);} 25%{ filter:brightness(1.35);} 100%{ filter:brightness(1);} }
+
+  @media (hover:hover) and (pointer:fine){
+    .trader{ transition:transform .18s var(--ease), background-color .18s; }
+    .trader:hover{ transform:translateY(-2px); background-color:rgba(255,255,255,.08); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cartao{ animation:fadeCurto .25s ease both; animation-delay:0s; }
+    @keyframes fadeCurto{ from{ opacity:0; } to{ opacity:1; } }
+    .vivo i, .selo i, .time[data-med="1"] .coroa{ animation:none; }
+    .barra i{ transition:none; }
+    .aviso{ transform:none; }
+    .aviso.on{ animation:fadeIn .2s ease forwards; }
+    .aviso.out{ animation:fadeOut .2s ease forwards; }
+    @keyframes fadeIn{ from{ opacity:0;} to{ opacity:1;} }
+    @keyframes fadeOut{ from{ opacity:1;} to{ opacity:0;} }
+    .time.recebeu .cartao{ animation:none; }
+    .time{ will-change:auto; }
+  }
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <img class="bg-photo" src="../../assets/corujao/background.webp" alt="" />
+    <div class="bg-grid"></div>
+    <div class="bg-vinheta"></div>
+    <div class="bg-grao"></div>
+  </div>
+
+  <div class="avisos" id="avisos" aria-live="polite"></div>
+
+  <main class="palco">
+    <header class="topo">
+      <div class="marca">
+        <img src="../../assets/safirion-icon.svg" alt="Safirion" width="72" height="72" />
+        <div class="marca-txt">
+          <p class="olho">Corujão de Traders</p>
+          <h1><span>Ranking dos Times</span></h1>
+        </div>
+      </div>
+      <div class="placar">
+        <div class="geral">
+          <small>Total do evento</small>
+          <b id="totalGeral">R$&nbsp;0,00</b>
+        </div>
+        <div class="vivo glass" id="vivo"><i></i><span class="vtx">Ao vivo</span><span class="hora" id="hora">conectando…</span></div>
+      </div>
+    </header>
+
+    <ol class="lista" id="lista" aria-label="Ranking dos times"></ol>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
+<script>
+"use strict";
+/* Ranking dos Times — página pública do Corujão de Traders.
+   Lê a tabela roleta_estado do Supabase (linhas cj-corujao__<time> com os
+   experts e cj-ranking com os lançamentos de depósito), escuta o tempo real e,
+   como rede de segurança, consulta de novo a cada 8 s. Nada aqui inventa valor:
+   sem linha no banco, todos os times aparecem com R$ 0,00. */
+
+const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+
+/* Ordem fixa = desempate final. Horários em Brasília (UTC-3, sem horário de verão). */
+const TIMES = [
+  { slug:"mulheres",   nome:"Time das Mulheres",  quando:"16/10 · 18h → 00h", ini:"2026-10-16T18:00:00-03:00", fim:"2026-10-17T00:00:00-03:00", cor:"#ff5fa8" },
+  { slug:"madruga",    nome:"Time da Madruga",    quando:"17/10 · 00h → 06h", ini:"2026-10-17T00:00:00-03:00", fim:"2026-10-17T06:00:00-03:00", cor:"#8c84ff" },
+  { slug:"amem",       nome:"Time do Amém",       quando:"17/10 · 06h → 12h", ini:"2026-10-17T06:00:00-03:00", fim:"2026-10-17T12:00:00-03:00", cor:"#ff9a3d" },
+  { slug:"fechamento", nome:"Time do Fechamento", quando:"17/10 · 12h → 18h", ini:"2026-10-17T12:00:00-03:00", fim:"2026-10-17T18:00:00-03:00", cor:"#2fd39a" }
+].map((t, i) => Object.assign(t, { ordem:i, iniMs:Date.parse(t.ini), fimMs:Date.parse(t.fim) }));
+
+const ID_RANK = "cj-ranking";
+const IDS = TIMES.map(t => "cj-corujao__" + t.slug).concat(ID_RANK);
+const REST = SYNC_URL + "/rest/v1/roleta_estado?id=in.(" + IDS.join(",") + ")&select=id,experts,cfg,atualizado";
+const HEAD = { apikey: SYNC_ANON, Authorization: "Bearer " + SYNC_ANON };
+
+const BRL  = new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL" });
+const BRL0 = new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL", maximumFractionDigits:0, minimumFractionDigits:0 });
+const HORA = new Intl.DateTimeFormat("pt-BR", { timeZone:"America/Sao_Paulo", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+const fmt  = v => BRL.format(v || 0);
+const fmtCurto = v => Number.isInteger(v) ? BRL0.format(v) : BRL.format(v);
+const primeiroNome = n => String(n || "").trim().split(/\s+/)[0] || "Trader";
+
+const reduz = window.matchMedia("(prefers-reduced-motion: reduce)");
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+/* ---------- foto ---------- */
+function iniciais(nome){
+  return String(nome || "?").trim().split(/\s+/).map(p => p[0] || "").slice(0, 2).join("").toUpperCase() || "?";
+}
+function avatar(nome, cor){
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>" +
+    "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>" +
+    "<stop offset='0%' stop-color='" + (cor || "#0090df") + "'/><stop offset='100%' stop-color='#0b1830'/></linearGradient></defs>" +
+    "<rect width='240' height='240' fill='url(#g)'/>" +
+    "<text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' " +
+    "font-family='Montserrat,Arial,sans-serif' font-weight='800' font-size='92' fill='#fff'>" + esc(iniciais(nome)) + "</text></svg>";
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+/* As fotos são gravadas relativas a /roleta/ ("../assets/experts/x.webp");
+   esta página mora um nível abaixo, então ganha mais um "../". */
+function fotoDe(caminho, nome, cor){
+  const p = typeof caminho === "string" ? caminho.trim() : "";
+  if (!p) return avatar(nome, cor);
+  if (/^(data:|https?:|blob:|\/)/i.test(p)) return p;
+  return "../" + p;
+}
+
+/* ---------- estado ---------- */
+let linhas = new Map();          // id -> linha do banco
+let vistos = null;               // ids de lançamentos já conhecidos (null = ainda não carregou)
+const exibido = new Map();       // slug -> total mostrado (para o contador)
+let exibidoGeral = 0;
+const els = new Map();           // slug -> <li>
+
+function calcular(){
+  const rk = linhas.get(ID_RANK);
+  const cfg = rk && rk.cfg && typeof rk.cfg === "object" ? rk.cfg : {};
+  const lanc = Array.isArray(cfg.lanc) ? cfg.lanc : [];
+  const apag = cfg.apagados && typeof cfg.apagados === "object" ? cfg.apagados : {};
+  const validos = lanc.filter(l => l && l.id != null &&
+    !Object.prototype.hasOwnProperty.call(apag, String(l.id)) &&
+    Number.isFinite(Number(l.valor)) && TIMES.some(t => t.slug === l.time));
+
+  const times = TIMES.map(t => {
+    const linha = linhas.get("cj-corujao__" + t.slug);
+    const experts = linha && Array.isArray(linha.experts) ? linha.experts.filter(e => e && e.id != null) : [];
+    const porExpert = new Map(experts.map(e => [String(e.id), e]));
+    const traders = new Map();
+    experts.forEach(e => {
+      if (e.active === false) return;
+      traders.set(String(e.id), { id:String(e.id), nome:e.name || "Trader", foto:e.photo, total:0, qtd:0 });
+    });
+    let total = 0, qtd = 0;
+    validos.filter(l => l.time === t.slug).forEach(l => {
+      const v = Number(l.valor);
+      total += v; qtd++;
+      const k = String(l.expert);
+      let tr = traders.get(k);
+      if (!tr){
+        const e = porExpert.get(k);
+        tr = { id:k, nome:(e && e.name) || l.nome || "Trader", foto:e ? e.photo : null, total:0, qtd:0 };
+        traders.set(k, tr);
+      }
+      tr.total += v; tr.qtd++;
+    });
+    const lista = [...traders.values()].sort((a, b) => b.total - a.total || b.qtd - a.qtd || a.nome.localeCompare(b.nome, "pt-BR"));
+    return { t, total: Math.round(total * 100) / 100, qtd, traders: lista, porExpert };
+  });
+  return { times, validos };
+}
+
+/* ---------- desenho ---------- */
+const CORoa = '<svg class="coroa" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 34 0 8l16 12L32 0l16 20L64 8l-4 26z"/><rect x="4" y="35" width="56" height="5" rx="2" fill="currentColor"/></svg>';
+const ESTRELA = '<svg class="estrela" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>';
+
+function criarTime(t, i){
+  const li = document.createElement("li");
+  li.className = "time";
+  li.dataset.slug = t.slug;
+  li.innerHTML =
+    '<article class="cartao glass" style="--cor:' + t.cor + ';--i:' + i + '">' +
+      '<div class="pos">' + CORoa + '<span class="pos-n"><span class="n">' + (i + 1) + '</span><small>º</small></span></div>' +
+      '<div class="nome"><h2>' + esc(t.nome) + '</h2>' +
+        '<p class="quando"><span class="selo"><i></i>No ar agora</span><span class="faixa">' + esc(t.quando) + '</span><span class="encerrado">· encerrado</span></p></div>' +
+      '<div class="total"><b class="valor">' + fmt(0) + '</b></div>' +
+      '<div class="barra" aria-hidden="true"><i></i></div>' +
+      '<p class="meta"><span class="dep">Nenhum depósito</span><span class="mais"></span></p>' +
+      '<ul class="traders"></ul>' +
+    '</article>';
+  return li;
+}
+
+function quantosTraders(){
+  const w = window.innerWidth, h = window.innerHeight;
+  if (w < 600) return 3;
+  if (w < 1024) return 4;
+  const cols = w >= 1600 ? 4 : 3;
+  return h < 820 ? cols : cols * 2;
+}
+
+function desenharTraders(el, d){
+  const ul = el.querySelector(".traders");
+  const max = quantosTraders();
+  const mostra = d.traders.slice(0, max);
+  const resto = d.traders.length - mostra.length;
+  const topo = d.traders[0] && d.traders[0].total > 0 ? d.traders[0].id : null;
+  const assinatura = max + "|" + d.traders.map(x => x.id + ":" + x.total + ":" + x.nome + ":" + (x.foto ? String(x.foto).length : 0)).join(",");
+  if (ul.dataset.sig !== assinatura){
+    ul.dataset.sig = assinatura;
+    ul.innerHTML = mostra.length ? mostra.map(x =>
+      '<li class="trader' + (x.id === topo ? " top" : "") + '" title="' + esc(x.nome) + ' · ' + esc(fmt(x.total)) + '">' +
+        ESTRELA +
+        '<img src="' + esc(fotoDe(x.foto, x.nome, d.t.cor)) + '" alt="" loading="lazy" decoding="async">' +
+        '<span class="tx"><span class="tn"><span class="np">' + esc(primeiroNome(x.nome)) + '</span><span class="nc">' + esc(x.nome) + '</span></span>' +
+        '<span class="tv"><span class="vp">' + esc(BRL0.format(Math.round(x.total))) + '</span><span class="vc">' + esc(fmtCurto(x.total)) + '</span></span></span>' +
+      '</li>').join("")
+      : '<li class="vazio">Aguardando os traders do time</li>';
+    ul.querySelectorAll("img").forEach(im => {
+      im.addEventListener("error", () => { const n = im.closest(".trader").title.split(" · ")[0]; im.src = avatar(n, d.t.cor); }, { once:true });
+    });
+  }
+  el.querySelector(".mais").textContent = resto > 0 ? "+" + resto + (resto === 1 ? " trader" : " traders") : "";
+}
+
+/* número que conta até o valor novo */
+function contar(alvo, de, para, duracao){
+  if (reduz.matches || de === para){ alvo.textContent = fmt(para); return; }
+  const t0 = performance.now();
+  const passo = agora => {
+    const p = Math.min(1, (agora - t0) / duracao);
+    const e = 1 - Math.pow(1 - p, 3);
+    alvo.textContent = fmt(de + (para - de) * e);
+    if (p < 1) requestAnimationFrame(passo); else alvo.textContent = fmt(para);
+  };
+  requestAnimationFrame(passo);
+}
+
+/* reordenação com FLIP: mede antes, move no DOM, anima a diferença */
+function reordenar(ordem){
+  const lista = $("lista");
+  const atual = [...lista.children].map(li => li.dataset.slug).join();
+  const nova = ordem.map(d => d.t.slug).join();
+  if (atual === nova) return;
+  const antes = new Map();
+  els.forEach((li, s) => antes.set(s, li.getBoundingClientRect().top));
+  ordem.forEach(d => lista.appendChild(els.get(d.t.slug)));
+  if (reduz.matches) return;
+  els.forEach((li, s) => {
+    const dy = antes.get(s) - li.getBoundingClientRect().top;
+    if (Math.abs(dy) < 1) return;
+    li.style.transition = "none";
+    li.style.transform = "translateY(" + dy + "px)";
+    li.style.zIndex = dy > 0 ? "2" : "1";
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      li.style.transition = "transform .8s cubic-bezier(.22,1,.36,1)";
+      li.style.transform = "";
+      setTimeout(() => { li.style.zIndex = ""; li.style.transition = ""; }, 850);
+    }));
+  });
+}
+
+function noAr(t, agora){ return agora >= t.iniMs && agora < t.fimMs; }
+
+function marcarHorario(){
+  const agora = Date.now();
+  TIMES.forEach(t => {
+    const li = els.get(t.slug); if (!li) return;
+    li.classList.toggle("no-ar", noAr(t, agora));
+    li.classList.toggle("fim", agora >= t.fimMs);
+  });
+}
+
+function desenhar(dados, animar){
+  const ordem = dados.times.slice().sort((a, b) => b.total - a.total || b.qtd - a.qtd || a.t.ordem - b.t.ordem);
+  const lider = ordem[0].total;
+  reordenar(ordem);
+  ordem.forEach((d, i) => {
+    const li = els.get(d.t.slug);
+    li.dataset.pos = String(i + 1);
+    li.dataset.med = d.total > 0 ? String(i + 1) : "0";   /* medalha só para quem tem valor */
+    li.classList.toggle("lider", i === 0 && lider > 0);
+    li.querySelector(".n").textContent = i + 1;
+    const valor = li.querySelector(".valor");
+    const antes = exibido.has(d.t.slug) ? exibido.get(d.t.slug) : 0;
+    if (antes !== d.total) contar(valor, animar ? antes : d.total, d.total, 1400);
+    exibido.set(d.t.slug, d.total);
+    li.querySelector(".barra i").style.transform = "scaleX(" + (lider > 0 ? d.total / lider : 0) + ")";
+    li.querySelector(".dep").innerHTML = d.qtd === 0 ? "Nenhum depósito"
+      : "<b>" + d.qtd + "</b> " + (d.qtd === 1 ? "depósito" : "depósitos");
+    li.setAttribute("aria-label", (i + 1) + "º lugar: " + d.t.nome + ", " + fmt(d.total) + ", " + d.qtd + (d.qtd === 1 ? " depósito" : " depósitos"));
+    desenharTraders(li, d);
+  });
+  const geral = Math.round(dados.times.reduce((s, d) => s + d.total, 0) * 100) / 100;
+  if (geral !== exibidoGeral) contar($("totalGeral"), animar ? exibidoGeral : geral, geral, 1400);
+  exibidoGeral = geral;
+  marcarHorario();
+}
+
+/* ---------- avisos de depósito novo: fila, um por vez ---------- */
+const fila = [];
+let mostrando = false;
+function avisar(item){ fila.push(item); if (!mostrando) proximoAviso(); }
+function proximoAviso(){
+  const it = fila.shift();
+  if (!it){ mostrando = false; return; }
+  mostrando = true;
+  const box = $("avisos");
+  const el = document.createElement("div");
+  el.className = "aviso";
+  el.style.setProperty("--cor", it.cor);
+  el.innerHTML = '<img src="' + esc(it.foto) + '" alt="">' +
+    '<span class="ax"><span class="an">' + esc(it.nome) + ' depositou</span>' +
+    '<span class="av"><em>+' + esc(fmt(it.valor)) + '</em> · <span>' + esc(it.time) + '</span></span></span>';
+  el.querySelector("img").addEventListener("error", e => { e.target.src = avatar(it.nome, it.cor); }, { once:true });
+  box.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("on"));
+  const li = els.get(it.slug);
+  if (li){ li.classList.remove("recebeu"); void li.offsetWidth; li.classList.add("recebeu"); }
+  setTimeout(() => {
+    el.classList.remove("on"); el.classList.add("out");
+    setTimeout(() => { el.remove(); proximoAviso(); }, reduz.matches ? 220 : 420);
+  }, 3500);
+}
+
+/* ---------- aplicar o que chegou do banco ---------- */
+function aplicar(){
+  const dados = calcular();
+  const ids = new Set(dados.validos.map(l => String(l.id)));
+  const primeira = vistos === null;
+  if (!primeira){
+    const novos = dados.validos.filter(l => !vistos.has(String(l.id)))
+      .sort((a, b) => (Number(a.t) || 0) - (Number(b.t) || 0));
+    novos.forEach(l => {
+      const d = dados.times.find(x => x.t.slug === l.time);
+      const e = d && d.porExpert.get(String(l.expert));
+      const nome = (e && e.name) || l.nome || "Trader";
+      avisar({ slug:l.time, nome, valor:Number(l.valor), time:d.t.nome, cor:d.t.cor, foto:fotoDe(e ? e.photo : null, nome, d.t.cor) });
+    });
+  }
+  vistos = ids;
+  desenhar(dados, !primeira);
+}
+
+let ultimaOk = 0;
+function marcarVivo(ok){
+  const v = $("vivo");
+  if (ok){ ultimaOk = Date.now(); v.classList.remove("off"); v.querySelector(".vtx").textContent = "Ao vivo"; }
+  else if (Date.now() - ultimaOk > 20000){ v.classList.add("off"); v.querySelector(".vtx").textContent = "Reconectando"; }
+  $("hora").textContent = ultimaOk ? "· " + HORA.format(new Date(ultimaOk)) : "· aguardando";
+}
+
+let buscando = false, deNovo = false;
+async function buscar(){
+  if (buscando){ deNovo = true; return; }
+  buscando = true;
+  try {
+    const r = await fetch(REST, { headers: HEAD, cache:"no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    if (!Array.isArray(d)) throw new Error("resposta inesperada");
+    linhas = new Map(d.filter(x => x && x.id).map(x => [x.id, x]));
+    aplicar();
+    marcarVivo(true);
+  } catch (err){
+    console.warn("Ranking: falha ao consultar, tento de novo em 8 s.", err && err.message);
+    marcarVivo(false);
+  } finally {
+    buscando = false;
+    if (deNovo){ deNovo = false; setTimeout(buscar, 150); }
+  }
+}
+
+/* ---------- início ---------- */
+TIMES.forEach((t, i) => { const li = criarTime(t, i); els.set(t.slug, li); $("lista").appendChild(li); });
+desenhar(calcular(), false);
+buscar();
+setInterval(buscar, 8000);
+setInterval(marcarHorario, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) buscar(); });
+
+let quantos = quantosTraders();
+window.addEventListener("resize", () => {
+  const q = quantosTraders();
+  if (q !== quantos){ quantos = q; desenhar(calcular(), false); }
+}, { passive:true });
+
+/* Tempo real: a mudança no banco dispara uma consulta na hora (o pacote do
+   tempo real pode vir truncado com fotos em data URI, então não confio nele
+   como dado). Se o tempo real cair, a consulta de 8 s segue sozinha. */
+(function tempoReal(){
+  try {
+    if (!window.supabase || !window.supabase.createClient) return;
+    const sb = window.supabase.createClient(SYNC_URL, SYNC_ANON);
+    let espera = null;
+    sb.channel("ranking-times-" + Math.random().toString(36).slice(2, 8))
+      .on("postgres_changes", { event:"*", schema:"public", table:"roleta_estado" }, payload => {
+        try {
+          const id = (payload && (payload.new && payload.new.id)) || (payload && payload.old && payload.old.id);
+          if (id && !IDS.includes(id)) return;
+          clearTimeout(espera); espera = setTimeout(buscar, 120);
+        } catch (e) { buscar(); }
+      })
+      .subscribe(st => { if (st === "SUBSCRIBED") buscar(); });
+  } catch (err){ console.warn("Ranking: tempo real fora do ar, sigo pela consulta de 8 s.", err && err.message); }
+})();
+
+/* Versão nova publicada da roleta: recarrega sozinha (a live não precisa de F5). */
+(function(){
+  let minha = null;
+  setInterval(() => {
+    fetch("../version.json?cb=" + Date.now(), { cache:"no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d || !d.v) return;
+        if (minha === null){ minha = d.v; return; }
+        if (d.v !== minha && !mostrando) location.reload();
+      }).catch(() => {});
+  }, 60000);
+})();
+</script>
+</body>
+</html>

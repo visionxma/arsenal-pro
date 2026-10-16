@@ -714,7 +714,7 @@
 
           <!-- fs-right: em tela cheia vira a coluna da direita (display:contents fora dela) -->
           <div class="fs-brand fs-only">
-            <span>Corujão de Traders</span>
+            <span id="marcaTime">Corujão de Traders</span>
           </div>
 
           <div class="fs-right">
@@ -775,6 +775,28 @@
 
   <div class="toast glass" id="toast" role="status"></div>
 
+<script>
+/* ===== Roleta por TIME (16/10/2026) =====
+   ?time=<slug> transforma esta página numa roleta própria daquele time: sala,
+   linha no banco, canal do navegador e chaves locais ganham o sufixo do time,
+   então cada time sorteia só entre os seus, sem tocar na roleta geral (sem
+   parâmetro tudo continua exatamente como antes). */
+var TIMES_CJ = [
+  { slug:"mulheres",   nome:"Time das Mulheres",  quando:"16/10 · 18h → 00h" },
+  { slug:"madruga",    nome:"Time da Madruga",    quando:"17/10 · 00h → 06h" },
+  { slug:"amem",       nome:"Time do Amém",       quando:"17/10 · 06h → 12h" },
+  { slug:"fechamento", nome:"Time do Fechamento", quando:"17/10 · 12h → 18h" }
+];
+var TIME = (function(){
+  try {
+    var t = (new URLSearchParams(location.search).get("time") || "").toLowerCase().trim();
+    return TIMES_CJ.some(function(x){ return x.slug === t; }) ? t : "";
+  } catch (e) { return ""; }
+})();
+var TIME_INFO = TIMES_CJ.filter(function(x){ return x.slug === TIME; })[0] || null;
+function K(k){ return TIME ? k + "__" + TIME : k; }
+function comTime(caminho){ return TIME ? caminho + "?time=" + TIME : caminho; }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
@@ -800,11 +822,12 @@
   check();
 })();
 /* ================= Dados ================= */
-const LS_EXPERTS = "cj_experts_v6";
-const LS_CFG     = "cj_cfg_v2";
-const LS_HIST    = "cj_hist_v1";
-const LS_RODADA  = "cj_rodada_v1";
-const LS_LIVE    = "cj_live_state_v1";
+if (TIME_INFO){ document.title = "Roleta · " + TIME_INFO.nome + " — Corujão de Traders"; document.addEventListener("DOMContentLoaded", function(){ var m = document.getElementById("marcaTime"); if (m) m.textContent = "Corujão · " + TIME_INFO.nome; }); }
+const LS_EXPERTS = K("cj_experts_v6");
+const LS_CFG     = K("cj_cfg_v2");
+const LS_HIST    = K("cj_hist_v1");
+const LS_RODADA  = K("cj_rodada_v1");
+const LS_LIVE    = K("cj_live_state_v1");
 
 /* Os 16 experts = uma foto para cada arquivo em assets/experts/ */
 const DEFAULT_EXPERTS = [
@@ -1318,7 +1341,7 @@ function setLiveCard(state){ // idle | live | done
 }
 function setLive(state){
   save(LS_LIVE, state);
-  try { new BroadcastChannel("cj-live").postMessage(state); } catch {}
+  try { new BroadcastChannel(K("cj-live")).postMessage(state); } catch {}
   syncSend(Object.assign({ type:"live" }, state));
 }
 function showWinner(e){
@@ -1594,7 +1617,7 @@ const MUTE = (function(){
 })();
 
 /* ================= Painel Admin externo (admin/) ================= */
-function openAdminPage(){ window.open("admin/", "_blank", "noopener"); }
+function openAdminPage(){ window.open(comTime("admin/"), "_blank", "noopener"); }
 document.getElementById("adminHot").addEventListener("dblclick", openAdminPage);
 document.addEventListener("keydown", e => {
   if ((e.key === "A" || e.key === "a") && e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
@@ -1632,11 +1655,11 @@ window.addEventListener("storage", ev => {
 });
 const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
 const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
-const SYNC_ROOM = "cj-corujao";
+const SYNC_ROOM = K("cj-corujao");
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 let syncCh = null, syncOn = false;
 /* último link da live recebido de um admin autenticado (url + token que o validou) */
-let LIVE_URL = { url: (function(){ try { return localStorage.getItem("cj_live_url_v1") || null; } catch { return null; } })(), t: null };
+let LIVE_URL = { url: (function(){ try { return localStorage.getItem(K("cj_live_url_v1")) || null; } catch { return null; } })(), t: null };
 /* CANAL LOCAL (rede de seguranca, 18/09/2026)
    O canal pela internet (Supabase Realtime) pode estar fora do ar — foi o que
    aconteceu: o projeto sumiu e painel e roleta ficaram sem se falar. Este
@@ -1644,7 +1667,7 @@ let LIVE_URL = { url: (function(){ try { return localStorage.getItem("cj_live_ur
    nada externo, entao o operador continua comandando a roleta com o painel
    aberto na mesma maquina. Como e restrito ao proprio navegador, nao precisa
    (nem tem como) exigir token: ninguem de fora consegue falar por aqui. */
-const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd"); } catch { return null; } })();
+const CMD_CH = (() => { try { return new BroadcastChannel(K("cj-cmd")); } catch { return null; } })();
 function syncSend(o){
   const msg = Object.assign({ k: SYNC_KEY }, o);
   try { if (CMD_CH) CMD_CH.postMessage(msg); } catch {}
@@ -1679,11 +1702,11 @@ function safeRebuild(){
    poder MESCLAR em vez de substituir. Antes ela adotava a lista de qualquer
    painel em bloco, entao o ultimo a falar vencia — com varias maquinas no mesmo
    login, uma desatualizada apagava o que a outra tinha acabado de corrigir. */
-const LS_TUMBAS = "cj_experts_tumbas_v1";
+const LS_TUMBAS = K("cj_experts_tumbas_v1");
 /* Maior relogio logico ja visto. A roleta nao edita nada, mas precisa guardar
    isso para entregar a um painel recem-aberto: sem esse numero ele comecaria do
    zero e TODA edicao dele perderia para as outras maquinas. */
-const LS_REV_VISTO = "cj_rev_visto_v1";
+const LS_REV_VISTO = K("cj_rev_visto_v1");
 let revVisto = parseInt(localStorage.getItem(LS_REV_VISTO) || "0", 10) || 0;
 function anotarRev(v){
   const n = parseInt(v, 10) || 0;
@@ -1740,7 +1763,7 @@ function applyAdminState(m){
    e aberta num computador novo e nao ha painel no ar para responder. Sem a
    tabela, nada muda: ela percebe uma vez e nao tenta mais. */
 const EST_REST = SYNC_URL + "/rest/v1/roleta_estado";
-const EST_ID   = "cj-corujao";
+const EST_ID   = K("cj-corujao");
 let estadoNoServidor = null;
 async function adotarDoServidor(){
   if (estadoNoServidor === false) return false;
@@ -1819,7 +1842,7 @@ async function tratarMsg(m, local){
       case "liveUrl": {
         // guarda o link + o token que o autenticou, para reencaminhar ao Corujão
         const u = (function(x){ try { const p = new URL(String(x)); return (p.protocol==="https:"||p.protocol==="http:") ? p.href : null; } catch { return null; } })(m.url);
-        if (u){ LIVE_URL = { url:u, t:m.t }; try { localStorage.setItem("cj_live_url_v1", u); } catch {} }
+        if (u){ LIVE_URL = { url:u, t:m.t }; try { localStorage.setItem(K("cj_live_url_v1"), u); } catch {} }
         break;
       }
       case "force":
@@ -1904,7 +1927,7 @@ if (CMD_CH){
 setTimeout(adotarDoServidor, 1200);
 
 /* ================= Redundância: principal + reserva ================= */
-const LS_HB = "cj_roleta_hb";
+const LS_HB = K("cj_roleta_hb");
 const INST_ID = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 let isPrimary = false;
 const readHB = () => load(LS_HB, null);

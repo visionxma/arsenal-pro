@@ -564,6 +564,78 @@
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
   }
+
+  /* ===== Times e depósitos (16/10/2026) ===== */
+  .sb-time{ margin-top:10px; display:flex; align-items:center; gap:9px; width:100%; min-height:40px;
+    padding:7px 10px; border-radius:var(--r); background:var(--brand-dim); border:1px solid var(--brand-line);
+    color:var(--text); text-align:left; cursor:pointer; transition:background .15s, transform .12s; }
+  .sb-time:active{ transform:scale(.98); }
+  @media (hover:hover) and (pointer:fine){ .sb-time:hover{ background:rgba(35,137,230,.22); } }
+  .sb-time .dot{ width:8px; height:8px; border-radius:50%; background:var(--brand-2); flex:none;
+    box-shadow:0 0 0 3px rgba(75,163,240,.18); }
+  .sb-time span{ min-width:0; display:grid; }
+  .sb-time b{ font-size:12.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-time small{ font-size:11px; color:var(--t3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.sb-min .sb-time{ display:none; }
+  .tb-time{ margin-left:auto; font-size:11.5px; font-weight:600; color:var(--brand-2); white-space:nowrap;
+    padding:3px 8px; border-radius:999px; background:var(--brand-dim); border:1px solid var(--brand-line); }
+  .tb-time:empty{ display:none; }
+
+  .eq-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap:12px; }
+  .eq-card{ background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); padding:16px;
+    display:grid; gap:12px; align-content:start; min-width:0; height:100%; }
+  .eq-card.atual{ border-color:var(--brand-line); box-shadow:inset 0 0 0 1px var(--brand-line); }
+  .eq-h{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .eq-h > div{ min-width:0; }
+  .eq-h b{ display:block; font-size:15px; font-weight:600; color:var(--text); }
+  .eq-h small{ display:block; margin-top:3px; font-size:12.5px; color:var(--warn); font-variant-numeric:tabular-nums; }
+  .eq-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:13px; color:var(--t3); }
+  .eq-av{ display:flex; padding-left:8px; }
+  .eq-av img{ width:30px; height:30px; border-radius:50%; object-fit:cover; margin-left:-8px;
+    border:2px solid var(--s1); background:var(--s2); }
+  .eq-link{ display:grid; gap:5px; }
+  .eq-link > span{ font-size:11.5px; color:var(--t4); font-weight:600; letter-spacing:.02em; }
+  .eq-link .linha{ display:flex; gap:6px; align-items:center; min-width:0; }
+  .eq-link code{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:12.5px; color:var(--t2); background:var(--s2); border:1px solid var(--line);
+    border-radius:var(--r); padding:8px 10px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .eq-link .btn{ flex:none; min-height:36px; }
+  .eq-card .btn-pri{ width:100%; justify-content:center; min-height:40px; }
+
+  .dp-tot{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-bottom:16px; }
+  @media (min-width:48rem){ .dp-tot{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+  .dp-time{ background:var(--s1); border:1px solid var(--line); border-radius:var(--r-lg); padding:14px;
+    min-width:0; display:grid; gap:3px; text-align:center; transition:transform .3s cubic-bezier(.22,1,.36,1); }
+  .dp-time .pos{ font-size:11.5px; font-weight:600; color:var(--t4); }
+  .dp-time .nm{ font-size:13.5px; color:var(--t2); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dp-time .vl{ font-size:clamp(20px, 2.2vw, 26px); font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+  .dp-time .qt{ font-size:12.5px; color:var(--t3); }
+  .dp-time.lider{ border-color:var(--warn-line); background:linear-gradient(180deg, rgba(251,191,36,.08), var(--s1) 70%); }
+  .dp-time.lider .pos{ color:var(--warn); }
+  .dp-form{ display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:10px; align-items:end; }
+  .dp-form .field{ margin:0; }
+  .dp-form .btn{ grid-column:1 / -1; justify-content:center; min-height:44px; }
+  @media (min-width:48rem){ .dp-form{ grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto; } .dp-form .btn{ grid-column:auto; } }
+  .dp-form select{ width:100%; min-height:44px; font-size:16px; padding:9px 10px; border-radius:var(--r);
+    background:var(--s2); color:var(--text); border:1px solid var(--line-2); }
+  .dp-form input{ font-size:16px !important; min-height:44px; font-variant-numeric:tabular-nums; }
+  .dp-lista{ list-style:none; margin:0; padding:0; }
+  .dp-lista li{ display:grid; grid-template-columns:36px minmax(0,1fr) auto auto; gap:10px; align-items:center;
+    padding:10px 14px; border-bottom:1px solid var(--line); }
+  .dp-lista li:last-child{ border-bottom:0; }
+  .dp-lista li.novo{ animation:dpNovo 1.2s ease-out; }
+  @keyframes dpNovo{ from{ background:rgba(52,211,153,.16); } to{ background:transparent; } }
+  .dp-lista img{ width:36px; height:36px; border-radius:50%; object-fit:cover; background:var(--s2); }
+  .dp-lista .q{ min-width:0; display:grid; }
+  .dp-lista .q b{ font-size:14px; color:var(--text); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dp-lista .q small{ font-size:12.5px; color:var(--t3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dp-lista .v{ font-weight:700; color:var(--ok); font-variant-numeric:tabular-nums; font-size:14.5px; }
+  .dp-lista .btn{ min-height:36px; }
+  .dp-vazio{ padding:22px 16px; text-align:center; color:var(--t3); font-size:13.5px; }
+  .cell-nm .conta{ display:block; font-size:11.5px; color:var(--t4); font-variant-numeric:tabular-nums; }
+  .cell-nm .nm-box{ min-width:0; display:grid; }
+  @media (max-width:900px){ body.sb-min .sb-time{ display:flex; } }
+  @media (max-width:23rem){ .dp-lista li{ grid-template-columns:32px minmax(0,1fr) auto; } .dp-lista li .btn{ grid-column:2 / -1; justify-self:end; } }
 </style>
 </head>
 <body class="locked">
@@ -577,6 +649,7 @@
     </button>
     <img class="tb-logo" src="../../assets/logo.svg" alt="Safirion" />
     <span class="tb-title" id="tbTitle">Ao vivo</span>
+    <span class="tb-time" id="tbTime"></span>
     <i class="tb-dot" id="tbDot" aria-hidden="true"></i>
   </header>
 
@@ -584,9 +657,19 @@
     <div class="sb-top">
       <img src="../../assets/logo.svg" alt="Safirion" />
       <div class="sb-title">Admin · Roleta</div>
+      <button class="sb-time" id="sbTime" type="button" title="Trocar de time"><i class="dot" aria-hidden="true"></i><span><b>Roleta geral</b><small>Trocar de time</small></span></button>
     </div>
     <div class="conn" id="conn"><i></i><span id="connTxt">Procurando a roleta…</span></div>
     <nav class="sb-nav" aria-label="Seções do painel">
+      <div class="sb-group">Corujão por times</div>
+      <button class="sb-item" data-view="equipes" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15.5 14.2c3 .2 5.5 2.5 5.5 5.8"/></svg>
+        <span class="lbl">Times e links</span>
+      </button>
+      <button class="sb-item" data-view="depositos" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+        <span class="lbl">Depósitos e ranking</span>
+      </button>
       <div class="sb-group">Operação</div>
       <button class="sb-item active" data-view="live" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/></svg>
@@ -621,7 +704,7 @@
       </button>
     </nav>
     <div class="sb-foot">
-      <a class="sb-item" href="../" target="_blank" rel="noopener">
+      <a class="sb-item" id="lnkAbrirRoleta" href="../" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         <span class="lbl">Abrir roleta</span>
       </a>
@@ -637,6 +720,56 @@
 
   <main class="main">
     <div class="wrap">
+
+      <!-- ============ TELA: TIMES E LINKS (16/10/2026) ============ -->
+      <section class="view" id="view-equipes">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Times e links</h1>
+            <p>Cada time tem roleta, lista e sorteio próprios. Escolha qual time este painel controla.</p>
+          </div>
+        </div>
+        <div class="eq-grid" id="eqGrid"><div class="dp-vazio">Carregando os times…</div></div>
+      </section>
+
+      <!-- ============ TELA: DEPÓSITOS E RANKING (16/10/2026) ============ -->
+      <section class="view" id="view-depositos">
+        <div class="page-head">
+          <div class="ph-txt">
+            <h1>Depósitos e ranking</h1>
+            <p>Lance cada depósito no trader; o ranking dos times atualiza ao vivo.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn" id="btnCopiarRanking" type="button">Copiar link</button>
+            <a class="btn btn-pri" id="lnkRanking" href="../ranking/" target="_blank" rel="noopener">Abrir ranking</a>
+          </div>
+        </div>
+        <div class="dp-tot" id="dpTot" aria-label="Ranking dos times"></div>
+        <div class="panel">
+          <div class="panel-h"><h2>Lançar depósito</h2></div>
+          <div class="panel-b">
+            <div class="dp-form">
+              <div class="field">
+                <label for="dpTrader">Trader</label>
+                <select id="dpTrader"></select>
+              </div>
+              <div class="field">
+                <label for="dpValor">Valor (R$)</label>
+                <input type="text" id="dpValor" inputmode="decimal" placeholder="Ex.: 250,00" autocomplete="off" maxlength="16" />
+              </div>
+              <button class="btn btn-pri" id="dpLancar" type="button">Lançar</button>
+            </div>
+            <p class="sub" id="dpAviso" style="margin-top:8px">O depósito soma no trader e no time dele. Errou? Use "Desfazer" na lista abaixo.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h2>Últimos lançamentos</h2>
+            <div class="ph-side"><span class="tag tag-mut" id="dpCont">0</span></div>
+          </div>
+          <ul class="dp-lista" id="dpLista"></ul>
+        </div>
+      </section>
 
       <!-- ============ TELA: AO VIVO ============ -->
       <section class="view active" id="view-live">
@@ -859,6 +992,10 @@
                 <label for="fMinutes">Tempo próprio (min, opcional)</label>
                 <input type="number" id="fMinutes" min="1" max="180" step="1" placeholder="Usar o tempo padrão" />
               </div>
+            </div>
+            <div class="field">
+              <label for="fConta">ID na corretora (opcional)</label>
+              <input type="text" id="fConta" placeholder="Ex.: 832009 (mais de um: separe por ·)" maxlength="60" autocomplete="off" />
             </div>
             <div class="field">
               <label for="fPhoto">Foto (opcional)</label>
@@ -1119,6 +1256,28 @@
       </div>
     </div>
   </div>
+<script>
+/* ===== Roleta por TIME (16/10/2026) =====
+   ?time=<slug> transforma esta página numa roleta própria daquele time: sala,
+   linha no banco, canal do navegador e chaves locais ganham o sufixo do time,
+   então cada time sorteia só entre os seus, sem tocar na roleta geral (sem
+   parâmetro tudo continua exatamente como antes). */
+var TIMES_CJ = [
+  { slug:"mulheres",   nome:"Time das Mulheres",  quando:"16/10 · 18h → 00h" },
+  { slug:"madruga",    nome:"Time da Madruga",    quando:"17/10 · 00h → 06h" },
+  { slug:"amem",       nome:"Time do Amém",       quando:"17/10 · 06h → 12h" },
+  { slug:"fechamento", nome:"Time do Fechamento", quando:"17/10 · 12h → 18h" }
+];
+var TIME = (function(){
+  try {
+    var t = (new URLSearchParams(location.search).get("time") || "").toLowerCase().trim();
+    return TIMES_CJ.some(function(x){ return x.slug === t; }) ? t : "";
+  } catch (e) { return ""; }
+})();
+var TIME_INFO = TIMES_CJ.filter(function(x){ return x.slug === TIME; })[0] || null;
+function K(k){ return TIME ? k + "__" + TIME : k; }
+function comTime(caminho){ return TIME ? caminho + "?time=" + TIME : caminho; }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8/dist/umd/supabase.min.js" integrity="sha384-Tve8O+C6PBzsIMK/IRCwHbi8fyEzXIlIs6OfVBZHubplwYhaQF/4Mzxqgg+pp/oy" crossorigin="anonymous"></script>
 <script>
 "use strict";
@@ -1154,13 +1313,13 @@
   check();
 })();
 /* ================= Dados (mesmas chaves da roleta) ================= */
-const LS_EXPERTS = "cj_experts_v6";
-const LS_CFG     = "cj_cfg_v2";
-const LS_HIST    = "cj_hist_v1";
-const LS_RODADA  = "cj_rodada_v1";
-const LS_LIVE    = "cj_live_state_v1";
-const LS_LIVE_URL = "cj_live_url_v1";
-const LS_SB      = "cj_admin_sb";
+const LS_EXPERTS = K("cj_experts_v6");
+const LS_CFG     = K("cj_cfg_v2");
+const LS_HIST    = K("cj_hist_v1");
+const LS_RODADA  = K("cj_rodada_v1");
+const LS_LIVE    = K("cj_live_state_v1");
+const LS_LIVE_URL = "cj_live_url_v1";   /* um link só para todos os times: a página do Corujão é uma */
+const LS_SB      = K("cj_admin_sb");
 
 const CFG_DEF = { minutes:30, waitSec:10, autoNext:false, spinSec:null, rounds:null, idle:2, confetti:true, sfx:true };
 
@@ -1207,7 +1366,7 @@ let listaPropria = false;
 /* true enquanto esperamos a lista de quem ja esta no ar (ver semearSePrecisar) */
 let aguardandoListaInicial = false;
 (function(){
-  const INIT = "cj_experts_init_v1";
+  const INIT = K("cj_experts_init_v1");
   const raw = localStorage.getItem(LS_EXPERTS);
   if (raw != null){
     experts = load(LS_EXPERTS, []);                 // já existe lista salva → usa ela, seja qual for o tamanho
@@ -1256,7 +1415,7 @@ const minutesFor = e => {
 /* ================= Comunicação com a roleta (Supabase Realtime) ================= */
 const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
 const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
-const SYNC_ROOM = "cj-corujao";
+const SYNC_ROOM = K("cj-corujao");
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 const SB = window.supabase ? window.supabase.createClient(SYNC_URL, SYNC_ANON) : null;
 let syncCh = null, syncOn = false, lastPongPrim = 0, lastPongStb = 0;
@@ -1282,7 +1441,7 @@ async function recuperarSessaoEReenviar(motivo){
 /* CANAL LOCAL (rede de seguranca, 18/09/2026) — ver o comentario igual na
    roleta. Alcanca so as abas deste navegador, entao funciona sem internet e
    sem servidor nenhum. E o caminho usado no "modo local" do login. */
-const CMD_CH = (() => { try { return new BroadcastChannel("cj-cmd"); } catch { return null; } })();
+const CMD_CH = (() => { try { return new BroadcastChannel(K("cj-cmd")); } catch { return null; } })();
 let modoLocal = false;
 function syncSend(o){
   const msg = Object.assign({ k: SYNC_KEY, t: authTok }, o);
@@ -1298,8 +1457,8 @@ function syncSend(o){
    expert, campo a campo, com lapides para as remocoes. Resultado: a ordem de
    chegada deixa de importar e o estado converge igual em todas as maquinas,
    com quantos painies estiverem abertos. */
-let relogio = parseInt(localStorage.getItem("cj_experts_rev") || "0", 10) || 0;
-const LS_TUMBAS = "cj_experts_tumbas_v1";
+let relogio = parseInt(localStorage.getItem(K("cj_experts_rev")) || "0", 10) || 0;
+const LS_TUMBAS = K("cj_experts_tumbas_v1");
 /* lapides: { id: valorDoRelogio } — lembram QUE alguem foi removido e QUANDO.
    Sem isso, uma maquina desatualizada re-adicionaria quem ja foi excluido. */
 let tumbas = load(LS_TUMBAS, {});
@@ -1313,13 +1472,13 @@ function tick(vistoFora){
      painel que ainda carrega o carimbo antigo. O comportamento Lamport
      continua valendo — o max sempre inclui o maior valor ja visto. */
   relogio = Math.max(relogio, parseInt(vistoFora, 10) || 0, Date.now()) + 1;
-  try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+  try { localStorage.setItem(K("cj_experts_rev"), String(relogio)); } catch {}
   return relogio;
 }
 /* Absorve o relogio de quem mandou, sem contar como edicao local. */
 function absorverRelogio(vistoFora){
   const v = parseInt(vistoFora, 10) || 0;
-  if (v > relogio){ relogio = v; try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {} }
+  if (v > relogio){ relogio = v; try { localStorage.setItem(K("cj_experts_rev"), String(relogio)); } catch {} }
 }
 const carimbo = e => parseInt(e && e.updatedAt, 10) || 0;
 
@@ -1375,7 +1534,7 @@ function sendStateR(){ agendarGravacao(); return syncSend({ type:"state-r", sort
    - Sem a tabela no banco, TUDO continua funcionando como antes: o painel
      percebe uma vez, anota e nunca mais tenta. */
 const EST_TABELA = "roleta_estado";
-const EST_ID     = "cj-corujao";
+const EST_ID     = K("cj-corujao");
 const EST_REST   = SYNC_URL + "/rest/v1/" + EST_TABELA;
 let estadoNoServidor = null;      // null = ainda nao sabemos; false = nao existe
 let gravacaoAgendada = null;
@@ -1410,7 +1569,7 @@ async function adotarDoServidor(){
       experts = dedupeExperts(linha.experts);
       tumbas  = (linha.tumbas && typeof linha.tumbas === "object") ? Object.assign({}, linha.tumbas) : {};
       aguardandoListaInicial = false;
-      try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+      try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
     } else {
       const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
       experts = r.experts; tumbas = r.tumbas;
@@ -1554,7 +1713,7 @@ async function tratarMsgPainel(m){
             experts = dedupeExperts(m.experts);
             tumbas  = (m.tumbas && typeof m.tumbas === "object") ? Object.assign({}, m.tumbas) : {};
             aguardandoListaInicial = false;
-            try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+            try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
           } else {
             const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
             experts = r.experts; tumbas = r.tumbas;
@@ -1761,7 +1920,7 @@ function renderLive(){
   }
 }
 try {
-  new BroadcastChannel("cj-live").onmessage = ev => { live = ev.data || { status:"idle" }; renderLive(); };
+  new BroadcastChannel(K("cj-live")).onmessage = ev => { live = ev.data || { status:"idle" }; renderLive(); };
 } catch {}
 
 /* ================= Render ================= */
@@ -1770,6 +1929,7 @@ const timesBody = document.getElementById("timesBody");
 const fName = document.getElementById("fName");
 const fPhoto = document.getElementById("fPhoto");
 const fMinutes = document.getElementById("fMinutes");
+const fConta = document.getElementById("fConta");
 const btnSaveExpert = document.getElementById("btnSaveExpert");
 const btnCancelEdit = document.getElementById("btnCancelEdit");
 const formTitle = document.getElementById("formTitle");
@@ -1790,6 +1950,7 @@ function edicaoTemMudanca(){
   if (!editingId || !editBase) return false;
   return fName.value.trim() !== editBase.name ||
          String(fMinutes.value || "") !== String(editBase.minutes || "") ||
+         fConta.value.trim() !== String(editBase.conta || "") ||
          !!fotoRecortada || (fPhoto.files && fPhoto.files.length > 0);
 }
 /* abre/fecha o formulário de cadastro (fica dentro do painel da tabela) */
@@ -1853,7 +2014,11 @@ function fazCellNome(e){
   const cell = document.createElement("div"); cell.className = "cell-nm";
   const im = document.createElement("img"); im.src = photoOf(e); im.alt = "";
   const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = e.name;
-  cell.append(im, nm);
+  if (e.conta){
+    const box = document.createElement("span"); box.className = "nm-box";
+    const ct = document.createElement("span"); ct.className = "conta"; ct.textContent = "ID " + e.conta;
+    box.append(nm, ct); cell.append(im, box);
+  } else cell.append(im, nm);
   return cell;
 }
 function editarExpert(e){
@@ -1866,7 +2031,8 @@ function editarExpert(e){
     btnSaveExpert.textContent = "Salvar";
     fName.value = e.name; fPhoto.value = "";
     fMinutes.value = e.minutes || "";
-    editBase = { name: e.name, minutes: e.minutes || "" };   // baseline p/ detectar mudança
+    fConta.value = e.conta || "";
+    editBase = { name: e.name, minutes: e.minutes || "", conta: e.conta || "" };   // baseline p/ detectar mudança
     goView("experts");
     abreForm(true);
     fName.focus();
@@ -2127,7 +2293,7 @@ function persistExperts(alterados){
     tumbas    = JSON.parse(backTumbas);
     sorteados = JSON.parse(backSort);
     relogio   = backRelogio;
-    try { localStorage.setItem("cj_experts_rev", String(relogio)); } catch {}
+    try { localStorage.setItem(K("cj_experts_rev"), String(relogio)); } catch {}
     render();
     toast("Sem espaço no navegador para salvar. Remova fotos antigas e tente de novo.");
     return { ok:false, entregue:false };
@@ -2409,10 +2575,10 @@ btnSaveExpert.addEventListener("click", async () => {
     if (editingId){
       const e = experts.find(x => x.id === editingId);
       if (!e){ toast("Este expert não existe mais — a lista foi atualizada."); cancelEdit(); render(); return; }
-      e.name = name; e.minutes = minutes; if (photo) e.photo = photo;
+      e.name = name; e.minutes = minutes; e.conta = fConta.value.trim(); if (photo) e.photo = photo;
       tocado = e;
     } else {
-      tocado = { id: novoIdExpert(), name, photo, active:true, minutes };
+      tocado = { id: novoIdExpert(), name, photo, active:true, minutes, conta: fConta.value.trim() };
       experts.push(tocado); criando = true;
     }
     const r = persistExperts(tocado);
@@ -2429,7 +2595,7 @@ btnSaveExpert.addEventListener("click", async () => {
   } finally { salvandoExpert = false; btnSaveExpert.disabled = false; }
 });
 /* Enter em Nome ou Tempo aciona Adicionar/Salvar (fluxo mais rápido no teclado). */
-[fName, fMinutes].forEach(inp => inp.addEventListener("keydown", e => {
+[fName, fMinutes, fConta].forEach(inp => inp.addEventListener("keydown", e => {
   if (e.key === "Enter"){ e.preventDefault(); btnSaveExpert.click(); }
 }));
 
@@ -2469,7 +2635,7 @@ function cancelEdit(){
   editingId = null; editBase = null;
   formTitle.textContent = "Adicionar expert";
   btnSaveExpert.textContent = "Adicionar";
-  fName.value=""; fMinutes.value="";
+  fName.value=""; fMinutes.value=""; fConta.value="";
   if (typeof limpaFoto === "function") limpaFoto(); else fPhoto.value="";
   abreForm(false);
 }
@@ -2518,6 +2684,9 @@ function semearSePrecisar(){
     timerSemear = null;
     if (!aguardandoListaInicial || listaPropria) return;   // alguem respondeu no meio tempo
     if (jaPerguntouSemear) return;
+    /* painel de time: a lista do time já nasce no servidor; os 16 padrão são do
+       geral e contaminariam o sorteio do time */
+    if (TIME){ toast("A lista do time ainda não chegou. Confira a internet e recarregue a página."); return; }
     jaPerguntouSemear = true;
     /* NUNCA semear e publicar sozinho: se a roleta so estiver demorando a
        responder, uma lista padrao criada aqui iria para o ar por cima da real.
@@ -2536,7 +2705,7 @@ function semearSePrecisar(){
     experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
     aguardandoListaInicial = false;
     listaPropria = true;
-    try { localStorage.setItem("cj_experts_init_v1", "1"); } catch {}
+    try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
     save(LS_EXPERTS, experts);
     render();
     sendState();
@@ -2549,7 +2718,7 @@ function semearSePrecisar(){
    que estava. Aplicar uma lista NAO e uma substituicao cega: ela e traduzida em
    carimbos e lapides com o relogio atual, senao a mesclagem de outra maquina
    desfaria a troca. */
-const LS_LISTAS = "cj_listas_v1";
+const LS_LISTAS = K("cj_listas_v1");
 let listas = load(LS_LISTAS, []);
 if (!Array.isArray(listas)) listas = [];
 
@@ -2723,7 +2892,7 @@ fListaNome.addEventListener("keydown", e => {
 /* Rede de seguranca: na primeira vez que este navegador tem uma lista de verdade,
    guarda sozinho a formacao que estava no ar. Se algum teste der errado, ela esta la. */
 function backupAutomatico(){
-  const FLAG = "cj_listas_auto_v1";
+  const FLAG = K("cj_listas_auto_v1");
   try {
     if (localStorage.getItem(FLAG)) return;
     if (!listaPropria || !experts.length) return;      // ainda sem base real
@@ -2819,6 +2988,22 @@ function sendLiveUrl(){
   const u = localStorage.getItem(LS_LIVE_URL);
   if (u) syncSend({ type:"liveUrl", url:u });
 }
+/* painel de time: a página do Corujão escuta a sala GERAL, então o link salvo
+   aqui sai também por ela (só no salvar, para um painel de time antigo nunca
+   responder por cima do link novo do geral) */
+let liveCh = null, liveOn = false;
+if (TIME && SB){
+  try {
+    liveCh = SB.channel("cj-corujao", { config: { broadcast: { self:false } } });
+    liveCh.subscribe(st => { liveOn = st === "SUBSCRIBED"; });
+  } catch { liveCh = null; }
+}
+function enviaLiveUrl(url){
+  const ok = syncSend({ type:"liveUrl", url });
+  if (!liveCh || !liveOn) return TIME ? false : ok;
+  try { liveCh.send({ type:"broadcast", event:"msg", payload:{ k:SYNC_KEY, t:authTok, type:"liveUrl", url } }); return true; }
+  catch { return TIME ? false : ok; }
+}
 document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
   const raw = fLiveUrl.value.trim();
   if (!raw){ toast("Informe o link da live."); return; }
@@ -2827,7 +3012,7 @@ document.getElementById("btnSaveLiveUrl").addEventListener("click", () => {
   localStorage.setItem(LS_LIVE_URL, url);
   showLiveUrl();
   // vai direto pelo canal (o alvo é a página do Corujão, não a roleta):
-  if (syncSend({ type:"liveUrl", url }))
+  if (enviaLiveUrl(url))
     toast("Link da live atualizado na página do Corujão.");
   else
     toast("Sincronização offline — o link foi salvo e será enviado ao reconectar.");
@@ -2978,6 +3163,8 @@ const VIEWS = {
   lists:   { el:"view-lists",   titulo:"Listas salvas" },
   fx:      { el:"view-fx",      titulo:"Efeitos" },
   backup:  { el:"view-backup",  titulo:"Backup e reset" },
+  equipes: { el:"view-equipes", titulo:"Times e links" },
+  depositos:{ el:"view-depositos", titulo:"Depósitos e ranking" },
 };
 let viewAtual = null;
 function goView(nome, semHash){
@@ -3225,5 +3412,281 @@ let aplicarBusca = null;
 
 goView(viewDoHash(), true);
 render(); renderLive();
+/* ================= Times e links + Depósitos e ranking (16/10/2026) =================
+   Cada time é uma roleta própria (ver o bloco TIMES_CJ no topo). Esta parte mostra
+   os links de cada time, troca o time que o painel controla e lança os depósitos
+   que alimentam o ranking público (/roleta/ranking/). O ranking mora na linha
+   "cj-ranking" da mesma tabela: cfg = { lanc:[...], apagados:{id:quando} }.
+   Lançamento só se ACRESCENTA e desfazer só marca apagado, então dois operadores
+   lançando ao mesmo tempo nunca se apagam: cada gravação relê, junta e confere. */
+(function(){
+  const NO_DOMINIO = /(^|\.)safiriontradingbrasil\.com$/.test(location.hostname);
+  const BASE_ROLETA = NO_DOMINIO ? "https://safiriontradingbrasil.com/arsenal-pro/roleta/" : new URL("../", location.href).href;
+  const BASE_ADMIN  = NO_DOMINIO ? "https://admin.safiriontradingbrasil.com/roleta/admin/" : new URL("./", location.href).href.split("?")[0].split("#")[0];
+  const linkRoleta = slug => BASE_ROLETA + (slug ? "?time=" + slug : "");
+  const linkAdmin  = slug => BASE_ADMIN + (slug ? "?time=" + slug : "");
+  const LINK_RANKING = BASE_ROLETA + "ranking/";
+  const BRL = new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL" });
+  const HORA = new Intl.DateTimeFormat("pt-BR", { hour:"2-digit", minute:"2-digit", timeZone:"America/Sao_Paulo" });
+  const RK_ID = "cj-ranking";
+  const ID_TIME = slug => "cj-corujao__" + slug;
+  const nomeTime = slug => (TIMES_CJ.find(t => t.slug === slug) || { nome: slug }).nome;
+
+  function el(tag, cls, txt){
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt != null) n.textContent = txt;
+    return n;
+  }
+
+  /* ---- time atual: menu, barra do celular, título e "Abrir roleta" ---- */
+  const chip = document.getElementById("sbTime");
+  if (chip){
+    chip.querySelector("b").textContent = TIME_INFO ? TIME_INFO.nome : "Roleta geral";
+    chip.querySelector("small").textContent = TIME_INFO ? TIME_INFO.quando + " · trocar" : "Todos juntos · trocar de time";
+    chip.addEventListener("click", () => goView("equipes"));
+  }
+  const tbTime = document.getElementById("tbTime");
+  if (tbTime && TIME_INFO) tbTime.textContent = TIME_INFO.nome.replace(/^Time d[aeo]s? /, "");
+  if (TIME_INFO) document.title = "Admin · " + TIME_INFO.nome + " · Roleta dos Experts";
+  const lnkAbrir = document.getElementById("lnkAbrirRoleta");
+  if (lnkAbrir) lnkAbrir.href = comTime("../");
+  const lnkRanking = document.getElementById("lnkRanking");
+  if (lnkRanking) lnkRanking.href = LINK_RANKING;
+
+  async function copiar(txt){
+    try { await navigator.clipboard.writeText(txt); toast("Link copiado."); }
+    catch { await promptModal("Copie o link abaixo:", txt, { title:"Link", okText:"Fechar" }); }
+  }
+  document.getElementById("btnCopiarRanking").addEventListener("click", () => copiar(LINK_RANKING));
+
+  /* ---- leitura do servidor (leitura é pública) ---- */
+  let dadosTimes = {};                       // slug -> experts
+  let rk = { lanc:[], apagados:{} };
+  let carregou = false, erroCarga = false;
+  function normRk(c){
+    c = (c && typeof c === "object") ? c : {};
+    return { lanc: Array.isArray(c.lanc) ? c.lanc.filter(l => l && l.id) : [],
+             apagados: (c.apagados && typeof c.apagados === "object" && !Array.isArray(c.apagados)) ? c.apagados : {} };
+  }
+  async function lerLinhas(ids){
+    const r = await fetch(EST_REST + "?id=in.(" + ids.map(encodeURIComponent).join(",") + ")&select=id,experts,cfg",
+                          { headers: { "apikey": SYNC_ANON }, cache:"no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }
+  async function carregar(){
+    try {
+      const linhas = await lerLinhas(TIMES_CJ.map(t => ID_TIME(t.slug)).concat(RK_ID));
+      linhas.forEach(l => {
+        if (l.id === RK_ID) rk = normRk(l.cfg);
+        else dadosTimes[l.id.replace("cj-corujao__", "")] = Array.isArray(l.experts) ? l.experts : [];
+      });
+      carregou = true; erroCarga = false;
+    } catch { erroCarga = true; }
+    renderEquipes(); renderDepositos();
+  }
+  /* a lista do time deste painel é a da memória (pode estar mais nova que o servidor) */
+  const expertsDo = slug => ((TIME && slug === TIME && Array.isArray(experts) && experts.length) ? experts : (dadosTimes[slug] || [])).filter(e => e && e.active !== false);
+
+  const validos = () => rk.lanc.filter(l => !rk.apagados[l.id] && Number.isFinite(+l.valor) && +l.valor > 0);
+  function totais(){
+    const t = {};
+    TIMES_CJ.forEach(x => { t[x.slug] = { soma:0, qtd:0 }; });
+    validos().forEach(l => { if (t[l.time]){ t[l.time].soma += +l.valor; t[l.time].qtd++; } });
+    return t;
+  }
+  function ordem(){
+    const t = totais();
+    return TIMES_CJ.map((x, i) => Object.assign({ i }, x, t[x.slug]))
+      .sort((a, b) => (b.soma - a.soma) || (b.qtd - a.qtd) || (a.i - b.i));
+  }
+
+  /* ---- tela Times e links ---- */
+  function blocoLink(rotulo, url){
+    const box = el("div", "eq-link");
+    box.append(el("span", null, rotulo));
+    const linha = el("div", "linha");
+    const code = el("code", null, url.replace(/^https?:\/\//, "")); code.title = url;
+    const bCop = el("button", "btn btn-sm", "Copiar"); bCop.type = "button";
+    bCop.addEventListener("click", () => copiar(url));
+    const bAbr = el("a", "btn btn-sm", "Abrir"); bAbr.href = url; bAbr.target = "_blank"; bAbr.rel = "noopener";
+    linha.append(code, bCop, bAbr);
+    box.append(linha);
+    return box;
+  }
+  function renderEquipes(){
+    const g = document.getElementById("eqGrid");
+    if (!g) return;
+    const t = totais();
+    const cards = [{ slug:"", nome:"Roleta geral", quando:"Todos os experts juntos" }].concat(TIMES_CJ).map(x => {
+      const atual = x.slug === TIME;
+      const card = el("article", "eq-card" + (atual ? " atual" : ""));
+      const h = el("div", "eq-h");
+      const tx = el("div"); tx.append(el("b", null, x.nome), el("small", null, x.quando));
+      h.append(tx);
+      if (atual) h.append(el("span", "tag tag-ok", "Este painel"));
+      card.append(h);
+      if (x.slug){
+        const lista = expertsDo(x.slug);
+        const meta = el("div", "eq-meta");
+        const av = el("div", "eq-av");
+        lista.slice(0, 6).forEach(e => { const im = el("img"); im.src = photoOf(e); im.alt = ""; im.title = e.name; av.append(im); });
+        meta.append(av, el("span", null, (carregou ? lista.length : "…") + " traders · " + BRL.format(t[x.slug].soma)));
+        card.append(meta);
+      }
+      card.append(blocoLink("Roleta do time (live)", linkRoleta(x.slug)), blocoLink("Painel deste time", linkAdmin(x.slug)));
+      const ir = el("button", atual ? "btn" : "btn btn-pri", atual ? "Você está neste time" : "Controlar este time");
+      ir.type = "button"; ir.disabled = atual;
+      ir.addEventListener("click", () => { location.href = "./" + (x.slug ? "?time=" + x.slug : "") + "#/live"; });
+      card.append(ir);
+      return card;
+    });
+    const rkCard = el("article", "eq-card");
+    const h = el("div", "eq-h"); const tx = el("div");
+    tx.append(el("b", null, "Ranking dos times"), el("small", null, "Página pública, atualiza sozinha"));
+    h.append(tx); rkCard.append(h, blocoLink("Link do ranking (live)", LINK_RANKING));
+    const irDp = el("button", "btn btn-pri", "Lançar depósitos"); irDp.type = "button";
+    irDp.addEventListener("click", () => goView("depositos"));
+    rkCard.append(irDp);
+    g.replaceChildren(...cards, rkCard);
+  }
+
+  /* ---- tela Depósitos e ranking ---- */
+  const dpTrader = document.getElementById("dpTrader");
+  const dpValor = document.getElementById("dpValor");
+  const dpLancar = document.getElementById("dpLancar");
+  let assinaturaSelect = "";
+  function renderSelect(){
+    const ordemTimes = TIME ? [TIME].concat(TIMES_CJ.map(t => t.slug).filter(s => s !== TIME)) : TIMES_CJ.map(t => t.slug);
+    const grupos = ordemTimes.map(slug => [slug, expertsDo(slug).map(e => [e.id, e.name, e.conta || ""])]);
+    const ass = JSON.stringify(grupos);
+    if (ass === assinaturaSelect || document.activeElement === dpTrader) return;
+    assinaturaSelect = ass;
+    const antes = dpTrader.value;
+    dpTrader.replaceChildren();
+    const ph = el("option", null, carregou ? "Escolha o trader" : "Carregando…"); ph.value = ""; dpTrader.append(ph);
+    grupos.forEach(([slug, lista]) => {
+      if (!lista.length) return;
+      const og = document.createElement("optgroup"); og.label = nomeTime(slug);
+      lista.forEach(([id, nome, conta]) => {
+        const o = el("option", null, nome + (conta ? " · " + conta : "")); o.value = slug + "|" + id; og.append(o);
+      });
+      dpTrader.append(og);
+    });
+    if (antes && [...dpTrader.options].some(o => o.value === antes)) dpTrader.value = antes;
+  }
+  let vistosNaLista = null;
+  function renderDepositos(){
+    const tot = document.getElementById("dpTot");
+    if (!tot) return;
+    renderSelect();
+    tot.replaceChildren(...ordem().map((x, k) => {
+      const c = el("div", "dp-time" + (k === 0 && x.soma > 0 ? " lider" : ""));
+      c.append(el("span", "pos", (k + 1) + "º lugar"), el("span", "nm", x.nome), el("span", "vl", BRL.format(x.soma)),
+               el("span", "qt", x.qtd === 1 ? "1 depósito" : x.qtd + " depósitos"));
+      return c;
+    }));
+    const lista = document.getElementById("dpLista");
+    const vs = validos().sort((a, b) => (b.t || 0) - (a.t || 0));
+    document.getElementById("dpCont").textContent = vs.length === 1 ? "1 lançamento" : vs.length + " lançamentos";
+    if (erroCarga && !carregou){ lista.replaceChildren(el("li", "dp-vazio", "Sem conexão com o servidor. Tentando de novo…")); return; }
+    if (!vs.length){ lista.replaceChildren(el("li", "dp-vazio", carregou ? "Nenhum depósito lançado ainda." : "Carregando…")); vistosNaLista = new Set(); return; }
+    const antes = vistosNaLista;
+    lista.replaceChildren(...vs.slice(0, 60).map(l => {
+      const e = expertsDo(l.time).find(x => x.id === l.expert);
+      const li = el("li", antes && !antes.has(l.id) ? "novo" : null);
+      const im = el("img"); im.src = photoOf(e || { name: l.nome || "?" }); im.alt = "";
+      const q = el("div", "q");
+      q.append(el("b", null, (e && e.name) || l.nome || "Trader"),
+               el("small", null, nomeTime(l.time) + " · " + (l.t ? HORA.format(new Date(l.t)) : "")));
+      const bd = el("button", "btn btn-sm", "Desfazer"); bd.type = "button";
+      bd.addEventListener("click", () => desfazer(l, (e && e.name) || l.nome));
+      li.append(im, q, el("span", "v", "+" + BRL.format(+l.valor)), bd);
+      return li;
+    }));
+    vistosNaLista = new Set(vs.map(l => l.id));
+  }
+
+  /* gravação: relê, junta, grava e CONFERE (outro operador pode ter gravado junto) */
+  async function gravarRk(mudar, conferir){
+    if (!authTok){ toast("Entre com a conta do operador para lançar depósitos."); return false; }
+    for (let tentativa = 0; tentativa < 4; tentativa++){
+      let linha;
+      try { linha = (await lerLinhas([RK_ID]))[0]; } catch { continue; }
+      if (!linha){ toast("O ranking não existe no servidor. Avise o suporte."); return false; }
+      const c = normRk(linha.cfg);
+      mudar(c);
+      let r;
+      try {
+        r = await fetch(EST_REST + "?id=eq." + RK_ID, { method:"PATCH",
+          headers: estCabecalho({ "Prefer":"return=minimal" }),
+          body: JSON.stringify({ cfg:c, rev: Date.now(), atualizado: new Date().toISOString() }) });
+      } catch { continue; }
+      if (r.status === 401 || r.status === 403){
+        try { const { data } = await SB.auth.refreshSession(); if (data && data.session){ authTok = data.session.access_token; continue; } } catch {}
+        toast("Sua sessão expirou. Entre de novo para lançar."); return false;
+      }
+      if (!r.ok) continue;
+      try {
+        const v = normRk((await lerLinhas([RK_ID]))[0].cfg);
+        if (conferir(v)){ rk = v; renderDepositos(); renderEquipes(); return true; }
+      } catch {}
+    }
+    toast("Não consegui gravar no servidor. Confira a internet e tente de novo.");
+    return false;
+  }
+  function lerValor(txt){
+    let s = String(txt || "").replace(/R\$|\s/g, "");
+    if (!s || !/^[\d.,]+$/.test(s)) return NaN;
+    /* "1,500.00" (formato americano) e "1,2,3" são recusados: lançar 1000x menor sem aviso é pior que pedir de novo */
+    if ((s.match(/,/g) || []).length > 1) return NaN;
+    if (s.includes(",") && s.lastIndexOf(".") > s.indexOf(",")) return NaN;
+    if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+    else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+    const v = Number(s);
+    return Number.isFinite(v) ? Math.round(v * 100) / 100 : NaN;
+  }
+  let lancando = false;
+  async function lancar(){
+    if (lancando) return;
+    const [slug, id] = (dpTrader.value || "").split("|");
+    const e = slug && expertsDo(slug).find(x => x.id === id);
+    if (!e){ toast("Escolha o trader."); dpTrader.focus(); return; }
+    const v = lerValor(dpValor.value);
+    if (!(v > 0 && v <= 10000000)){ toast("Informe o valor, ex.: 250 ou 1.500,00."); dpValor.focus(); return; }
+    const l = { id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+                time: slug, expert: e.id, nome: e.name, valor: v, t: Date.now() };
+    lancando = true; dpLancar.disabled = true; dpLancar.textContent = "Lançando…";
+    try {
+      const ok = await gravarRk(c => { if (!c.lanc.some(x => x.id === l.id)) c.lanc.push(l); },
+                                c => c.lanc.some(x => x.id === l.id));
+      if (ok){ toast(BRL.format(v) + " lançado para " + e.name + " · " + nomeTime(slug) + "."); dpValor.value = ""; dpValor.focus(); }
+    } finally { lancando = false; dpLancar.disabled = false; dpLancar.textContent = "Lançar"; }
+  }
+  async function desfazer(l, nome){
+    if (!(await confirmModal("Desfazer o depósito de " + BRL.format(+l.valor) + " de " + nome + "? Ele sai do ranking.",
+          { title:"Desfazer lançamento", okText:"Desfazer", danger:true }))) return;
+    const ok = await gravarRk(c => { c.apagados[l.id] = Date.now(); }, c => !!c.apagados[l.id]);
+    if (ok) toast("Lançamento desfeito.");
+  }
+  dpLancar.addEventListener("click", lancar);
+  dpValor.addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); lancar(); } });
+
+  /* ---- atualização: ao abrir as telas, a cada 8 s enquanto à vista e quando o banco avisa ---- */
+  const TELAS = ["equipes", "depositos"];
+  const _goView = goView;
+  goView = function(nome, semHash){ _goView(nome, semHash); if (TELAS.includes(viewAtual)) carregar(); };
+  setInterval(() => { if (TELAS.includes(viewAtual) && !document.hidden) carregar(); }, 8000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && TELAS.includes(viewAtual)) carregar(); });
+  try {
+    if (SB) SB.channel("cj-ranking-admin")
+      .on("postgres_changes", { event:"UPDATE", schema:"public", table:"roleta_estado", filter:"id=eq." + RK_ID },
+          p => { if (p && p.new && p.new.cfg){ rk = normRk(p.new.cfg); renderDepositos(); renderEquipes(); } })
+      .subscribe();
+  } catch {}
+  carregar();
+})();
+
 </script>
 </body></html>

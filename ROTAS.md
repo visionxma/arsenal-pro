@@ -13,14 +13,9 @@ DNS novo: `AAAA admin → 100::` com proxy (nuvem laranja). Nenhum registro exis
 A comunicação painel ↔ roleta usa **Supabase Realtime** (chave anon no código) e funciona
 de qualquer dispositivo/navegador — não depende mais de mesma origem.
 
-> ⚠️ **O projeto Supabase `hovbgrhmoqrhrxvwvkbt` NÃO EXISTE MAIS (verificado em
-> 18/09/2026: NXDOMAIN em 4 resolvedores; o navegador falha com
-> `ERR_NAME_NOT_RESOLVED` ao abrir o WebSocket).** Enquanto ele não for
-> substituído, **não há sincronização entre máquinas nem login no painel**.
-> Para voltar ao normal basta criar um projeto novo e trocar `SYNC_URL` e
-> `SYNC_ANON` nos três arquivos (`roleta/index.html`, `roleta/admin/index.html`,
-> `corujao/index.html`) e criar o usuário do operador — o CSP do Worker já libera
-> qualquer `*.supabase.co`, então nada mais precisa mudar.
+> ✅ **O projeto Supabase `hovbgrhmoqrhrxvwvkbt` voltou e está no ar** (conferido em
+> 16/10/2026: DNS resolve, REST responde 200, login do operador funciona). O aviso de
+> 18/09 sobre NXDOMAIN ficou só no histórico do git.
 >
 > **MODO LOCAL (rede de segurança, 18/09/2026):** para a live não depender disso,
 > painel e roleta também conversam por um `BroadcastChannel` chamado `cj-cmd`, que
@@ -29,7 +24,8 @@ de qualquer dispositivo/navegador — não depende mais de mesma origem.
 > aberta na mesma máquina: girar, forçar, pausar, retomar, encerrar, editar a lista.
 > Como o canal não sai do navegador, ele não exige token (ninguém de fora alcança).
 > Numa máquina nova, o painel em modo local pergunta se cria a lista dos 16 e a
-> publica na roleta. Testado ponta a ponta em `testes-roleta/` (T5 e T6).
+> publica na roleta (no painel de TIME essa pergunta não aparece). Testado ponta a
+> ponta em `testes-roleta/` (T5 e T6).
 
 > ⚠️ **INVARIANTE — NÃO REMOVER (sincronização de experts):** apagar/editar/adicionar
 > um expert em **qualquer** Painel Admin deve refletir **em todos os painéis abertos e
@@ -86,6 +82,8 @@ GitHub Pages, sem nenhuma configuração de servidor.
 | `/edlaine/` | `edlaine/index.html` | LP do Arsenal Pro da Edlaine trader (checkout PerfectPay próprio) |
 | `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento); CTA vai para o Google Meet do evento |
 | `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
+| `/roleta/?time=<slug>` | `roleta/index.html` | Roleta de UM time (`mulheres`, `madruga`, `amem`, `fechamento`): só os traders do time, sala e linha próprias |
+| `/roleta/ranking/` | `roleta/ranking/index.html` | Ranking dos times por depósitos, ao vivo (lê a linha `cj-ranking`) |
 
 As LPs por expert são cópias da landing; as diferenças são a const `CHECKOUT_URL`
 (link do produto de cada expert na PerfectPay), o selo "Indicado por" no hero
@@ -97,6 +95,7 @@ com o nome do expert. As páginas não têm rodapé (removido junto com a marca 
 | Rota | Arquivo | O que é |
 |---|---|---|
 | `/roleta/admin/` | `roleta/admin/index.html` | Painel Admin da roleta (senha no arquivo, const `ADMIN_PASS`) |
+| `/roleta/admin/?time=<slug>` | `roleta/admin/index.html` | Painel do time: experts, sorteio e "Depósitos e ranking" daquele time |
 
 ## Extras
 
@@ -124,3 +123,17 @@ com o nome do expert. As páginas não têm rodapé (removido junto com a marca 
   mesmo domínio, isso já está garantido.
 - Não há rewrites nem rotas dinâmicas: qualquer host estático serve o site como está.
 - Se o host oferecer "clean URLs", nada muda — as rotas já são pastas com `index.html`.
+
+## Roleta por time (16/10/2026, Corujão de Traders)
+
+- `?time=<slug>` liga o sufixo `__<slug>` em TODA chave de `localStorage`, nos dois
+  `BroadcastChannel`, na sala Realtime e na linha `roleta_estado` (`cj-corujao__<slug>`),
+  pela função `K()` dos dois arquivos. Sem o parâmetro, `K()` devolve a chave original e a
+  roleta geral fica idêntica. Os times ficam no array `TIMES_CJ` (iguais nos dois arquivos).
+- As linhas dos times nascem no servidor com `~/.jarvis/arsenal-roleta/semear_times.py`
+  (a tabela não tem política de INSERT; idempotente, `--forcar` regrava).
+- Exceção de propósito: o link da live (`cj_live_url_v1`) é UM só; o painel de time manda o
+  link salvo também na sala geral `cj-corujao`, que é a que `corujao/index.html` escuta.
+- Depósitos: linha `cj-ranking`, `cfg = { lanc:[{id,time,expert,nome,valor,t}], apagados:{id:ms} }`.
+  Só se acrescenta e se apaga por lápide; gravar = ler, mesclar, PATCH e conferir. Lança-se
+  no painel ("Depósitos e ranking"); não há integração com a corretora.
