@@ -1782,6 +1782,13 @@ async function adotarDoServidor(){
     /* o relogio de ANTES: applyAdminState ja anota o do servidor, e comparar
        depois daria empate — a rodada guardada nunca seria adotada. */
     const revAntes = revVisto;
+    /* RODA VAZIA NO AR (17/10/2026): roleta sem ninguem ativo e servidor com
+       gente ativa = a copia deste navegador e que esta errada (lapide ou
+       desativacao que nunca chegou ao banco). Ai o servidor vence por inteiro,
+       em vez de mesclar e deixar a copia velha apagar todo mundo. */
+    if (Array.isArray(linha.experts) && linha.experts.some(e => e && e.active) && !activeExperts().length){
+      experts = []; tumbas = {};
+    }
     if (Array.isArray(linha.experts) && linha.experts.length)
       applyAdminState({ experts: linha.experts, tumbas: linha.tumbas, cfg: linha.cfg, rev });
     if (rev > revAntes || !sorteados.length)
@@ -1927,6 +1934,11 @@ if (CMD_CH){
 
 /* A memoria do servidor nao depende de ninguem estar no ar: consulta sempre. */
 setTimeout(adotarDoServidor, 1200);
+/* Uma leitura so nao basta (17/10/2026): a roleta de um time aberta num
+   navegador novo nasce vazia, e se aquela unica leitura falhasse (rede
+   piscando, fonte do OBS ainda carregando) a roda ficava vazia na live ate um
+   painel publicar. Enquanto nao houver ninguem ativo, pergunta de novo. */
+setInterval(() => { if (!spinning && !activeExperts().length) adotarDoServidor(); }, 4000);
 
 /* ================= Redundância: principal + reserva ================= */
 const LS_HB = K("cj_roleta_hb");
