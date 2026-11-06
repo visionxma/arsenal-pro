@@ -13,9 +13,21 @@ DNS novo: `AAAA admin → 100::` com proxy (nuvem laranja). Nenhum registro exis
 A comunicação painel ↔ roleta usa **Supabase Realtime** (chave anon no código) e funciona
 de qualquer dispositivo/navegador — não depende mais de mesma origem.
 
-> ✅ **O projeto Supabase `hovbgrhmoqrhrxvwvkbt` voltou e está no ar** (conferido em
-> 16/10/2026: DNS resolve, REST responde 200, login do operador funciona). O aviso de
-> 18/09 sobre NXDOMAIN ficou só no histórico do git.
+> ✅ **Banco desde 06/11/2026: projeto Supabase Remessa (`ujwovqskcffrriepehal`, São Paulo).**
+> O projeto antigo (`hovbgrhmoqrhrxvwvkbt`, org genesisapp360) ficou INACTIVE e só voltava pagando a
+> fatura vencida do cliente. Tabelas próprias: `roleta_estado` (produção) e `roleta_estado_teste`
+> (cópia de teste), com RLS (leitura pública, escrita só de quem está logado), Realtime ligado e
+> cadastro aberto desligado. Logins: os mesmos e-mails de antes (o compartilhado dos turnos é o
+> genesisapp360, com a mesma senha); credenciais no cofre local `~/.claude/credenciais/arsenal-pro-roleta.md`.
+> Lista dos times vinda de `https://rankcorujao.safirionbr.com/#grupos`; Madruga virou Vingadores.
+> **Manter acordado:** o projeto Remessa está no vigia `manter-vivo` do HotelGestão (Edge diária).
+> **Backup:** job do launchd `com.visionx.roleta-backup` no Mac (05:10), script
+> `~/.jarvis/arsenal-roleta/backup_roleta.py`, arquivos criptografados por 90 dias em
+> `~/.jarvis/arsenal-roleta/backups/`; falhou = pendência no jmem. Os workflows `pulso-roleta.yml`
+> e `supabase-backup.yml` ficaram desligados (agendamento de produto não roda no GitHub Actions).
+> **Trocar a lista inteira** = subir a versão das chaves locais (`cj_experts_vN`, `cj_experts_tumbas_vN`,
+> `cj_experts_init_vN`) na roleta E no painel, senão a lista velha do navegador volta pela mesclagem
+> (portão `testes-roleta/lista-antiga-nao-volta.mjs`).
 >
 > **MODO LOCAL (rede de segurança, 18/09/2026):** para a live não depender disso,
 > painel e roleta também conversam por um `BroadcastChannel` chamado `cj-cmd`, que
@@ -82,7 +94,7 @@ GitHub Pages, sem nenhuma configuração de servidor.
 | `/edlaine/` | `edlaine/index.html` | LP do Arsenal Pro da Edlaine trader (checkout PerfectPay próprio) |
 | `/corujao/` | `corujao/index.html` | Pré-página do Corujão de Traders (pôster do evento); CTA vai para o Google Meet do evento |
 | `/roleta/` | `roleta/index.html` | Roleta dos Experts (pública, exibida na live) |
-| `/roleta/?time=<slug>` | `roleta/index.html` | Roleta de UM time (`mulheres`, `madruga`, `amem`, `fechamento`): só os traders do time, sala e linha próprias |
+| `/roleta/?time=<slug>` | `roleta/index.html` | Roleta de UM time (`mulheres`, `vingadores`, `amem`, `fechamento`; `madruga` abre `vingadores`): só os traders do time, sala e linha próprias |
 | `/roleta/ranking/` | `roleta/ranking/index.html` | Ranking dos times por depósitos, ao vivo (lê a linha `cj-ranking`) |
 
 As LPs por expert são cópias da landing; as diferenças são a const `CHECKOUT_URL`

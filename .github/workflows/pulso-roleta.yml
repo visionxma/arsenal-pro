@@ -1,3 +1,7 @@
+# DESLIGADO em 06/11/2026: o projeto antigo (hovbgrhmoqrhrxvwvkbt) ficou INACTIVE e a roleta foi para o
+# projeto Remessa (ujwovqskcffrriepehal), que o vigia manter-vivo do HotelGestão mantém acordado.
+# O aviso de página fora do ar passou para o backup diário do Mac (backup_roleta.py). Agendamento de
+# produto não roda no GitHub Actions. Ver ROTAS.md.
 name: Pulso da Roleta (login e páginas no ar)
 
 # Por que existe (18/09/2026): em 18/09 o projeto Supabase saiu do ar e o painel
@@ -12,8 +16,6 @@ name: Pulso da Roleta (login e páginas no ar)
 # Para rodar na hora: aba Actions → este workflow → "Run workflow".
 
 on:
-  schedule:
-    - cron: "0 9 */2 * *"   # a cada 2 dias, 09:00 UTC (06:00 BRT)
   workflow_dispatch:
 
 permissions:

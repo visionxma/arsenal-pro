@@ -1,3 +1,6 @@
+# DESLIGADO em 06/11/2026: o projeto antigo (hovbgrhmoqrhrxvwvkbt) ficou INACTIVE. O backup da roleta
+# agora roda no Mac (launchd com.visionx.roleta-backup → ~/.jarvis/arsenal-roleta/backup_roleta.py),
+# contra o projeto Remessa (ujwovqskcffrriepehal). Agendamento de produto não roda no GitHub Actions.
 name: Backup da roleta e dos logins
 
 # O que este projeto tem de verdade no Supabase: o LOGIN do operador (auth) e a
@@ -14,8 +17,6 @@ name: Backup da roleta e dos logins
 #   BACKUP_PASSPHRASE      → senha que abre o arquivo (está no cofre local)
 
 on:
-  schedule:
-    - cron: "0 5 * * *"   # todo dia 05:00 UTC (~02:00 BRT, depois do Corujão)
   workflow_dispatch:
 
 permissions:
