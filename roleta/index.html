@@ -784,14 +784,15 @@
    então cada time sorteia só entre os seus, sem tocar na roleta geral (sem
    parâmetro tudo continua exatamente como antes). */
 var TIMES_CJ = [
-  { slug:"mulheres",   nome:"Time das Mulheres",  quando:"16/10 · 18h → 00h" },
-  { slug:"madruga",    nome:"Time da Madruga",    quando:"17/10 · 00h → 06h" },
-  { slug:"amem",       nome:"Time do Amém",       quando:"17/10 · 06h → 12h" },
-  { slug:"fechamento", nome:"Time do Fechamento", quando:"17/10 · 12h → 18h" }
+  { slug:"mulheres",   nome:"Time das Mulheres",   quando:"Líder Mizag" },
+  { slug:"vingadores", nome:"Time dos Vingadores", quando:"Líder Rafael Santos" },
+  { slug:"amem",       nome:"Time do Amém",        quando:"Líder Jhon Heverton" },
+  { slug:"fechamento", nome:"Time do Fechamento",  quando:"Líder Jhonatan" }
 ];
 var TIME = (function(){
   try {
     var t = (new URLSearchParams(location.search).get("time") || "").toLowerCase().trim();
+    if (t === "madruga") t = "vingadores";   // link antigo do Time da Madruga (06/11/2026)
     return TIMES_CJ.some(function(x){ return x.slug === t; }) ? t : "";
   } catch (e) { return ""; }
 })();
@@ -1655,8 +1656,8 @@ window.addEventListener("storage", ev => {
     renderHist();
   }
 });
-const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
-const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_URL  = "https://ujwovqskcffrriepehal.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqd292cXNrY2ZmcnJpZXBlaGFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzI5MjgsImV4cCI6MjEwNTQ0ODkyOH0.PI1NG94OYPrpNnagOUnHm2jz185-7ofn6Wegr23bigA";
 const SYNC_ROOM = K("cj-corujao");
 const SYNC_KEY  = "q1vcjZHdCejBqSJeQSXBKCNC";
 let syncCh = null, syncOn = false;

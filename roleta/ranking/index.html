@@ -371,13 +371,13 @@
    como rede de segurança, consulta de novo a cada 8 s. Nada aqui inventa valor:
    sem linha no banco, todos os times aparecem com R$ 0,00. */
 
-const SYNC_URL  = "https://hovbgrhmoqrhrxvwvkbt.supabase.co";
-const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdmJncmhtb3FyaHJ4dnd2a2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzMwMTcsImV4cCI6MjEwMDU0OTAxN30.gjtn3yy3XMwXesMLsDM-k99FWKs_R6mTiIs50l7i6h4";
+const SYNC_URL  = "https://ujwovqskcffrriepehal.supabase.co";
+const SYNC_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqd292cXNrY2ZmcnJpZXBlaGFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzI5MjgsImV4cCI6MjEwNTQ0ODkyOH0.PI1NG94OYPrpNnagOUnHm2jz185-7ofn6Wegr23bigA";
 
 /* Ordem fixa = desempate final. Horários em Brasília (UTC-3, sem horário de verão). */
 const TIMES = [
   { slug:"mulheres",   nome:"Time das Mulheres",  quando:"16/10 · 18h → 00h", ini:"2026-10-16T18:00:00-03:00", fim:"2026-10-17T00:00:00-03:00", cor:"#ff5fa8" },
-  { slug:"madruga",    nome:"Time da Madruga",    quando:"17/10 · 00h → 06h", ini:"2026-10-17T00:00:00-03:00", fim:"2026-10-17T06:00:00-03:00", cor:"#8c84ff" },
+  { slug:"vingadores", nome:"Time dos Vingadores",    quando:"17/10 · 00h → 06h", ini:"2026-10-17T00:00:00-03:00", fim:"2026-10-17T06:00:00-03:00", cor:"#8B7CF6" },
   { slug:"amem",       nome:"Time do Amém",       quando:"17/10 · 06h → 12h", ini:"2026-10-17T06:00:00-03:00", fim:"2026-10-17T12:00:00-03:00", cor:"#ff9a3d" },
   { slug:"fechamento", nome:"Time do Fechamento", quando:"17/10 · 12h → 18h", ini:"2026-10-17T12:00:00-03:00", fim:"2026-10-17T18:00:00-03:00", cor:"#2fd39a" }
 ].map((t, i) => Object.assign(t, { ordem:i, iniMs:Date.parse(t.ini), fimMs:Date.parse(t.fim) }));
