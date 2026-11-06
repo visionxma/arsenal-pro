@@ -7,8 +7,8 @@ useDefault = true
 [allowlist]
 description = "Chaves publicas por design (anon Supabase, sala Realtime)"
 regexes = [
-  # JWT anon do Supabase (role:anon) — publico
-  '''eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]*InJvbGUiOiJhbm9u[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+''',
+  # JWT anon do Supabase (role:anon) — publico; as 3 formas do base64 conforme a posicao no payload
+  '''eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]*(?:InJvbGUiOiJhbm9u|Jyb2xlIjoiYW5vb|icm9sZSI6ImFub2)[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+''',
   # nome da sala do Realtime
   '''cj-corujao''',
 ]
