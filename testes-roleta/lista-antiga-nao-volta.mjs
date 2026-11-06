@@ -2,12 +2,17 @@
    Põe no localStorage uma lista velha na chave de antes (padrão cj_experts_v6) e abre o painel de produção
    (login do cofre) e a roleta do Fechamento. Sai 1 se alguém que saiu reaparece, se a roda do time não tem
    o tamanho do banco ou se o painel tentaria gravar mais experts do que o banco tem.
-   Só LÊ: escrita no banco e canal ao vivo bloqueados. Uso: node lista-antiga-nao-volta.mjs [chave-antiga] */
+   Só LÊ: escrita no banco e canal ao vivo bloqueados. Uso: node lista-antiga-nao-volta.mjs [chave-antiga] [--com-canal]
+   Pegadinhas (06/11/2026): `route()` com o padrão do realtime NÃO pega WebSocket — o canal ao vivo ficava aberto e a lista
+   de um painel ou roleta aberta em outra máquina entrava na conta; o bloqueio é `routeWebSocket`. E o texto do
+   <body> inclui o <script> (a lista padrão tem esses nomes): confere-se a lista em memória e o texto sem script.
+   --com-canal deixa o canal ao vivo aberto: mostra se alguma tela aberta lá fora ainda manda a lista velha. */
 import fs from "node:fs";
 import { chromium } from "/Users/victorgabryellferreiraqueiroz/.jarvis/design-engine/node_modules/playwright/index.mjs";
 const cofre = fs.readFileSync(process.env.HOME + "/.claude/credenciais/arsenal-pro-roleta.md", "utf8");
 const SENHA = /Senha[^`]*`([^`]+)`/.exec(cofre.slice(cofre.indexOf("## Painel do operador")))[1];
-const CHAVE = process.argv[2] || "cj_experts_v6";
+const COM_CANAL = process.argv.includes("--com-canal");
+const CHAVE = process.argv.slice(2).find(a => !a.startsWith("--")) || "cj_experts_v6";
 const SB = "https://ujwovqskcffrriepehal.supabase.co";
 const html = await (await fetch("https://safiriontradingbrasil.com/arsenal-pro/roleta/")).text();
 const ANON = /const SYNC_ANON\s*=\s*"([^"]+)"/.exec(html)[1];
@@ -17,7 +22,7 @@ let falhou = 0;
 const b = await chromium.launch();
 for (const [url, sufixo] of [["https://admin.safiriontradingbrasil.com/roleta/admin/", ""], ["https://safiriontradingbrasil.com/arsenal-pro/roleta/?time=fechamento", "__fechamento"]]) {
   const ctx = await b.newContext();
-  await ctx.route("**/realtime/**", r => r.abort());
+  if (!COM_CANAL) await ctx.routeWebSocket(/realtime/, () => {});   // canal ao vivo mudo: não conecta ao servidor
   let escrita = null;
   await ctx.route("**/rest/v1/**", r => { const q = r.request(); if (q.method() === "GET") return r.continue(); escrita = JSON.parse(q.postData() || "{}"); return r.abort(); });
   await ctx.addInitScript(([k, s]) => {
@@ -33,7 +38,12 @@ for (const [url, sufixo] of [["https://admin.safiriontradingbrasil.com/roleta/ad
     await p.fill("#loginEmail", "genesisapp360@gmail.com"); await p.fill("#loginPass", SENHA); await p.click(".gate-btn");
   }
   await p.waitForTimeout(8000);
-  const txt = (await p.evaluate(() => document.body.textContent)).toLowerCase();
+  const txt = (await p.evaluate(() => {
+    const c = document.body.cloneNode(true);
+    c.querySelectorAll("script, style, template").forEach(n => n.remove());
+    let mem = ""; try { mem = experts.map(e => e.name).join(" | "); } catch {}
+    return c.textContent + " | " + mem;
+  })).toLowerCase();
   const fatias = await p.evaluate(() => document.querySelectorAll("#wheel .seg-item").length);
   const voltaram = ["mineirinho", "lucas bemfica", "trader estoico"].filter(n => txt.includes(n));
   const nBanco = BANCO[sufixo || "geral"];

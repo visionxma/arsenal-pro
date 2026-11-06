@@ -6,7 +6,7 @@ const b = await chromium.launch();
 async function cenario(nome, prep){
   const ctx = await b.newContext({ viewport:{width:1440,height:900} });
   /* nunca fala com o canal ao vivo: a roleta da live nao pode receber nada deste teste */
-  await ctx.route("**/realtime/**", r => r.abort());
+  await ctx.routeWebSocket(/realtime/, () => {});   // route() não pega WebSocket: assim o canal ao vivo fica mudo de verdade
   const p = await ctx.newPage();
   const erros=[]; p.on("pageerror", e=>erros.push(e.message));
   await prep(ctx, p);
@@ -25,11 +25,11 @@ async function cenario(nome, prep){
 await cenario("A primeiras leituras do banco falham", async (ctx)=>{
   let falhas=0;
   await ctx.route("**/rest/v1/roleta_estado**", r => (falhas++ < 2) ? r.abort() : r.continue());
-  await ctx.route("**/realtime/**", r => r.abort());
+  await ctx.routeWebSocket(/realtime/, () => {});   // route() não pega WebSocket: assim o canal ao vivo fica mudo de verdade
 });
 // B: copia local velha com todos DESATIVADOS e carimbo mais novo + lapides
 await cenario("B copia local velha com todos desativados", async (ctx, p)=>{
-  await ctx.route("**/realtime/**", r => r.abort());
+  await ctx.routeWebSocket(/realtime/, () => {});   // route() não pega WebSocket: assim o canal ao vivo fica mudo de verdade
   await ctx.addInitScript(()=>{
     if (sessionStorage.getItem("prep")) return; sessionStorage.setItem("prep","1");
     const agora = Date.now()+999999;
@@ -39,7 +39,7 @@ await cenario("B copia local velha com todos desativados", async (ctx, p)=>{
 });
 // C: lapides locais para todos
 await cenario("C lapides locais para todos", async (ctx)=>{
-  await ctx.route("**/realtime/**", r => r.abort());
+  await ctx.routeWebSocket(/realtime/, () => {});   // route() não pega WebSocket: assim o canal ao vivo fica mudo de verdade
   await ctx.addInitScript(()=>{
     if (sessionStorage.getItem("prep")) return; sessionStorage.setItem("prep","1");
     const t={}; ["fec1","fec2","fec3","fec5","fec6"].forEach(id=>t[id]=Date.now()+999999);
@@ -49,7 +49,7 @@ await cenario("C lapides locais para todos", async (ctx)=>{
 // D: normal
 await cenario("D navegador novo normal", async ()=>{});
 // E: roleta geral sem time continua igual
-const ctx = await b.newContext(); await ctx.route("**/realtime/**", r => r.abort()); const p = await ctx.newPage();
+const ctx = await b.newContext(); await ctx.routeWebSocket(/realtime/, () => {}); const p = await ctx.newPage();
 await p.goto(BASE, {waitUntil:"domcontentloaded"}); await p.waitForTimeout(5000);
 console.log("E roleta geral", await p.evaluate(()=>document.querySelectorAll("#wheel .seg-item").length), "fatias");
 await b.close(); if (falhou) { console.log("FALHOU: roda vazia em", falhou, "cenario(s)"); process.exit(1); } console.log("OK: roda nunca vazia");
