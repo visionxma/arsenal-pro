@@ -34,7 +34,7 @@ await cenario("B copia local velha com todos desativados", async (ctx, p)=>{
     if (sessionStorage.getItem("prep")) return; sessionStorage.setItem("prep","1");
     const agora = Date.now()+999999;
     const ex = ["fec1","fec2","fec3","fec5","fec6"].map((id,i)=>({id,name:["Miriele","Maciel","Tio Vitão","Julin","Adao"][i],active:false,minutes:null,updatedAt:agora}));
-    localStorage.setItem("cj_experts_v6__fechamento", JSON.stringify(ex));
+    localStorage.setItem("cj_experts_v7__fechamento", JSON.stringify(ex));
   });
 });
 // C: lapides locais para todos
@@ -43,7 +43,7 @@ await cenario("C lapides locais para todos", async (ctx)=>{
   await ctx.addInitScript(()=>{
     if (sessionStorage.getItem("prep")) return; sessionStorage.setItem("prep","1");
     const t={}; ["fec1","fec2","fec3","fec5","fec6"].forEach(id=>t[id]=Date.now()+999999);
-    localStorage.setItem("cj_experts_tumbas_v1__fechamento", JSON.stringify(t));
+    localStorage.setItem("cj_experts_tumbas_v2__fechamento", JSON.stringify(t));
   });
 });
 // D: normal

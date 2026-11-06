@@ -9,19 +9,19 @@
    ============================================================ */
 (() => {
   const CHAVES = [
-    "cj_experts_v6",     // lista de experts (a mais importante)
+    "cj_experts_v7",     // lista de experts (a mais importante)
     "cj_cfg_v2",         // configuracoes
     "cj_hist_v1",        // historico
     "cj_rodada_v1",      // quem ja foi sorteado nesta rodada
     "cj_live_state_v1",  // estado do cartao AO VIVO
     "cj_live_url_v1",    // link da live
     "cj_experts_rev",    // carimbo de versao (decide quem vence no sync)
-    "cj_experts_init_v1" // flag de primeira semeadura
+    "cj_experts_init_v2" // flag de primeira semeadura
   ];
   const dump = {};
   CHAVES.forEach(k => { const v = localStorage.getItem(k); if (v !== null) dump[k] = v; });
 
-  const experts = JSON.parse(dump.cj_experts_v6 || "[]");
+  const experts = JSON.parse(dump.cj_experts_v7 || "[]");
   const meta = {
     exportadoEm: new Date().toISOString(),
     origem: location.href,

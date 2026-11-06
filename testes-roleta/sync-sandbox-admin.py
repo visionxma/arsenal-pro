@@ -16,8 +16,8 @@ HOOK = '''<body class="locked">
   var nomes = ["Taylon","Patrick","Miriele","Julin","Thon Carvalho","Ed Trader","Vitor Lela","Eduardo Bastos","Tio Vitao","Gustavo","Lucas Bemfica","Allan","Big Boss","Mineirinho","Molina","Trader Estoico"];
   var exps = nomes.map(function(n,i){ return { id:"d"+i, name:n, photo:null, active: i!==7 && i!==12, minutes: (i===1?45:(i===4?20:null)), updatedAt:1 }; });
   try {
-    localStorage.setItem("cj_experts_v6", JSON.stringify(exps));
-    localStorage.setItem("cj_experts_init_v1","1");
+    localStorage.setItem("cj_experts_v7", JSON.stringify(exps));
+    localStorage.setItem("cj_experts_init_v2","1");
     localStorage.setItem("cj_rodada_v1", JSON.stringify(["d2","d5","d10"]));
     localStorage.setItem("cj_hist_v1", JSON.stringify([
       {name:"Lucas Bemfica", at:"21:36"},

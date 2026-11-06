@@ -1316,7 +1316,10 @@ function comTime(caminho){ return TIME ? caminho + "?time=" + TIME : caminho; }
   check();
 })();
 /* ================= Dados (mesmas chaves da roleta) ================= */
-const LS_EXPERTS = K("cj_experts_v6");
+/* v7 (06/11/2026): o banco mudou de projeto e a lista veio do ranking do Corujão. A chave local
+   antiga (v6) guardava a lista de antes; mesclada com a do banco, trazia de volta quem saiu e
+   gravava a soma no banco. Chave nova = todo navegador começa da lista do banco. */
+const LS_EXPERTS = K("cj_experts_v7");
 const LS_CFG     = K("cj_cfg_v2");
 const LS_HIST    = K("cj_hist_v1");
 const LS_RODADA  = K("cj_rodada_v1");
@@ -1369,7 +1372,7 @@ let listaPropria = false;
 /* true enquanto esperamos a lista de quem ja esta no ar (ver semearSePrecisar) */
 let aguardandoListaInicial = false;
 (function(){
-  const INIT = K("cj_experts_init_v1");
+  const INIT = K("cj_experts_init_v2");
   const raw = localStorage.getItem(LS_EXPERTS);
   if (raw != null){
     experts = load(LS_EXPERTS, []);                 // já existe lista salva → usa ela, seja qual for o tamanho
@@ -1461,7 +1464,7 @@ function syncSend(o){
    chegada deixa de importar e o estado converge igual em todas as maquinas,
    com quantos painies estiverem abertos. */
 let relogio = parseInt(localStorage.getItem(K("cj_experts_rev")) || "0", 10) || 0;
-const LS_TUMBAS = K("cj_experts_tumbas_v1");
+const LS_TUMBAS = K("cj_experts_tumbas_v2");
 /* lapides: { id: valorDoRelogio } — lembram QUE alguem foi removido e QUANDO.
    Sem isso, uma maquina desatualizada re-adicionaria quem ja foi excluido. */
 let tumbas = load(LS_TUMBAS, {});
@@ -1572,7 +1575,7 @@ async function adotarDoServidor(){
       experts = dedupeExperts(linha.experts);
       tumbas  = (linha.tumbas && typeof linha.tumbas === "object") ? Object.assign({}, linha.tumbas) : {};
       aguardandoListaInicial = false;
-      try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
+      try { localStorage.setItem(K("cj_experts_init_v2"), "1"); } catch {}
     } else {
       const r = mesclarExperts(experts, tumbas, linha.experts, linha.tumbas);
       experts = r.experts; tumbas = r.tumbas;
@@ -1716,7 +1719,7 @@ async function tratarMsgPainel(m){
             experts = dedupeExperts(m.experts);
             tumbas  = (m.tumbas && typeof m.tumbas === "object") ? Object.assign({}, m.tumbas) : {};
             aguardandoListaInicial = false;
-            try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
+            try { localStorage.setItem(K("cj_experts_init_v2"), "1"); } catch {}
           } else {
             const r = mesclarExperts(experts, tumbas, m.experts, m.tumbas);
             experts = r.experts; tumbas = r.tumbas;
@@ -2708,7 +2711,7 @@ function semearSePrecisar(){
     experts = JSON.parse(JSON.stringify(DEFAULT_EXPERTS));
     aguardandoListaInicial = false;
     listaPropria = true;
-    try { localStorage.setItem(K("cj_experts_init_v1"), "1"); } catch {}
+    try { localStorage.setItem(K("cj_experts_init_v2"), "1"); } catch {}
     save(LS_EXPERTS, experts);
     render();
     sendState();

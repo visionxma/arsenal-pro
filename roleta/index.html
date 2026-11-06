@@ -826,7 +826,10 @@ function comTime(caminho){ return TIME ? caminho + "?time=" + TIME : caminho; }
 })();
 /* ================= Dados ================= */
 if (TIME_INFO){ document.title = "Roleta · " + TIME_INFO.nome + " — Corujão de Traders"; document.addEventListener("DOMContentLoaded", function(){ var m = document.getElementById("marcaTime"); if (m) m.textContent = "Corujão · " + TIME_INFO.nome; }); }
-const LS_EXPERTS = K("cj_experts_v6");
+/* v7 (06/11/2026): o banco mudou de projeto e a lista veio do ranking do Corujão. A chave local
+   antiga (v6) guardava a lista de antes; mesclada com a do banco, trazia de volta quem saiu e
+   gravava a soma no banco. Chave nova = todo navegador começa da lista do banco. */
+const LS_EXPERTS = K("cj_experts_v7");
 const LS_CFG     = K("cj_cfg_v2");
 const LS_HIST    = K("cj_hist_v1");
 const LS_RODADA  = K("cj_rodada_v1");
@@ -1705,7 +1708,7 @@ function safeRebuild(){
    poder MESCLAR em vez de substituir. Antes ela adotava a lista de qualquer
    painel em bloco, entao o ultimo a falar vencia — com varias maquinas no mesmo
    login, uma desatualizada apagava o que a outra tinha acabado de corrigir. */
-const LS_TUMBAS = K("cj_experts_tumbas_v1");
+const LS_TUMBAS = K("cj_experts_tumbas_v2");
 /* Maior relogio logico ja visto. A roleta nao edita nada, mas precisa guardar
    isso para entregar a um painel recem-aberto: sem esse numero ele comecaria do
    zero e TODA edicao dele perderia para as outras maquinas. */
